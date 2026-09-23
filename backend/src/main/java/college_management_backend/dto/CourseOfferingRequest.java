@@ -2,6 +2,7 @@ package college_management_backend.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class CourseOfferingRequest {
 
@@ -15,6 +16,7 @@ public class CourseOfferingRequest {
     private Long facultyId;
 
     @NotBlank(message = "Offering status is required")
+    @Size(max = 20, message = "Offering status cannot exceed 20 characters")
     private String offeringStatus;
 
     public Long getCourseId() {

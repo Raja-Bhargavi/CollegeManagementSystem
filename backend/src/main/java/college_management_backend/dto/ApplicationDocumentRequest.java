@@ -2,19 +2,23 @@ package college_management_backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class ApplicationDocumentRequest {
 
-    @NotNull
+    @NotNull(message = "Application ID is required")
     private Long applicationId;
 
-    @NotBlank
+    @NotBlank(message = "Document type is required")
+    @Size(max = 50, message = "Document type cannot exceed 50 characters")
     private String documentType;
 
-    @NotBlank
+    @NotBlank(message = "File name is required")
+    @Size(max = 150, message = "File name cannot exceed 150 characters")
     private String fileName;
 
-    @NotBlank
+    @NotBlank(message = "File path is required")
+    @Size(max = 500, message = "File path cannot exceed 500 characters")
     private String filePath;
 
     public Long getApplicationId() {

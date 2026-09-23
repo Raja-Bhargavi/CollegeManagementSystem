@@ -6,6 +6,7 @@ import college_management_backend.service.AttendanceService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +24,14 @@ public class AttendanceController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<AttendanceResponse> getAllAttendance() {
 
         return attendanceService.getAllAttendance();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public AttendanceResponse getAttendanceById(
             @PathVariable Long id) {
 
@@ -36,6 +39,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/registration/{registrationId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<AttendanceResponse> getAttendanceByRegistration(
             @PathVariable Long registrationId) {
 
@@ -44,6 +48,7 @@ public class AttendanceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public ResponseEntity<AttendanceResponse> markAttendance(
             @Valid @RequestBody AttendanceRequest request) {
 
@@ -53,5 +58,27 @@ public class AttendanceController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    public AttendanceResponse updateAttendance(
+            @PathVariable Long id,
+            @Valid @RequestBody AttendanceRequest request) {
+
+        return attendanceService.updateAttendance(
+                id,
+                request
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteAttendance(
+            @PathVariable Long id) {
+
+        attendanceService.deleteAttendance(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

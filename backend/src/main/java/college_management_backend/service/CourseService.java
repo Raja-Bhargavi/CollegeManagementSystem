@@ -42,13 +42,7 @@ public class CourseService {
                         )
                 );
 
-        return new CourseResponse(
-                course.getCourseId(),
-                course.getCourseCode(),
-                course.getCourseName(),
-                course.getCredits(),
-                course.getDescription()
-        );
+        return toResponse(course);
     }
 
     @Transactional
@@ -71,12 +65,66 @@ public class CourseService {
 
         Course savedCourse = courseRepository.save(course);
 
+        return toResponse(savedCourse);
+    }
+
+    @Transactional
+    public CourseResponse updateCourse(
+            Long courseId,
+            CourseRequest request) {
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Course not found with ID: " + courseId
+                        )
+                );
+
+        /*
+         * Check whether the new course code belongs
+         * to another course.
+         */
+        if (!course.getCourseCode().equals(request.getCourseCode())
+                && courseRepository.existsByCourseCode(request.getCourseCode())) {
+
+            throw new RuntimeException(
+                    "Course with code "
+                            + request.getCourseCode()
+                            + " already exists"
+            );
+        }
+
+        course.setCourseCode(request.getCourseCode());
+        course.setCourseName(request.getCourseName());
+        course.setCredits(request.getCredits());
+        course.setDescription(request.getDescription());
+
+        Course updatedCourse = courseRepository.save(course);
+
+        return toResponse(updatedCourse);
+    }
+
+    @Transactional
+    public void deleteCourse(Long courseId) {
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Course not found with ID: " + courseId
+                        )
+                );
+
+        courseRepository.delete(course);
+    }
+
+    private CourseResponse toResponse(Course course) {
+
         return new CourseResponse(
-                savedCourse.getCourseId(),
-                savedCourse.getCourseCode(),
-                savedCourse.getCourseName(),
-                savedCourse.getCredits(),
-                savedCourse.getDescription()
+                course.getCourseId(),
+                course.getCourseCode(),
+                course.getCourseName(),
+                course.getCredits(),
+                course.getDescription()
         );
     }
 }

@@ -2,16 +2,18 @@ package college_management_backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class ApprovalRequest {
 
-    @NotNull
+    @NotNull(message = "Application ID is required")
     private Long applicationId;
 
-    @NotNull
+    @NotNull(message = "Approver user ID is required")
     private Long approverUserId;
 
-    @NotBlank
+    @NotBlank(message = "Action is required")
+    @Size(max = 30, message = "Action cannot exceed 30 characters")
     private String action;
 
     private String comments;

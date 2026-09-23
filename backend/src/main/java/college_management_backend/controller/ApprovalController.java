@@ -6,6 +6,7 @@ import college_management_backend.service.ApprovalService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/application/{applicationId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public List<ApprovalResponse> getApprovalsByApplication(
             @PathVariable Long applicationId) {
 
@@ -28,7 +30,25 @@ public class ApprovalController {
                 .getApprovalsByApplication(applicationId);
     }
 
+    @GetMapping("/{approvalId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
+    public ApprovalResponse getApprovalById(
+            @PathVariable Long approvalId) {
+
+        return approvalService.getApprovalById(approvalId);
+    }
+
+    @GetMapping("/approver/{approverUserId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
+    public List<ApprovalResponse> getApprovalsByApprover(
+            @PathVariable Long approverUserId) {
+
+        return approvalService
+                .getApprovalsByApprover(approverUserId);
+    }
+
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','MANAGEMENT')")
     public ResponseEntity<ApprovalResponse> processApproval(
             @Valid @RequestBody ApprovalRequest request) {
 

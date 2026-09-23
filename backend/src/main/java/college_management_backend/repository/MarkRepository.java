@@ -16,4 +16,10 @@ public interface MarkRepository
             Long examId,
             Long studentId
     );
+
+    boolean existsByExamIdAndStudentIdAndMarkIdNot(
+            Long examId,
+            Long studentId,
+            Long markId
+    );
 }

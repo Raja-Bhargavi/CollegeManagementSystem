@@ -7,6 +7,7 @@ import college_management_backend.repository.CourseOfferingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,46 @@ public class CourseOfferingService {
                 courseOfferingRepository.save(offering);
 
         return toResponse(savedOffering);
+    }
+
+    @Transactional
+    public CourseOfferingResponse updateOffering(
+            Long offeringId,
+            CourseOfferingRequest request) {
+
+        CourseOffering offering =
+                courseOfferingRepository.findById(offeringId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course offering not found with ID: "
+                                                + offeringId
+                                )
+                        );
+
+        offering.setCourseId(request.getCourseId());
+        offering.setSectionId(request.getSectionId());
+        offering.setFacultyId(request.getFacultyId());
+        offering.setOfferingStatus(request.getOfferingStatus());
+
+        CourseOffering updatedOffering =
+                courseOfferingRepository.save(offering);
+
+        return toResponse(updatedOffering);
+    }
+
+    @Transactional
+    public void deleteOffering(Long offeringId) {
+
+        CourseOffering offering =
+                courseOfferingRepository.findById(offeringId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course offering not found with ID: "
+                                                + offeringId
+                                )
+                        );
+
+        courseOfferingRepository.delete(offering);
     }
 
     private CourseOfferingResponse toResponse(

@@ -141,6 +141,123 @@ public class CourseRegistrationService {
         return toResponse(savedRegistration);
     }
 
+        @Transactional
+    public CourseRegistrationResponse updateRegistration(
+            Long registrationId,
+            CourseRegistrationRequest request) {
+
+        CourseRegistration registration =
+                courseRegistrationRepository
+                        .findById(registrationId)
+                        .orElseThrow(() ->
+                                new RegistrationNotFoundException(
+                                        "Registration not found with ID: "
+                                                + registrationId
+                                )
+                        );
+
+        validateStudent(request.getStudentId());
+        validateOffering(request.getOfferingId());
+
+        boolean duplicate =
+                courseRegistrationRepository
+                        .existsByStudentIdAndOfferingId(
+                                request.getStudentId(),
+                                request.getOfferingId()
+                        );
+
+        /*
+         * The existing registration itself should not
+         * be considered a duplicate.
+         */
+        if (duplicate) {
+            CourseRegistration existing =
+                    courseRegistrationRepository.findAll()
+                            .stream()
+                            .filter(r ->
+                                    r.getStudentId()
+                                            .equals(request.getStudentId())
+                                            && r.getOfferingId()
+                                            .equals(request.getOfferingId())
+                            )
+                            .findFirst()
+                            .orElse(null);
+
+            if (existing != null
+                    && !existing.getRegistrationId()
+                    .equals(registrationId)) {
+
+                throw new DuplicateRegistrationException(
+                        "Student is already registered for this course offering"
+                );
+            }
+        }
+
+        registration.setStudentId(request.getStudentId());
+        registration.setOfferingId(request.getOfferingId());
+
+        CourseRegistration updatedRegistration =
+                courseRegistrationRepository.save(registration);
+
+        return toResponse(updatedRegistration);
+    }
+
+    @Transactional
+    public void deleteRegistration(Long registrationId) {
+
+        CourseRegistration registration =
+                courseRegistrationRepository
+                        .findById(registrationId)
+                        .orElseThrow(() ->
+                                new RegistrationNotFoundException(
+                                        "Registration not found with ID: "
+                                                + registrationId
+                                )
+                        );
+
+        courseRegistrationRepository.delete(registration);
+    }
+
+    private void validateStudent(Long studentId) {
+
+        Student student =
+                studentRepository.findById(studentId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Student not found with ID: "
+                                                + studentId
+                                )
+                        );
+
+        if (!"ACTIVE".equalsIgnoreCase(
+                student.getStudentStatus())) {
+
+            throw new RuntimeException(
+                    "Student is not active and cannot register for courses"
+            );
+        }
+    }
+
+    private void validateOffering(Long offeringId) {
+
+        CourseOffering offering =
+                courseOfferingRepository.findById(offeringId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course offering not found with ID: "
+                                                + offeringId
+                                )
+                        );
+
+        if (!"ACTIVE".equalsIgnoreCase(
+                offering.getOfferingStatus())) {
+
+            throw new RuntimeException(
+                    "Course offering is not active"
+            );
+        }
+    }    
+
     private CourseRegistrationResponse toResponse(
             CourseRegistration registration) {
 

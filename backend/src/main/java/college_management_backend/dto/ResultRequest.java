@@ -6,20 +6,20 @@ import jakarta.validation.constraints.NotNull;
 
 public class ResultRequest {
 
-    @NotNull
+    @NotNull(message = "Student ID is required")
     private Long studentId;
 
-    @NotNull
+    @NotNull(message = "Semester ID is required")
     private Long semesterId;
 
-    @NotNull
-    @DecimalMin("0.0")
-    @DecimalMax("10.0")
+    @NotNull(message = "SGPA is required")
+    @DecimalMin(value = "0.0", message = "SGPA cannot be negative")
+    @DecimalMax(value = "10.0", message = "SGPA cannot exceed 10.0")
     private Double sgpa;
 
-    @NotNull
-    @DecimalMin("0.0")
-    @DecimalMax("10.0")
+    @NotNull(message = "CGPA is required")
+    @DecimalMin(value = "0.0", message = "CGPA cannot be negative")
+    @DecimalMax(value = "10.0", message = "CGPA cannot exceed 10.0")
     private Double cgpa;
 
     public Long getStudentId() {

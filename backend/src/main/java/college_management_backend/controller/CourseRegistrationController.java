@@ -6,6 +6,7 @@ import college_management_backend.service.CourseRegistrationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,12 +26,14 @@ public class CourseRegistrationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<CourseRegistrationResponse> getAllRegistrations() {
 
         return courseRegistrationService.getAllRegistrations();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public CourseRegistrationResponse getRegistrationById(
             @PathVariable Long id) {
 
@@ -39,10 +42,10 @@ public class CourseRegistrationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CourseRegistrationResponse>
     registerStudent(
-            @Valid @RequestBody
-            CourseRegistrationRequest request) {
+            @Valid @RequestBody CourseRegistrationRequest request) {
 
         CourseRegistrationResponse response =
                 courseRegistrationService
@@ -51,5 +54,26 @@ public class CourseRegistrationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CourseRegistrationResponse updateRegistration(
+            @PathVariable Long id,
+            @Valid @RequestBody CourseRegistrationRequest request) {
+
+        return courseRegistrationService
+                .updateRegistration(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteRegistration(
+            @PathVariable Long id) {
+
+        courseRegistrationService
+                .deleteRegistration(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

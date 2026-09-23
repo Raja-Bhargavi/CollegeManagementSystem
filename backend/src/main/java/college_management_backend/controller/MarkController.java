@@ -6,6 +6,7 @@ import college_management_backend.service.MarkService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +22,14 @@ public class MarkController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<MarkResponse> getAllMarks() {
 
         return markService.getAllMarks();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public MarkResponse getMarkById(
             @PathVariable Long id) {
 
@@ -34,6 +37,7 @@ public class MarkController {
     }
 
     @GetMapping("/exam/{examId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<MarkResponse> getMarksByExam(
             @PathVariable Long examId) {
 
@@ -41,6 +45,7 @@ public class MarkController {
     }
 
     @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<MarkResponse> getMarksByStudent(
             @PathVariable Long studentId) {
 
@@ -48,6 +53,7 @@ public class MarkController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public ResponseEntity<MarkResponse> createMark(
             @Valid @RequestBody MarkRequest request) {
 
@@ -57,5 +63,27 @@ public class MarkController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    public MarkResponse updateMark(
+            @PathVariable Long id,
+            @Valid @RequestBody MarkRequest request) {
+
+        return markService.updateMark(
+                id,
+                request
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteMark(
+            @PathVariable Long id) {
+
+        markService.deleteMark(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

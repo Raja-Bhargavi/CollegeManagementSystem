@@ -6,6 +6,7 @@ import college_management_backend.service.ExaminationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +24,14 @@ public class ExaminationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<ExaminationResponse> getAllExaminations() {
 
         return examinationService.getAllExaminations();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public ExaminationResponse getExaminationById(
             @PathVariable Long id) {
 
@@ -36,6 +39,7 @@ public class ExaminationController {
     }
 
     @GetMapping("/offering/{offeringId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<ExaminationResponse> getExaminationsByOffering(
             @PathVariable Long offeringId) {
 
@@ -44,6 +48,7 @@ public class ExaminationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public ResponseEntity<ExaminationResponse> createExamination(
             @Valid @RequestBody ExaminationRequest request) {
 
@@ -53,5 +58,27 @@ public class ExaminationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    public ExaminationResponse updateExamination(
+            @PathVariable Long id,
+            @Valid @RequestBody ExaminationRequest request) {
+
+        return examinationService.updateExamination(
+                id,
+                request
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteExamination(
+            @PathVariable Long id) {
+
+        examinationService.deleteExamination(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -15,4 +15,10 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             Long studentId,
             Long semesterId
     );
+
+    boolean existsByStudentIdAndSemesterIdAndResultIdNot(
+            Long studentId,
+            Long semesterId,
+            Long resultId
+    );
 }

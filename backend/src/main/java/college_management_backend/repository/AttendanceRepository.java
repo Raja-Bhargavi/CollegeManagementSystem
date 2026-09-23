@@ -17,4 +17,10 @@ public interface AttendanceRepository
     List<Attendance> findByRegistrationId(
             Long registrationId
     );
+
+    boolean existsByRegistrationIdAndAttendanceDateAndAttendanceIdNot(
+            Long registrationId,
+            LocalDate attendanceDate,
+            Long attendanceId
+    );
 }
