@@ -23,6 +23,7 @@ public class PublicController {
     public Map<String, String> about() {
 
         return Map.of(
+                "status", "success",
                 "name", "VNIT College Management Portal",
                 "message", "Welcome to the public portal"
         );
@@ -32,6 +33,7 @@ public class PublicController {
     public Map<String, String> contact() {
 
         return Map.of(
+                "status", "success",
                 "email", "info@vnit.ac.in",
                 "message", "Contact information"
         );
