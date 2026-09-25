@@ -3,6 +3,7 @@ package college_management_backend.controller;
 import college_management_backend.dto.CourseOfferingRequest;
 import college_management_backend.dto.CourseOfferingResponse;
 import college_management_backend.service.CourseOfferingService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/course-offerings")
+@SecurityRequirement(name = "bearerAuth")
 public class CourseOfferingController {
 
     private final CourseOfferingService courseOfferingService;

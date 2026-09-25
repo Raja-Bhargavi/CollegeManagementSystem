@@ -4,6 +4,7 @@ import college_management_backend.dto.ApplicationDocumentRequest;
 import college_management_backend.dto.ApplicationDocumentResponse;
 import college_management_backend.entity.ApplicationDocument;
 import college_management_backend.service.ApplicationDocumentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/application-documents")
+@SecurityRequirement(name = "bearerAuth")
 public class ApplicationDocumentController {
 
     private final ApplicationDocumentService documentService;

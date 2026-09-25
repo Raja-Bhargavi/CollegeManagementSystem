@@ -3,6 +3,8 @@ package college_management_backend.controller;
 import college_management_backend.dto.StaffRequest;
 import college_management_backend.dto.StaffResponse;
 import college_management_backend.service.StaffService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/staff")
+@SecurityRequirement(name = "bearerAuth")
 public class StaffController {
 
     private final StaffService staffService;

@@ -3,7 +3,6 @@ package college_management_backend.controller;
 import college_management_backend.dto.VisitorInquiryRequest;
 import college_management_backend.entity.VisitorInquiry;
 import college_management_backend.service.VisitorInquiryService;
-
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,6 @@
 package college_management_backend.dto;
 
 import jakarta.validation.constraints.*;
-
 import java.time.LocalDate;
 
 public class StudentRequest {
@@ -40,8 +39,8 @@ public class StudentRequest {
     private Integer currentSemester;
 
     @NotBlank(message = "Student status is required")
+    @Size(max = 20, message = "Student status cannot exceed 20 characters")
     private String studentStatus;
-
 
     public Long getUserId() {
         return userId;

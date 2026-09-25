@@ -3,6 +3,8 @@ package college_management_backend.controller;
 import college_management_backend.dto.AuditLogRequest;
 import college_management_backend.dto.AuditLogResponse;
 import college_management_backend.service.AuditLogService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/audit-logs")
+@SecurityRequirement(name = "bearerAuth")
 public class AuditLogController {
 
     private final AuditLogService auditLogService;

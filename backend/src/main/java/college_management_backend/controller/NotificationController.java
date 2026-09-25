@@ -3,6 +3,7 @@ package college_management_backend.controller;
 import college_management_backend.dto.NotificationRequest;
 import college_management_backend.dto.NotificationResponse;
 import college_management_backend.service.NotificationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
+@SecurityRequirement(name = "bearerAuth")
 public class NotificationController {
 
     private final NotificationService notificationService;

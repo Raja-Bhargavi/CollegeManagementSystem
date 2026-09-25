@@ -3,6 +3,8 @@ package college_management_backend.controller;
 import college_management_backend.dto.FacultyRequest;
 import college_management_backend.dto.FacultyResponse;
 import college_management_backend.service.FacultyService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/faculty")
+@SecurityRequirement(name = "bearerAuth")
 public class FacultyController {
 
     private final FacultyService facultyService;

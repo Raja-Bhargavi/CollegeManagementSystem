@@ -4,6 +4,7 @@ import college_management_backend.dto.ApplicationRequest;
 import college_management_backend.dto.ApplicationResponse;
 import college_management_backend.dto.ApplicationStatusRequest;
 import college_management_backend.service.ApplicationService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/applications")
+@SecurityRequirement(name = "bearerAuth")
 public class ApplicationController {
 
     private final ApplicationService applicationService;
