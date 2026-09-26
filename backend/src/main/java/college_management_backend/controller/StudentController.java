@@ -26,24 +26,22 @@ public class StudentController {
     }
 
     // ADMIN, STAFF, FACULTY, MANAGEMENT
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public StudentResponse getMyProfile(Authentication authentication) {
+        return studentService.getStudentByUsername(authentication.getName());
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public List<StudentResponse> getAllStudents() {
         return studentService.getAllStudents();
     }
 
-    // ADMIN, STAFF, FACULTY, MANAGEMENT
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public StudentResponse getStudentById(@PathVariable Long id) {
         return studentService.getStudentById(id);
-    }
-
-    // STUDENT can retrieve their own profile
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('STUDENT')")
-    public StudentResponse getMyProfile(Authentication authentication) {
-        return studentService.getStudentByUsername(authentication.getName());
     }
 
     // ADMIN, STAFF

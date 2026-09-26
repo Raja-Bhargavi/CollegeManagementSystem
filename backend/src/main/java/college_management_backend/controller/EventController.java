@@ -3,6 +3,7 @@ package college_management_backend.controller;
 import college_management_backend.dto.EventRequest;
 import college_management_backend.dto.EventResponse;
 import college_management_backend.service.EventService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
+@SecurityRequirement(name = "bearerAuth")
 public class EventController {
 
     private final EventService eventService;

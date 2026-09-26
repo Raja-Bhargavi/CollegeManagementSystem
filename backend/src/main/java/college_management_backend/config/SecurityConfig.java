@@ -13,9 +13,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -42,6 +44,13 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
+                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**"
+                                )
+                                .permitAll()
+
                 // Public / Visitor APIs
                 .requestMatchers("/api/public/**").permitAll()
 
@@ -66,6 +75,7 @@ public class SecurityConfig {
 
                 // Everything else requires authentication
                 .anyRequest().authenticated()
+                
             )
 
             .addFilterBefore(
