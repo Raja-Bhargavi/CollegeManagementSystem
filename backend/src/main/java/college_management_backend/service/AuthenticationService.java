@@ -3,6 +3,7 @@ package college_management_backend.service;
 import college_management_backend.dto.LoginRequest;
 import college_management_backend.dto.LoginResponse;
 import college_management_backend.security.JwtService;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,9 +39,20 @@ public class AuthenticationService {
                                 authentication.getPrincipal()
                 );
 
+        String role = authentication.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(authority -> authority.getAuthority())
+                .orElse("");
+
+        if (role.startsWith("ROLE_")) {
+            role = role.substring(5);
+        }
+
         return new LoginResponse(
                 token,
                 authentication.getName(),
+                role,
                 "Login successful"
         );
     }

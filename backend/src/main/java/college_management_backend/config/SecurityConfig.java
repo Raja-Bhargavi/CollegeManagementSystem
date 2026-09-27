@@ -5,15 +5,17 @@ import college_management_backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @Configuration
 @EnableWebSecurity
@@ -23,19 +25,24 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
-
-        this.jwtAuthenticationFilter =
-                jwtAuthenticationFilter;
+            JwtAuthenticationFilter jwtAuthenticationFilter
+    ) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+            HttpSecurity http
+    ) throws Exception {
 
         http
+            // Disable CSRF because this is a JWT/stateless API
             .csrf(csrf -> csrf.disable())
 
+            // Enable CORS
+            .cors(cors -> {})
+
+            // No HTTP session
             .sessionManagement(session ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
@@ -44,38 +51,48 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
+                // IMPORTANT:
+                // Allow browser CORS preflight requests
                 .requestMatchers(
-                                        "/swagger-ui/**",
-                                        "/swagger-ui.html",
-                                        "/v3/api-docs/**"
-                                )
-                                .permitAll()
+                    HttpMethod.OPTIONS,
+                    "/**"
+                ).permitAll()
 
-                // Public / Visitor APIs
-                .requestMatchers("/api/public/**").permitAll()
+                // Swagger
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**"
+                ).permitAll()
 
-                // Login APIs
-                .requestMatchers("/api/auth/**").permitAll()
+                // Public APIs
+                .requestMatchers(
+                    "/api/public/**"
+                ).permitAll()
 
-                // Role-based APIs
-                .requestMatchers("/api/admin/**")
-                    .hasRole("ADMIN")
+                // Authentication
+                .requestMatchers(
+                    "/api/auth/**"
+                ).permitAll()
 
-                .requestMatchers("/api/staff/**")
-                    .hasRole("STAFF")
+                // Admin URL
+                .requestMatchers(
+                    "/api/admin/**"
+                ).hasRole("ADMIN")
 
-                .requestMatchers("/api/faculty/**")
-                    .hasRole("FACULTY")
+                // Management URL
+                .requestMatchers(
+                    "/api/management/**"
+                ).hasRole("MANAGEMENT")
 
-                .requestMatchers("/api/management/**")
-                    .hasRole("MANAGEMENT")
+                // Student self-service URL
+                .requestMatchers(
+                    "/api/student/**"
+                ).hasRole("STUDENT")
 
-                .requestMatchers("/api/student/**")
-                    .hasRole("STUDENT")
-
-                // Everything else requires authentication
+                // All other API endpoints require authentication.
+                // Controller @PreAuthorize handles the exact roles.
                 .anyRequest().authenticated()
-                
             )
 
             .addFilterBefore(
@@ -88,9 +105,10 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration)
-            throws Exception {
+            AuthenticationConfiguration configuration
+    ) throws Exception {
 
         return configuration.getAuthenticationManager();
     }
 }
+

@@ -29,16 +29,25 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
 
         Date now = new Date();
+
         Date expiryDate =
                 new Date(now.getTime() + expiration);
 
+        String role =
+                userDetails.getAuthorities()
+                        .stream()
+                        .findFirst()
+                        .map(authority -> authority.getAuthority())
+                        .orElse("");
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
-    }
+        }
 
     public String extractUsername(String token) {
 
