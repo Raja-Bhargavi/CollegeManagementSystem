@@ -6,19 +6,29 @@ import {
     deleteStudent,
     createStudent,
     updateStudent,
+    getAvailableStudentAccounts,
 } from "../../api/studentApi";
 
 import type {
     Student,
     StudentRequest,
+    UserAccountOption,
 } from "../../api/studentApi";
 
 export default function Students() {
 
     const [students, setStudents] = useState<Student[]>([]);
+
+    const [studentAccounts, setStudentAccounts] =
+        useState<UserAccountOption[]>([]);
+
     const [loading, setLoading] = useState(true);
 
+    const [loadingStudentAccounts, setLoadingStudentAccounts] =
+        useState(false);
+
     const [error, setError] = useState("");
+
     const [success, setSuccess] = useState("");
 
     const [showForm, setShowForm] = useState(false);
@@ -62,7 +72,10 @@ export default function Students() {
 
         } catch (err) {
 
-            console.error("Failed to load students:", err);
+            console.error(
+                "Failed to load students:",
+                err
+            );
 
             setError(
                 getBackendErrorMessage(
@@ -82,11 +95,52 @@ export default function Students() {
     }, []);
 
     // =====================================================
+    // LOAD AVAILABLE STUDENT USER ACCOUNTS
+    // =====================================================
+
+    const loadStudentAccounts = async (
+        includeUserId?: number
+    ) => {
+
+        try {
+
+            setLoadingStudentAccounts(true);
+
+            const data =
+                await getAvailableStudentAccounts(
+                    includeUserId
+                );
+
+            setStudentAccounts(data);
+
+        } catch (err) {
+
+            console.error(
+                "Failed to load student accounts:",
+                err
+            );
+
+            setError(
+                getBackendErrorMessage(
+                    err,
+                    "Unable to load student user accounts."
+                )
+            );
+
+        } finally {
+
+            setLoadingStudentAccounts(false);
+        }
+    };
+
+    // =====================================================
     // INPUT CHANGE
     // =====================================================
 
     const handleInputChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLSelectElement
+        >
     ) => {
 
         const { name, value } = e.target;
@@ -113,9 +167,12 @@ export default function Students() {
 
     const validateForm = (): string | null => {
 
-        // User ID
-        if (!Number.isInteger(formData.userId) || formData.userId <= 0) {
-            return "Invalid User ID. Enter a valid positive User ID.";
+        // User account
+        if (
+            !Number.isInteger(formData.userId) ||
+            formData.userId <= 0
+        ) {
+            return "Please select a student user account.";
         }
 
         // Roll number
@@ -124,12 +181,20 @@ export default function Students() {
         }
 
         // First name
-        if (!/^[A-Za-z ]+$/.test(formData.firstName.trim())) {
+        if (
+            !/^[A-Za-z ]+$/.test(
+                formData.firstName.trim()
+            )
+        ) {
             return "Invalid first name. Only letters and spaces are allowed.";
         }
 
         // Last name
-        if (!/^[A-Za-z ]+$/.test(formData.lastName.trim())) {
+        if (
+            !/^[A-Za-z ]+$/.test(
+                formData.lastName.trim()
+            )
+        ) {
             return "Invalid last name. Only letters and spaces are allowed.";
         }
 
@@ -144,7 +209,11 @@ export default function Students() {
         }
 
         // Phone
-        if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
+        if (
+            !/^[6-9]\d{9}$/.test(
+                formData.phone.trim()
+            )
+        ) {
             return "Invalid phone number. Enter a valid 10-digit Indian mobile number.";
         }
 
@@ -157,10 +226,13 @@ export default function Students() {
         }
 
         // Admission year
-        const currentYear = new Date().getFullYear();
+        const currentYear =
+            new Date().getFullYear();
 
         if (
-            !Number.isInteger(formData.admissionYear) ||
+            !Number.isInteger(
+                formData.admissionYear
+            ) ||
             formData.admissionYear < 2000 ||
             formData.admissionYear > currentYear
         ) {
@@ -169,7 +241,9 @@ export default function Students() {
 
         // Semester
         if (
-            !Number.isInteger(formData.currentSemester) ||
+            !Number.isInteger(
+                formData.currentSemester
+            ) ||
             formData.currentSemester < 1 ||
             formData.currentSemester > 8
         ) {
@@ -197,8 +271,8 @@ export default function Students() {
         setError("");
         setSuccess("");
 
-        // Frontend validation
-        const validationError = validateForm();
+        const validationError =
+            validateForm();
 
         if (validationError) {
             setError(validationError);
@@ -216,6 +290,8 @@ export default function Students() {
             );
 
             setFormData(emptyForm);
+
+            setStudentAccounts([]);
 
             setShowForm(false);
 
@@ -242,9 +318,13 @@ export default function Students() {
     // EDIT STUDENT
     // =====================================================
 
-    const handleEdit = (student: Student) => {
+    const handleEdit = async (
+        student: Student
+    ) => {
 
-        setEditingStudentId(student.studentId);
+        setEditingStudentId(
+            student.studentId
+        );
 
         setFormData({
             userId: student.userId,
@@ -263,6 +343,10 @@ export default function Students() {
         setError("");
         setSuccess("");
 
+        await loadStudentAccounts(
+            student.userId
+        );
+
         setShowForm(true);
     };
 
@@ -279,7 +363,8 @@ export default function Students() {
         setError("");
         setSuccess("");
 
-        const validationError = validateForm();
+        const validationError =
+            validateForm();
 
         if (validationError) {
             setError(validationError);
@@ -287,7 +372,11 @@ export default function Students() {
         }
 
         if (editingStudentId === null) {
-            setError("No student selected for editing.");
+
+            setError(
+                "No student selected for editing."
+            );
+
             return;
         }
 
@@ -307,6 +396,8 @@ export default function Students() {
             setEditingStudentId(null);
 
             setFormData(emptyForm);
+
+            setStudentAccounts([]);
 
             setShowForm(false);
 
@@ -337,9 +428,10 @@ export default function Students() {
         studentId: number
     ) => {
 
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this student?"
-        );
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to delete this student?"
+            );
 
         if (!confirmed) {
             return;
@@ -350,7 +442,9 @@ export default function Students() {
             setError("");
             setSuccess("");
 
-            await deleteStudent(studentId);
+            await deleteStudent(
+                studentId
+            );
 
             setSuccess(
                 "Student deleted successfully."
@@ -383,8 +477,28 @@ export default function Students() {
 
         setFormData(emptyForm);
 
+        setStudentAccounts([]);
+
         setError("");
         setSuccess("");
+    };
+
+    // =====================================================
+    // OPEN ADD STUDENT FORM
+    // =====================================================
+
+    const handleOpenAddForm = async () => {
+
+        setEditingStudentId(null);
+
+        setFormData(emptyForm);
+
+        setError("");
+        setSuccess("");
+
+        await loadStudentAccounts();
+
+        setShowForm(true);
     };
 
     // =====================================================
@@ -417,17 +531,9 @@ export default function Students() {
 
                 {!showForm && (
                     <button
-                        onClick={() => {
-
-                            setEditingStudentId(null);
-
-                            setFormData(emptyForm);
-
-                            setError("");
-                            setSuccess("");
-
-                            setShowForm(true);
-                        }}
+                        onClick={
+                            handleOpenAddForm
+                        }
                     >
                         + Add Student
                     </button>
@@ -495,17 +601,74 @@ export default function Students() {
                             : "Edit Student"}
                     </h2>
 
-                    {/* USER ID */}
+                    {/* STUDENT USER ACCOUNT */}
 
-                    <FormField
-                        label="User ID"
-                        name="userId"
-                        type="number"
-                        value={formData.userId}
-                        onChange={handleInputChange}
-                        required
-                        min="1"
-                    />
+                    <div
+                        style={
+                            formGroupStyle
+                        }
+                    >
+
+                        <label>
+                            Student User Account
+                        </label>
+
+                        <select
+                            name="userId"
+                            value={
+                                formData.userId
+                            }
+                            onChange={
+                                handleInputChange
+                            }
+                            required
+                            disabled={
+                                loadingStudentAccounts
+                            }
+                        >
+
+                            <option value={0}>
+                                {loadingStudentAccounts
+                                    ? "Loading student accounts..."
+                                    : "Select student account"}
+                            </option>
+
+                            {studentAccounts.map(
+                                (account) => (
+
+                                    <option
+                                        key={
+                                            account.userId
+                                        }
+                                        value={
+                                            account.userId
+                                        }
+                                    >
+                                        {account.username}
+                                        {" — "}
+                                        {account.email}
+                                    </option>
+
+                                )
+                            )}
+
+                        </select>
+
+                        {!loadingStudentAccounts &&
+                            studentAccounts.length === 0 && (
+                                <small
+                                    style={{
+                                        color: "#b02a37",
+                                    }}
+                                >
+                                    No available student
+                                    user accounts.
+                                    Create a STUDENT
+                                    user account first.
+                                </small>
+                            )}
+
+                    </div>
 
                     {/* ROLL NUMBER */}
 
@@ -513,8 +676,12 @@ export default function Students() {
                         label="Roll Number"
                         name="rollNumber"
                         type="text"
-                        value={formData.rollNumber}
-                        onChange={handleInputChange}
+                        value={
+                            formData.rollNumber
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
@@ -524,8 +691,12 @@ export default function Students() {
                         label="First Name"
                         name="firstName"
                         type="text"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
+                        value={
+                            formData.firstName
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
@@ -535,32 +706,50 @@ export default function Students() {
                         label="Last Name"
                         name="lastName"
                         type="text"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
+                        value={
+                            formData.lastName
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
-                    {/* DOB */}
+                    {/* DATE OF BIRTH */}
 
                     <FormField
                         label="Date of Birth"
                         name="dateOfBirth"
                         type="date"
-                        value={formData.dateOfBirth}
-                        onChange={handleInputChange}
+                        value={
+                            formData.dateOfBirth
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
                     {/* GENDER */}
 
-                    <div style={formGroupStyle}>
+                    <div
+                        style={
+                            formGroupStyle
+                        }
+                    >
 
-                        <label>Gender</label>
+                        <label>
+                            Gender
+                        </label>
 
                         <select
                             name="gender"
-                            value={formData.gender}
-                            onChange={handleInputChange}
+                            value={
+                                formData.gender
+                            }
+                            onChange={
+                                handleInputChange
+                            }
                             required
                         >
 
@@ -590,8 +779,12 @@ export default function Students() {
                         label="Phone"
                         name="phone"
                         type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
+                        value={
+                            formData.phone
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
@@ -601,8 +794,12 @@ export default function Students() {
                         label="Program ID"
                         name="programId"
                         type="number"
-                        value={formData.programId}
-                        onChange={handleInputChange}
+                        value={
+                            formData.programId
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                         min="1"
                     />
@@ -613,27 +810,39 @@ export default function Students() {
                         label="Admission Year"
                         name="admissionYear"
                         type="number"
-                        value={formData.admissionYear}
-                        onChange={handleInputChange}
+                        value={
+                            formData.admissionYear
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                     />
 
-                    {/* SEMESTER */}
+                    {/* CURRENT SEMESTER */}
 
                     <FormField
                         label="Current Semester"
                         name="currentSemester"
                         type="number"
-                        value={formData.currentSemester}
-                        onChange={handleInputChange}
+                        value={
+                            formData.currentSemester
+                        }
+                        onChange={
+                            handleInputChange
+                        }
                         required
                         min="1"
                         max="8"
                     />
 
-                    {/* STATUS */}
+                    {/* STUDENT STATUS */}
 
-                    <div style={formGroupStyle}>
+                    <div
+                        style={
+                            formGroupStyle
+                        }
+                    >
 
                         <label>
                             Student Status
@@ -641,8 +850,12 @@ export default function Students() {
 
                         <select
                             name="studentStatus"
-                            value={formData.studentStatus}
-                            onChange={handleInputChange}
+                            value={
+                                formData.studentStatus
+                            }
+                            onChange={
+                                handleInputChange
+                            }
                             required
                         >
 
@@ -668,14 +881,24 @@ export default function Students() {
 
                     {/* BUTTONS */}
 
-                    <div style={{ marginTop: "15px" }}>
+                    <div
+                        style={{
+                            marginTop: "15px",
+                        }}
+                    >
 
                         <button
                             type="submit"
-                            disabled={saving}
+                            disabled={
+                                saving ||
+                                loadingStudentAccounts ||
+                                studentAccounts.length === 0
+                            }
                             style={{
-                                padding: "10px 20px",
-                                marginRight: "10px",
+                                padding:
+                                    "10px 20px",
+                                marginRight:
+                                    "10px",
                             }}
                         >
                             {saving
@@ -687,10 +910,13 @@ export default function Students() {
 
                         <button
                             type="button"
-                            onClick={handleCancelForm}
+                            onClick={
+                                handleCancelForm
+                            }
                             disabled={saving}
                             style={{
-                                padding: "10px 20px",
+                                padding:
+                                    "10px 20px",
                             }}
                         >
                             Cancel
@@ -712,7 +938,8 @@ export default function Students() {
                 <table
                     style={{
                         width: "100%",
-                        borderCollapse: "collapse",
+                        borderCollapse:
+                            "collapse",
                     }}
                 >
 
@@ -754,62 +981,112 @@ export default function Students() {
 
                     <tbody>
 
-                        {students.map((student) => (
+                        {students.map(
+                            (student) => (
 
-                            <tr key={student.studentId}>
+                                <tr
+                                    key={
+                                        student.studentId
+                                    }
+                                >
 
-                                <td style={cellStyle}>
-                                    {student.studentId}
-                                </td>
-
-                                <td style={cellStyle}>
-                                    {student.rollNumber}
-                                </td>
-
-                                <td style={cellStyle}>
-                                    {student.firstName}{" "}
-                                    {student.lastName}
-                                </td>
-
-                                <td style={cellStyle}>
-                                    {student.currentSemester}
-                                </td>
-
-                                <td style={cellStyle}>
-                                    {student.admissionYear}
-                                </td>
-
-                                <td style={cellStyle}>
-                                    {student.studentStatus}
-                                </td>
-
-                                <td style={cellStyle}>
-
-                                    <button
-                                        onClick={() =>
-                                            handleEdit(student)
+                                    <td
+                                        style={
+                                            cellStyle
                                         }
                                     >
-                                        Edit
-                                    </button>
+                                        {
+                                            student.studentId
+                                        }
+                                    </td>
 
-                                    {" "}
-
-                                    <button
-                                        onClick={() =>
-                                            handleDelete(
-                                                student.studentId
-                                            )
+                                    <td
+                                        style={
+                                            cellStyle
                                         }
                                     >
-                                        Delete
-                                    </button>
+                                        {
+                                            student.rollNumber
+                                        }
+                                    </td>
 
-                                </td>
+                                    <td
+                                        style={
+                                            cellStyle
+                                        }
+                                    >
+                                        {
+                                            student.firstName
+                                        }{" "}
+                                        {
+                                            student.lastName
+                                        }
+                                    </td>
 
-                            </tr>
+                                    <td
+                                        style={
+                                            cellStyle
+                                        }
+                                    >
+                                        {
+                                            student.currentSemester
+                                        }
+                                    </td>
 
-                        ))}
+                                    <td
+                                        style={
+                                            cellStyle
+                                        }
+                                    >
+                                        {
+                                            student.admissionYear
+                                        }
+                                    </td>
+
+                                    <td
+                                        style={
+                                            cellStyle
+                                        }
+                                    >
+                                        {
+                                            student.studentStatus
+                                        }
+                                    </td>
+
+                                    <td
+                                        style={
+                                            cellStyle
+                                        }
+                                    >
+
+                                        <button
+                                            onClick={() =>
+                                                handleEdit(
+                                                    student
+                                                )
+                                            }
+                                        >
+                                            Edit
+                                        </button>
+
+                                        {" "}
+
+                                        <button
+                                            onClick={() =>
+                                                handleDelete(
+                                                    student.studentId
+                                                )
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            )
+                        )}
 
                     </tbody>
 
@@ -826,15 +1103,23 @@ export default function Students() {
 // =====================================================
 
 interface FormFieldProps {
+
     label: string;
+
     name: string;
+
     type: string;
+
     value: string | number;
+
     onChange: (
         e: React.ChangeEvent<HTMLInputElement>
     ) => void;
+
     required?: boolean;
+
     min?: string;
+
     max?: string;
 }
 
@@ -850,7 +1135,12 @@ function FormField({
 }: FormFieldProps) {
 
     return (
-        <div style={formGroupStyle}>
+
+        <div
+            style={
+                formGroupStyle
+            }
+        >
 
             <label>
                 {label}
@@ -872,7 +1162,7 @@ function FormField({
 
 
 // =====================================================
-// BACKEND ERROR HANDLER
+// STUDENT ERROR HANDLER
 // =====================================================
 
 function getStudentErrorMessage(
@@ -884,21 +1174,28 @@ function getStudentErrorMessage(
         return "Something went wrong. Please try again.";
     }
 
-    const status = error.response?.status;
+    const status =
+        error.response?.status;
 
-    const data = error.response?.data;
+    const data =
+        error.response?.data;
 
     // -------------------------------------------------
-    // If backend sends a simple string
+    // Backend simple string
     // -------------------------------------------------
 
-    if (typeof data === "string" && data.trim()) {
+    if (
+        typeof data === "string" &&
+        data.trim()
+    ) {
 
-        return translateBackendMessage(data);
+        return translateBackendMessage(
+            data
+        );
     }
 
     // -------------------------------------------------
-    // Common Spring Boot error formats
+    // Backend message
     // -------------------------------------------------
 
     if (data?.message) {
@@ -907,6 +1204,10 @@ function getStudentErrorMessage(
             String(data.message)
         );
     }
+
+    // -------------------------------------------------
+    // Backend error
+    // -------------------------------------------------
 
     if (data?.error) {
 
@@ -926,7 +1227,9 @@ function getStudentErrorMessage(
             return data.errors
                 .map((item: any) => {
 
-                    if (item.defaultMessage) {
+                    if (
+                        item.defaultMessage
+                    ) {
                         return item.defaultMessage;
                     }
 
@@ -935,43 +1238,56 @@ function getStudentErrorMessage(
                 .join(" | ");
         }
 
-        if (typeof data.errors === "object") {
+        if (
+            typeof data.errors ===
+            "object"
+        ) {
 
-            return Object.entries(data.errors)
+            return Object.entries(
+                data.errors
+            )
                 .map(
                     ([field, message]) =>
-                        `${formatFieldName(field)}: ${message}`
+                        `${formatFieldName(
+                            field
+                        )}: ${message}`
                 )
                 .join(" | ");
         }
     }
 
     // -------------------------------------------------
-    // HTTP status messages
+    // HTTP status
     // -------------------------------------------------
 
     if (status === 400) {
+
         return "Invalid student details. Please check the fields.";
     }
 
     if (status === 401) {
+
         return "Session expired. Please login again.";
     }
 
     if (status === 403) {
+
         return "You are not authorized to perform this operation.";
     }
 
     if (status === 404) {
+
         return "Student or related record was not found.";
     }
 
     if (status === 409) {
-        return "Duplicate student data. User ID or Roll Number may already be used.";
+
+        return "Duplicate student data. User account or Roll Number may already be used.";
     }
 
     if (status === 500) {
-        return "Server error. Please check the entered User ID, Program ID and other details.";
+
+        return "Server error. Please check the entered student details.";
     }
 
     return "Unable to complete the operation. Please try again.";
@@ -986,7 +1302,8 @@ function translateBackendMessage(
     message: string
 ): string {
 
-    const lower = message.toLowerCase();
+    const lower =
+        message.toLowerCase();
 
     // User ID
     if (
@@ -1000,10 +1317,11 @@ function translateBackendMessage(
             lower.includes("unique") ||
             lower.includes("already")
         ) {
-            return "User ID is already used. This user is already linked to a student.";
+
+            return "User account is already linked to a student.";
         }
 
-        return `User ID error: ${message}`;
+        return `User account error: ${message}`;
     }
 
     // Roll number
@@ -1018,6 +1336,7 @@ function translateBackendMessage(
             lower.includes("unique") ||
             lower.includes("already")
         ) {
+
             return "Roll Number is already used. Enter a different Roll Number.";
         }
 
@@ -1030,6 +1349,7 @@ function translateBackendMessage(
         lower.includes("first_name") ||
         lower.includes("first name")
     ) {
+
         return `First Name error: ${message}`;
     }
 
@@ -1039,6 +1359,7 @@ function translateBackendMessage(
         lower.includes("last_name") ||
         lower.includes("last name")
     ) {
+
         return `Last Name error: ${message}`;
     }
 
@@ -1047,6 +1368,7 @@ function translateBackendMessage(
         lower.includes("phone") ||
         lower.includes("mobile")
     ) {
+
         return `Phone Number error: ${message}`;
     }
 
@@ -1056,6 +1378,7 @@ function translateBackendMessage(
         lower.includes("program_id") ||
         lower.includes("program id")
     ) {
+
         return `Program ID error: ${message}`;
     }
 
@@ -1065,11 +1388,15 @@ function translateBackendMessage(
         lower.includes("date_of_birth") ||
         lower.includes("date of birth")
     ) {
+
         return `Date of Birth error: ${message}`;
     }
 
     // Semester
-    if (lower.includes("semester")) {
+    if (
+        lower.includes("semester")
+    ) {
+
         return `Semester error: ${message}`;
     }
 
@@ -1079,14 +1406,16 @@ function translateBackendMessage(
         lower.includes("student_status") ||
         lower.includes("status")
     ) {
+
         return `Student Status error: ${message}`;
     }
 
-    // Foreign key
+    // Foreign key / database
     if (
         lower.includes("foreign key") ||
         lower.includes("constraint")
     ) {
+
         return `Database constraint error: ${message}`;
     }
 
@@ -1103,13 +1432,16 @@ function getBackendErrorMessage(
     fallback: string
 ): string {
 
-    if (axios.isAxiosError(error)) {
+    if (
+        axios.isAxiosError(error)
+    ) {
 
         const message =
             error.response?.data?.message ||
             error.response?.data?.error;
 
         if (message) {
+
             return String(message);
         }
     }
@@ -1127,9 +1459,19 @@ function formatFieldName(
 ): string {
 
     return field
-        .replace(/([A-Z])/g, " $1")
-        .replace(/_/g, " ")
-        .replace(/^./, (char) => char.toUpperCase());
+        .replace(
+            /([A-Z])/g,
+            " $1"
+        )
+        .replace(
+            /_/g,
+            " "
+        )
+        .replace(
+            /^./,
+            (char) =>
+                char.toUpperCase()
+        );
 }
 
 
@@ -1137,17 +1479,34 @@ function formatFieldName(
 // STYLES
 // =====================================================
 
-const cellStyle: React.CSSProperties = {
-    border: "1px solid #ddd",
-    padding: "10px",
-    textAlign: "left",
+const cellStyle:
+    React.CSSProperties = {
+
+    border:
+        "1px solid #ddd",
+
+    padding:
+        "10px",
+
+    textAlign:
+        "left",
 };
 
-const formGroupStyle: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    marginBottom: "15px",
-    maxWidth: "400px",
-};
+const formGroupStyle:
+    React.CSSProperties = {
 
+    display:
+        "flex",
+
+    flexDirection:
+        "column",
+
+    gap:
+        "5px",
+
+    marginBottom:
+        "15px",
+
+    maxWidth:
+        "400px",
+};

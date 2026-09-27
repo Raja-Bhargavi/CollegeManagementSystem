@@ -16,12 +16,17 @@ import {
     getAttendance,
 } from "../../api/adminApi";
 
+import {
+    getCourseOfferings,
+} from "../../api/courseOfferingApi";
+
 interface DashboardCounts {
     students: number;
     faculty: number;
     staff: number;
     applications: number;
     courses: number;
+    courseOfferings: number;
     departments: number;
     events: number;
     examinations: number;
@@ -45,6 +50,7 @@ function AdminDashboard() {
             staff: 0,
             applications: 0,
             courses: 0,
+            courseOfferings: 0,
             departments: 0,
             events: 0,
             examinations: 0,
@@ -75,6 +81,7 @@ function AdminDashboard() {
                     staff,
                     applications,
                     courses,
+                    courseOfferings,
                     departments,
                     events,
                     examinations,
@@ -88,6 +95,7 @@ function AdminDashboard() {
                     getStaff(),
                     getApplications(),
                     getCourses(),
+                    getCourseOfferings(),
                     getDepartments(),
                     getEvents(),
                     getExaminations(),
@@ -103,6 +111,7 @@ function AdminDashboard() {
                     staff: staff.length,
                     applications: applications.length,
                     courses: courses.length,
+                    courseOfferings: courseOfferings.length,
                     departments: departments.length,
                     events: events.length,
                     examinations: examinations.length,
@@ -213,6 +222,14 @@ function AdminDashboard() {
                         <div>
                             <h3>Courses</h3>
                             <p>{counts.courses}</p>
+                        </div>
+
+                        <div
+                            onClick={() => navigate("/admin/course-offerings")}
+                            style={{ cursor: "pointer" }}
+                        >
+                            <h3>Course Offerings</h3>
+                            <p>{counts.courseOfferings}</p>
                         </div>
 
                         <div>

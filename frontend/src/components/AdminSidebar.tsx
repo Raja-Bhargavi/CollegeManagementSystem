@@ -8,6 +8,7 @@ const menuItems = [
     { label: "Staff", path: "/admin/staff" },
     { label: "Applications", path: "/admin/applications" },
     { label: "Courses", path: "/admin/courses" },
+    { label: "Course Offerings", path: "/admin/course-offerings" },
     { label: "Departments", path: "/admin/departments" },
     { label: "Events", path: "/admin/events" },
     { label: "Examinations", path: "/admin/examinations" },

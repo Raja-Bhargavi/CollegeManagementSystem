@@ -29,6 +29,12 @@ export interface StudentRequest {
     studentStatus: string;
 }
 
+export interface UserAccountOption {
+    userId: number;
+    username: string;
+    email: string;
+}
+
 export const getStudents = async (): Promise<Student[]> => {
     const response = await api.get<Student[]>("/api/students");
     return response.data;
@@ -73,3 +79,19 @@ export const deleteStudent = async (
     await api.delete(`/api/students/${studentId}`);
 };
 
+export const getAvailableStudentAccounts = async (
+    includeUserId?: number
+): Promise<UserAccountOption[]> => {
+
+    const response = await api.get<UserAccountOption[]>(
+        "/api/users/student-accounts",
+        {
+            params:
+                includeUserId !== undefined
+                    ? { includeUserId }
+                    : {},
+        }
+    );
+
+    return response.data;
+};
