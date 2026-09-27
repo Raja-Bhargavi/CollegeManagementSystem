@@ -1,7 +1,16 @@
-import { useState } from "react";
+import {
+    useState
+} from "react";
+
+import {
+    useNavigate
+} from "react-router-dom";
+
 import { login } from "../api/authApi";
 
 function Login() {
+
+    const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -26,7 +35,8 @@ function Login() {
             });
 
             console.log("Login successful:", response);
-
+            console.log("User role:", response.role);
+            
             // Store JWT
             localStorage.setItem(
                 "token",
@@ -39,9 +49,20 @@ function Login() {
                 response.username
             );
 
+            //store roles
+            localStorage.setItem(
+                "role",
+                response.role
+            );
+
+
             console.log(
                 "JWT stored successfully"
             );
+
+            if (response.role === "ADMIN") {
+                navigate("/admin");
+            }
 
         } catch (error) {
 
