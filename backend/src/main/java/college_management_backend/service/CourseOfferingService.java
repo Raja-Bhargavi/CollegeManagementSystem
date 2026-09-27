@@ -4,22 +4,29 @@ import college_management_backend.dto.CourseOfferingRequest;
 import college_management_backend.dto.CourseOfferingResponse;
 import college_management_backend.entity.CourseOffering;
 import college_management_backend.repository.CourseOfferingRepository;
+import college_management_backend.repository.CourseRepository;
+import college_management_backend.repository.FacultyRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseOfferingService {
 
     private final CourseOfferingRepository courseOfferingRepository;
+    private final CourseRepository courseRepository;
+    private final FacultyRepository facultyRepository;
 
     public CourseOfferingService(
-            CourseOfferingRepository courseOfferingRepository) {
+            CourseOfferingRepository courseOfferingRepository,
+            CourseRepository courseRepository,
+            FacultyRepository facultyRepository) {
 
         this.courseOfferingRepository = courseOfferingRepository;
+        this.courseRepository = courseRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     public List<CourseOfferingResponse> getAllOfferings() {
@@ -27,7 +34,7 @@ public class CourseOfferingService {
         return courseOfferingRepository.findAll()
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CourseOfferingResponse getOfferingById(Long offeringId) {
@@ -38,8 +45,7 @@ public class CourseOfferingService {
                                 new RuntimeException(
                                         "Course offering not found with ID: "
                                                 + offeringId
-                                )
-                        );
+                                ));
 
         return toResponse(offering);
     }
@@ -48,12 +54,42 @@ public class CourseOfferingService {
     public CourseOfferingResponse createOffering(
             CourseOfferingRequest request) {
 
+        validateRequest(request);
+
+        if (!courseRepository.existsById(request.getCourseId())) {
+            throw new RuntimeException(
+                    "Course not found with ID: "
+                            + request.getCourseId()
+            );
+        }
+
+        if (!facultyRepository.existsById(request.getFacultyId())) {
+            throw new RuntimeException(
+                    "Faculty not found with ID: "
+                            + request.getFacultyId()
+            );
+        }
+
+        if (courseOfferingRepository
+                .existsByCourseIdAndSectionIdAndFacultyId(
+                        request.getCourseId(),
+                        request.getSectionId(),
+                        request.getFacultyId())) {
+
+            throw new RuntimeException(
+                    "This course is already offered for the selected "
+                            + "section and faculty"
+            );
+        }
+
         CourseOffering offering = new CourseOffering();
 
         offering.setCourseId(request.getCourseId());
         offering.setSectionId(request.getSectionId());
         offering.setFacultyId(request.getFacultyId());
-        offering.setOfferingStatus(request.getOfferingStatus());
+        offering.setOfferingStatus(
+                request.getOfferingStatus().trim()
+        );
 
         CourseOffering savedOffering =
                 courseOfferingRepository.save(offering);
@@ -66,19 +102,54 @@ public class CourseOfferingService {
             Long offeringId,
             CourseOfferingRequest request) {
 
+        validateRequest(request);
+
         CourseOffering offering =
                 courseOfferingRepository.findById(offeringId)
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Course offering not found with ID: "
                                                 + offeringId
-                                )
-                        );
+                                ));
+
+        if (!courseRepository.existsById(request.getCourseId())) {
+            throw new RuntimeException(
+                    "Course not found with ID: "
+                            + request.getCourseId()
+            );
+        }
+
+        if (!facultyRepository.existsById(request.getFacultyId())) {
+            throw new RuntimeException(
+                    "Faculty not found with ID: "
+                            + request.getFacultyId()
+            );
+        }
+
+        boolean combinationChanged =
+                !offering.getCourseId().equals(request.getCourseId())
+                        || !offering.getSectionId().equals(request.getSectionId())
+                        || !offering.getFacultyId().equals(request.getFacultyId());
+
+        if (combinationChanged
+                && courseOfferingRepository
+                .existsByCourseIdAndSectionIdAndFacultyId(
+                        request.getCourseId(),
+                        request.getSectionId(),
+                        request.getFacultyId())) {
+
+            throw new RuntimeException(
+                    "Another course offering already exists "
+                            + "for the selected course, section and faculty"
+            );
+        }
 
         offering.setCourseId(request.getCourseId());
         offering.setSectionId(request.getSectionId());
         offering.setFacultyId(request.getFacultyId());
-        offering.setOfferingStatus(request.getOfferingStatus());
+        offering.setOfferingStatus(
+                request.getOfferingStatus().trim()
+        );
 
         CourseOffering updatedOffering =
                 courseOfferingRepository.save(offering);
@@ -95,10 +166,39 @@ public class CourseOfferingService {
                                 new RuntimeException(
                                         "Course offering not found with ID: "
                                                 + offeringId
-                                )
-                        );
+                                ));
 
         courseOfferingRepository.delete(offering);
+    }
+
+    private void validateRequest(
+            CourseOfferingRequest request) {
+
+        if (request.getCourseId() == null) {
+            throw new RuntimeException(
+                    "Course ID is required"
+            );
+        }
+
+        if (request.getSectionId() == null) {
+            throw new RuntimeException(
+                    "Section ID is required"
+            );
+        }
+
+        if (request.getFacultyId() == null) {
+            throw new RuntimeException(
+                    "Faculty ID is required"
+            );
+        }
+
+        if (request.getOfferingStatus() == null
+                || request.getOfferingStatus().isBlank()) {
+
+            throw new RuntimeException(
+                    "Offering status is required"
+            );
+        }
     }
 
     private CourseOfferingResponse toResponse(

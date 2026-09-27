@@ -4,11 +4,11 @@ import college_management_backend.dto.CourseRequest;
 import college_management_backend.dto.CourseResponse;
 import college_management_backend.entity.Course;
 import college_management_backend.repository.CourseRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -20,17 +20,10 @@ public class CourseService {
     }
 
     public List<CourseResponse> getAllCourses() {
-
         return courseRepository.findAll()
                 .stream()
-                .map(course -> new CourseResponse(
-                        course.getCourseId(),
-                        course.getCourseCode(),
-                        course.getCourseName(),
-                        course.getCredits(),
-                        course.getDescription()
-                ))
-                .collect(Collectors.toList());
+                .map(this::toResponse)
+                .toList();
     }
 
     public CourseResponse getCourseById(Long courseId) {
@@ -39,8 +32,7 @@ public class CourseService {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Course not found with ID: " + courseId
-                        )
-                );
+                        ));
 
         return toResponse(course);
     }
@@ -48,20 +40,31 @@ public class CourseService {
     @Transactional
     public CourseResponse createCourse(CourseRequest request) {
 
-        if (courseRepository.existsByCourseCode(request.getCourseCode())) {
+        String courseCode = request.getCourseCode().trim();
+        String courseName = request.getCourseName().trim();
+
+        if (courseRepository.existsByCourseCode(courseCode)) {
             throw new RuntimeException(
-                    "Course with code "
-                            + request.getCourseCode()
-                            + " already exists"
+                    "Course with code " + courseCode + " already exists"
+            );
+        }
+
+        if (courseRepository.existsByCourseName(courseName)) {
+            throw new RuntimeException(
+                    "Course with name " + courseName + " already exists"
             );
         }
 
         Course course = new Course();
 
-        course.setCourseCode(request.getCourseCode());
-        course.setCourseName(request.getCourseName());
+        course.setCourseCode(courseCode);
+        course.setCourseName(courseName);
         course.setCredits(request.getCredits());
-        course.setDescription(request.getDescription());
+        course.setDescription(
+                request.getDescription() == null
+                        ? null
+                        : request.getDescription().trim()
+        );
 
         Course savedCourse = courseRepository.save(course);
 
@@ -77,27 +80,35 @@ public class CourseService {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Course not found with ID: " + courseId
-                        )
-                );
+                        ));
 
-        /*
-         * Check whether the new course code belongs
-         * to another course.
-         */
-        if (!course.getCourseCode().equals(request.getCourseCode())
-                && courseRepository.existsByCourseCode(request.getCourseCode())) {
+        String courseCode = request.getCourseCode().trim();
+        String courseName = request.getCourseName().trim();
+
+        if (!course.getCourseCode().equals(courseCode)
+                && courseRepository.existsByCourseCode(courseCode)) {
 
             throw new RuntimeException(
-                    "Course with code "
-                            + request.getCourseCode()
-                            + " already exists"
+                    "Course with code " + courseCode + " already exists"
             );
         }
 
-        course.setCourseCode(request.getCourseCode());
-        course.setCourseName(request.getCourseName());
+        if (!course.getCourseName().equals(courseName)
+                && courseRepository.existsByCourseName(courseName)) {
+
+            throw new RuntimeException(
+                    "Course with name " + courseName + " already exists"
+            );
+        }
+
+        course.setCourseCode(courseCode);
+        course.setCourseName(courseName);
         course.setCredits(request.getCredits());
-        course.setDescription(request.getDescription());
+        course.setDescription(
+                request.getDescription() == null
+                        ? null
+                        : request.getDescription().trim()
+        );
 
         Course updatedCourse = courseRepository.save(course);
 
@@ -111,8 +122,7 @@ public class CourseService {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Course not found with ID: " + courseId
-                        )
-                );
+                        ));
 
         courseRepository.delete(course);
     }

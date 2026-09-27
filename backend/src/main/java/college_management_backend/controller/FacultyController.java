@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,18 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<FacultyResponse> getMyProfile(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                facultyService.getFacultyByUsername(authentication.getName())
+        );
+    }
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<List<FacultyResponse>> getAllFaculty() {
 
         return ResponseEntity.ok(
@@ -33,7 +44,7 @@ public class FacultyController {
     }
 
     @GetMapping("/{facultyId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<FacultyResponse> getFacultyById(
             @PathVariable Long facultyId) {
 
@@ -43,7 +54,7 @@ public class FacultyController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<FacultyResponse> getFacultyByUserId(
             @PathVariable Long userId) {
 
@@ -83,3 +94,4 @@ public class FacultyController {
         return ResponseEntity.noContent().build();
     }
 }
+

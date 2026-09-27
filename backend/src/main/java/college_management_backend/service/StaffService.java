@@ -3,7 +3,11 @@ package college_management_backend.service;
 import college_management_backend.dto.StaffRequest;
 import college_management_backend.dto.StaffResponse;
 import college_management_backend.entity.Staff;
+import college_management_backend.entity.User;
+import college_management_backend.repository.DepartmentRepository;
 import college_management_backend.repository.StaffRepository;
+import college_management_backend.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,12 +16,21 @@ import java.util.List;
 public class StaffService {
 
     private final StaffRepository staffRepository;
+    private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public StaffService(StaffRepository staffRepository) {
+    public StaffService(
+            StaffRepository staffRepository,
+            UserRepository userRepository,
+            DepartmentRepository departmentRepository) {
+
         this.staffRepository = staffRepository;
+        this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     public List<StaffResponse> getAllStaff() {
+
         return staffRepository.findAll()
                 .stream()
                 .map(StaffResponse::new)
@@ -46,7 +59,33 @@ public class StaffService {
         return new StaffResponse(staff);
     }
 
+    public StaffResponse getStaffByUsername(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found: " + username
+                        ));
+
+        return getStaffByUserId(user.getUserId());
+    }
+
     public StaffResponse createStaff(StaffRequest request) {
+
+        validateRequest(request);
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found with id: "
+                                        + request.getUserId()
+                        ));
+
+        if (!hasStaffRole(user.getUserId())) {
+            throw new RuntimeException(
+                    "Selected user does not have STAFF role"
+            );
+        }
 
         if (staffRepository.existsByUserId(request.getUserId())) {
             throw new RuntimeException(
@@ -63,6 +102,8 @@ public class StaffService {
                             + request.getEmployeeNumber()
             );
         }
+
+        validateDepartment(request.getDepartmentId());
 
         Staff staff = new Staff();
 
@@ -85,14 +126,30 @@ public class StaffService {
             Long staffId,
             StaffRequest request) {
 
+        validateRequest(request);
+
         Staff staff = staffRepository.findById(staffId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Staff not found with id: " + staffId
                         ));
 
+        userRepository.findById(request.getUserId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found with id: "
+                                        + request.getUserId()
+                        ));
+
+        if (!hasStaffRole(request.getUserId())) {
+            throw new RuntimeException(
+                    "Selected user does not have STAFF role"
+            );
+        }
+
         if (!staff.getUserId().equals(request.getUserId())
-                && staffRepository.existsByUserId(request.getUserId())) {
+                && staffRepository.existsByUserId(
+                        request.getUserId())) {
 
             throw new RuntimeException(
                     "Another staff already exists for user id: "
@@ -110,6 +167,8 @@ public class StaffService {
                             + request.getEmployeeNumber()
             );
         }
+
+        validateDepartment(request.getDepartmentId());
 
         staff.setUserId(request.getUserId());
         staff.setEmployeeNumber(request.getEmployeeNumber());
@@ -135,5 +194,56 @@ public class StaffService {
         }
 
         staffRepository.deleteById(staffId);
+    }
+
+    private void validateRequest(StaffRequest request) {
+
+        if (request.getUserId() == null) {
+            throw new RuntimeException("User ID is required");
+        }
+
+        if (request.getEmployeeNumber() == null
+                || request.getEmployeeNumber().isBlank()) {
+
+            throw new RuntimeException(
+                    "Employee number is required"
+            );
+        }
+
+        if (request.getFirstName() == null
+                || request.getFirstName().isBlank()) {
+
+            throw new RuntimeException(
+                    "First name is required"
+            );
+        }
+
+        if (request.getStaffStatus() == null
+                || request.getStaffStatus().isBlank()) {
+
+            throw new RuntimeException(
+                    "Staff status is required"
+            );
+        }
+    }
+
+    private void validateDepartment(Long departmentId) {
+
+        if (departmentId == null) {
+            return;
+        }
+
+        if (!departmentRepository.existsById(departmentId)) {
+            throw new RuntimeException(
+                    "Department not found with id: " + departmentId
+            );
+        }
+    }
+
+    private boolean hasStaffRole(Long userId) {
+
+        return userRepository.findStaffUserIds()
+                .stream()
+                .anyMatch(id -> id.equals(userId));
     }
 }

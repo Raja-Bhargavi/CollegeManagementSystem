@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,18 @@ public class StaffController {
         this.staffService = staffService;
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STAFF')")
+    public ResponseEntity<StaffResponse> getMyProfile(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                staffService.getStaffByUsername(authentication.getName())
+        );
+    }
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<List<StaffResponse>> getAllStaff() {
 
         return ResponseEntity.ok(
@@ -33,7 +44,7 @@ public class StaffController {
     }
 
     @GetMapping("/{staffId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<StaffResponse> getStaffById(
             @PathVariable Long staffId) {
 
@@ -43,7 +54,7 @@ public class StaffController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResponseEntity<StaffResponse> getStaffByUserId(
             @PathVariable Long userId) {
 
