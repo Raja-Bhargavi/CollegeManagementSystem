@@ -2,20 +2,20 @@ package college_management_backend.service;
 
 import college_management_backend.dto.CourseRegistrationRequest;
 import college_management_backend.dto.CourseRegistrationResponse;
-import college_management_backend.entity.CourseRegistration;
 import college_management_backend.entity.CourseOffering;
+import college_management_backend.entity.CourseRegistration;
 import college_management_backend.entity.Student;
-import college_management_backend.repository.CourseRegistrationRepository;
-import college_management_backend.repository.CourseOfferingRepository;
-import college_management_backend.repository.StudentRepository;
 import college_management_backend.exception.DuplicateRegistrationException;
 import college_management_backend.exception.RegistrationNotFoundException;
+import college_management_backend.repository.CourseOfferingRepository;
+import college_management_backend.repository.CourseRegistrationRepository;
+import college_management_backend.repository.StudentRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseRegistrationService {
@@ -48,7 +48,7 @@ public class CourseRegistrationService {
         return courseRegistrationRepository.findAll()
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CourseRegistrationResponse getRegistrationById(
@@ -70,6 +70,8 @@ public class CourseRegistrationService {
     @Transactional
     public CourseRegistrationResponse registerStudent(
             CourseRegistrationRequest request) {
+
+        validateRequest(request);
 
         Student student =
                 studentRepository.findById(request.getStudentId())
@@ -141,10 +143,12 @@ public class CourseRegistrationService {
         return toResponse(savedRegistration);
     }
 
-        @Transactional
+    @Transactional
     public CourseRegistrationResponse updateRegistration(
             Long registrationId,
             CourseRegistrationRequest request) {
+
+        validateRequest(request);
 
         CourseRegistration registration =
                 courseRegistrationRepository
@@ -159,45 +163,46 @@ public class CourseRegistrationService {
         validateStudent(request.getStudentId());
         validateOffering(request.getOfferingId());
 
-        boolean duplicate =
-                courseRegistrationRepository
-                        .existsByStudentIdAndOfferingId(
-                                request.getStudentId(),
-                                request.getOfferingId()
-                        );
+        boolean studentChanged =
+                !registration.getStudentId()
+                        .equals(request.getStudentId());
 
-        /*
-         * The existing registration itself should not
-         * be considered a duplicate.
-         */
-        if (duplicate) {
-            CourseRegistration existing =
-                    courseRegistrationRepository.findAll()
-                            .stream()
-                            .filter(r ->
-                                    r.getStudentId()
-                                            .equals(request.getStudentId())
-                                            && r.getOfferingId()
-                                            .equals(request.getOfferingId())
-                            )
-                            .findFirst()
-                            .orElse(null);
+        boolean offeringChanged =
+                !registration.getOfferingId()
+                        .equals(request.getOfferingId());
 
-            if (existing != null
-                    && !existing.getRegistrationId()
-                    .equals(registrationId)) {
+        if (studentChanged || offeringChanged) {
 
-                throw new DuplicateRegistrationException(
-                        "Student is already registered for this course offering"
-                );
-            }
+            courseRegistrationRepository
+                    .findByStudentIdAndOfferingId(
+                            request.getStudentId(),
+                            request.getOfferingId()
+                    )
+                    .ifPresent(existing -> {
+
+                        if (!existing.getRegistrationId()
+                                .equals(registrationId)) {
+
+                            throw new DuplicateRegistrationException(
+                                    "Student is already registered "
+                                            + "for this course offering"
+                            );
+                        }
+                    });
         }
 
-        registration.setStudentId(request.getStudentId());
-        registration.setOfferingId(request.getOfferingId());
+        registration.setStudentId(
+                request.getStudentId()
+        );
+
+        registration.setOfferingId(
+                request.getOfferingId()
+        );
 
         CourseRegistration updatedRegistration =
-                courseRegistrationRepository.save(registration);
+                courseRegistrationRepository.save(
+                        registration
+                );
 
         return toResponse(updatedRegistration);
     }
@@ -216,6 +221,28 @@ public class CourseRegistrationService {
                         );
 
         courseRegistrationRepository.delete(registration);
+    }
+
+    private void validateRequest(
+            CourseRegistrationRequest request) {
+
+        if (request == null) {
+            throw new RuntimeException(
+                    "Registration request is required"
+            );
+        }
+
+        if (request.getStudentId() == null) {
+            throw new RuntimeException(
+                    "Student ID is required"
+            );
+        }
+
+        if (request.getOfferingId() == null) {
+            throw new RuntimeException(
+                    "Offering ID is required"
+            );
+        }
     }
 
     private void validateStudent(Long studentId) {
@@ -256,7 +283,7 @@ public class CourseRegistrationService {
                     "Course offering is not active"
             );
         }
-    }    
+    }
 
     private CourseRegistrationResponse toResponse(
             CourseRegistration registration) {
