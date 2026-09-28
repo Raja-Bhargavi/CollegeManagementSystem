@@ -12,8 +12,11 @@ import Students from "./pages/admin/Students";
 import DepartmentPage from "./pages/admin/Department";
 import FacultyPage from "./pages/admin/Faculty";
 import StaffPage from "./pages/admin/Staff";
+import Applications from "./pages/admin/Applications";
 import CoursePage from "./pages/admin/Course";
 import CourseOfferingPage from "./pages/admin/CourseOffering";
+import AttendancePage from "./pages/admin/Attendance";
+import CourseRegistrationPage from "./pages/admin/CourseRegistration";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
 
@@ -69,11 +72,7 @@ function App() {
                     {/* Applications */}
                     <Route
                         path="applications"
-                        element={
-                            <div>
-                                <h1>Applications Management</h1>
-                            </div>
-                        }
+                        element={<Applications />}
                     />
 
                     {/* Courses */}
@@ -86,6 +85,12 @@ function App() {
                     <Route
                         path="course-offerings"
                         element={<CourseOfferingPage />}
+                    />
+
+                    {/* Course Registration */} 
+                    <Route 
+                        path="course-registrations" 
+                        element={<CourseRegistrationPage />} 
                     />
 
                     {/* Departments */} 
@@ -147,12 +152,9 @@ function App() {
                     {/* Attendance */}
                     <Route
                         path="attendance"
-                        element={
-                            <div>
-                                <h1>Attendance Management</h1>
-                            </div>
-                        }
+                        element={<AttendancePage />}
                     />
+
                 </Route>
 
                 {/* Unauthorized */}
