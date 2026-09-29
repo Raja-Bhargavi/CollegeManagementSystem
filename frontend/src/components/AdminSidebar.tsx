@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
@@ -13,6 +12,7 @@ const menuItems = [
     { label: "Departments", path: "/admin/departments" },
     { label: "Events", path: "/admin/events" },
     { label: "Examinations", path: "/admin/examinations" },
+    { label: "Marks", path: "/admin/marks" },
     { label: "Notices", path: "/admin/notices" },
     { label: "Payments", path: "/admin/payments" },
     { label: "Results", path: "/admin/results" },

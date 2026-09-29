@@ -16,6 +16,11 @@ import Applications from "./pages/admin/Applications";
 import CoursePage from "./pages/admin/Course";
 import CourseOfferingPage from "./pages/admin/CourseOffering";
 import AttendancePage from "./pages/admin/Attendance";
+import ExaminationsPage from "./pages/admin/Examinations";
+import MarksPage from "./pages/admin/Marks";
+import ResultsPage from "./pages/admin/Results";
+import EventsPage from "./pages/admin/Events";
+import NoticesPage from "./pages/admin/Notices";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
@@ -102,31 +107,25 @@ function App() {
                     {/* Events */}
                     <Route
                         path="events"
-                        element={
-                            <div>
-                                <h1>Events Management</h1>
-                            </div>
-                        }
+                        element={<EventsPage />}
                     />
 
                     {/* Examinations */}
                     <Route
                         path="examinations"
-                        element={
-                            <div>
-                                <h1>Examinations Management</h1>
-                            </div>
-                        }
+                        element={<ExaminationsPage />}
+                    />
+
+                    {/* Marks */}
+                    <Route
+                        path="marks"
+                        element={<MarksPage />}
                     />
 
                     {/* Notices */}
                     <Route
                         path="notices"
-                        element={
-                            <div>
-                                <h1>Notices Management</h1>
-                            </div>
-                        }
+                        element={<NoticesPage />}
                     />
 
                     {/* Payments */}
@@ -142,11 +141,7 @@ function App() {
                     {/* Results */}
                     <Route
                         path="results"
-                        element={
-                            <div>
-                                <h1>Results Management</h1>
-                            </div>
-                        }
+                        element={<ResultsPage />}
                     />
 
                     {/* Attendance */}
