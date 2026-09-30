@@ -21,6 +21,8 @@ import MarksPage from "./pages/admin/Marks";
 import ResultsPage from "./pages/admin/Results";
 import EventsPage from "./pages/admin/Events";
 import NoticesPage from "./pages/admin/Notices";
+import Fees from "./pages/admin/Fees";
+import Payments from "./pages/admin/Payments";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
@@ -128,14 +130,24 @@ function App() {
                         element={<NoticesPage />}
                     />
 
+                    {/* Fees */}
+                    <Route
+                        path="/admin/fees"
+                        element={
+                            <ProtectedRoute allowedRoles={["ADMIN"]}>
+                            <Fees />
+                            </ProtectedRoute>
+                        }
+                        />
+
                     {/* Payments */}
                     <Route
-                        path="payments"
+                        path="/admin/payments"
                         element={
-                            <div>
-                                <h1>Payments Management</h1>
-                            </div>
-                        }
+                        <ProtectedRoute allowedRoles={["ADMIN"]}>
+                        <Payments />
+                        </ProtectedRoute>
+                    }
                     />
 
                     {/* Results */}

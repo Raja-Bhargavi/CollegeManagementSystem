@@ -15,6 +15,7 @@ const menuItems = [
     { label: "Marks", path: "/admin/marks" },
     { label: "Notices", path: "/admin/notices" },
     { label: "Payments", path: "/admin/payments" },
+    { label: "Fees",path: "/admin/fees"},
     { label: "Results", path: "/admin/results" },
     { label: "Attendance", path: "/admin/attendance" },
 ];

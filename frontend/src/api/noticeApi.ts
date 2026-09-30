@@ -23,16 +23,16 @@ export interface NoticeRequest {
 
 export const getNotices = async (): Promise<Notice[]> => {
   try {
-    console.log("GET /notices");
+    console.log("GET /api/notices");
 
-    const response = await api.get("/notices");
+    const response = await api.get("/api/notices");
 
-    console.log("GET /notices response:", response);
+    console.log("GET /api/notices response:", response);
 
     return response.data;
   } catch (error: any) {
     console.error(
-      "GET /notices failed:",
+      "GET /api/notices failed:",
       error?.response?.status,
       error?.response?.data,
       error
@@ -45,7 +45,10 @@ export const getNotices = async (): Promise<Notice[]> => {
 export const getNoticeById = async (
   noticeId: number
 ): Promise<Notice> => {
-  const response = await api.get(`/notices/${noticeId}`);
+  const response = await api.get(
+    `/api/notices/${noticeId}`
+  );
+
   return response.data;
 };
 
@@ -53,16 +56,22 @@ export const createNotice = async (
   data: NoticeRequest
 ): Promise<Notice> => {
   try {
-    console.log("POST /notices payload:", data);
+    console.log("POST /api/notices payload:", data);
 
-    const response = await api.post("/notices", data);
+    const response = await api.post(
+      "/api/notices",
+      data
+    );
 
-    console.log("POST /notices response:", response);
+    console.log(
+      "POST /api/notices response:",
+      response
+    );
 
     return response.data;
   } catch (error: any) {
     console.error(
-      "POST /notices failed:",
+      "POST /api/notices failed:",
       error?.response?.status,
       error?.response?.data,
       error
@@ -77,7 +86,7 @@ export const updateNotice = async (
   data: NoticeRequest
 ): Promise<Notice> => {
   const response = await api.put(
-    `/notices/${noticeId}`,
+    `/api/notices/${noticeId}`,
     data
   );
 
@@ -87,5 +96,27 @@ export const updateNotice = async (
 export const deleteNotice = async (
   noticeId: number
 ): Promise<void> => {
-  await api.delete(`/notices/${noticeId}`);
+  await api.delete(
+    `/api/notices/${noticeId}`
+  );
+};
+
+export const getNoticesByVisibility = async (
+  visibility: string
+): Promise<Notice[]> => {
+  const response = await api.get(
+    `/api/notices/visibility/${visibility}`
+  );
+
+  return response.data;
+};
+
+export const getNoticesByStatus = async (
+  status: string
+): Promise<Notice[]> => {
+  const response = await api.get(
+    `/api/notices/status/${status}`
+  );
+
+  return response.data;
 };
