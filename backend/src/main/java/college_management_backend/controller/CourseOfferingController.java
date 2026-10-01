@@ -3,11 +3,13 @@ package college_management_backend.controller;
 import college_management_backend.dto.CourseOfferingRequest;
 import college_management_backend.dto.CourseOfferingResponse;
 import college_management_backend.service.CourseOfferingService;
+import college_management_backend.service.FacultyService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,57 +20,115 @@ import java.util.List;
 public class CourseOfferingController {
 
     private final CourseOfferingService courseOfferingService;
+    private final FacultyService facultyService;
 
     public CourseOfferingController(
-            CourseOfferingService courseOfferingService) {
+            CourseOfferingService courseOfferingService,
+            FacultyService facultyService) {
 
-        this.courseOfferingService = courseOfferingService;
+        this.courseOfferingService =
+                courseOfferingService;
+
+        this.facultyService =
+                facultyService;
     }
+
+    // =========================================================
+    // GET ALL
+    // =========================================================
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
-    public List<CourseOfferingResponse> getAllOfferings() {
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY')"
+    )
+    public List<CourseOfferingResponse>
+    getAllOfferings() {
 
-        return courseOfferingService.getAllOfferings();
+        return courseOfferingService
+                .getAllOfferings();
     }
+
+    // =========================================================
+    // FACULTY - MY COURSES
+    // =========================================================
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public List<CourseOfferingResponse>
+    getMyCourses(
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        return courseOfferingService
+                .getOfferingsByFaculty(
+                        facultyId
+                );
+    }
+
+    // =========================================================
+    // GET BY ID
+    // =========================================================
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
-    public CourseOfferingResponse getOfferingById(
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY')"
+    )
+    public CourseOfferingResponse
+    getOfferingById(
             @PathVariable Long id) {
 
-        return courseOfferingService.getOfferingById(id);
+        return courseOfferingService
+                .getOfferingById(id);
     }
+
+    // =========================================================
+    // CREATE
+    // =========================================================
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CourseOfferingResponse> createOffering(
-            @Valid @RequestBody CourseOfferingRequest request) {
+    public CourseOfferingResponse
+    createOffering(
+            @RequestBody CourseOfferingRequest request) {
 
-        CourseOfferingResponse response =
-                courseOfferingService.createOffering(request);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return courseOfferingService
+                .createOffering(request);
     }
+
+    // =========================================================
+    // UPDATE
+    // =========================================================
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CourseOfferingResponse updateOffering(
+    public CourseOfferingResponse
+    updateOffering(
             @PathVariable Long id,
-            @Valid @RequestBody CourseOfferingRequest request) {
+            @RequestBody CourseOfferingRequest request) {
 
-        return courseOfferingService.updateOffering(id, request);
+        return courseOfferingService
+                .updateOffering(
+                        id,
+                        request
+                );
     }
+
+    // =========================================================
+    // DELETE
+    // =========================================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteOffering(
+    public void deleteOffering(
             @PathVariable Long id) {
 
-        courseOfferingService.deleteOffering(id);
-
-        return ResponseEntity.noContent().build();
+        courseOfferingService
+                .deleteOffering(id);
     }
 }

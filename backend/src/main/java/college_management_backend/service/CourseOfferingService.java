@@ -2,13 +2,16 @@ package college_management_backend.service;
 
 import college_management_backend.dto.CourseOfferingRequest;
 import college_management_backend.dto.CourseOfferingResponse;
+import college_management_backend.entity.Course;
 import college_management_backend.entity.CourseOffering;
+import college_management_backend.entity.Faculty;
+import college_management_backend.entity.Section;
 import college_management_backend.repository.CourseOfferingRepository;
 import college_management_backend.repository.CourseRepository;
 import college_management_backend.repository.FacultyRepository;
+import college_management_backend.repository.SectionRepository;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,16 +21,23 @@ public class CourseOfferingService {
     private final CourseOfferingRepository courseOfferingRepository;
     private final CourseRepository courseRepository;
     private final FacultyRepository facultyRepository;
+    private final SectionRepository sectionRepository;
 
     public CourseOfferingService(
             CourseOfferingRepository courseOfferingRepository,
             CourseRepository courseRepository,
-            FacultyRepository facultyRepository) {
+            FacultyRepository facultyRepository,
+            SectionRepository sectionRepository) {
 
         this.courseOfferingRepository = courseOfferingRepository;
         this.courseRepository = courseRepository;
         this.facultyRepository = facultyRepository;
+        this.sectionRepository = sectionRepository;
     }
+
+    // =========================================================
+    // GET ALL OFFERINGS
+    // =========================================================
 
     public List<CourseOfferingResponse> getAllOfferings() {
 
@@ -37,58 +47,106 @@ public class CourseOfferingService {
                 .toList();
     }
 
-    public CourseOfferingResponse getOfferingById(Long offeringId) {
+    // =========================================================
+    // GET OFFERING BY ID
+    // =========================================================
+
+    public CourseOfferingResponse getOfferingById(Long id) {
 
         CourseOffering offering =
-                courseOfferingRepository.findById(offeringId)
+                courseOfferingRepository
+                        .findById(id)
                         .orElseThrow(() ->
                                 new RuntimeException(
-                                        "Course offering not found with ID: "
-                                                + offeringId
+                                        "Course offering not found with id: " + id
                                 ));
 
         return toResponse(offering);
     }
 
-    @Transactional
+    // =========================================================
+    // GET OFFERINGS BY FACULTY
+    // =========================================================
+
+    public List<CourseOfferingResponse> getOfferingsByFaculty(
+            Long facultyId) {
+
+        if (!facultyRepository.existsById(facultyId)) {
+            throw new RuntimeException(
+                    "Faculty not found with id: " + facultyId
+            );
+        }
+
+        return courseOfferingRepository
+                .findByFacultyId(facultyId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    // =========================================================
+    // CREATE OFFERING
+    // =========================================================
+
     public CourseOfferingResponse createOffering(
             CourseOfferingRequest request) {
 
-        validateRequest(request);
-
         if (!courseRepository.existsById(request.getCourseId())) {
+
             throw new RuntimeException(
-                    "Course not found with ID: "
+                    "Course not found with id: "
                             + request.getCourseId()
             );
         }
 
-        if (!facultyRepository.existsById(request.getFacultyId())) {
+        if (!sectionRepository.existsById(request.getSectionId())) {
+
             throw new RuntimeException(
-                    "Faculty not found with ID: "
+                    "Section not found with id: "
+                            + request.getSectionId()
+            );
+        }
+
+        if (!facultyRepository.existsById(request.getFacultyId())) {
+
+            throw new RuntimeException(
+                    "Faculty not found with id: "
                             + request.getFacultyId()
             );
         }
 
-        if (courseOfferingRepository
-                .existsByCourseIdAndSectionIdAndFacultyId(
-                        request.getCourseId(),
-                        request.getSectionId(),
-                        request.getFacultyId())) {
+        boolean exists =
+                courseOfferingRepository
+                        .existsByCourseIdAndSectionIdAndFacultyId(
+                                request.getCourseId(),
+                                request.getSectionId(),
+                                request.getFacultyId()
+                        );
+
+        if (exists) {
 
             throw new RuntimeException(
-                    "This course is already offered for the selected "
-                            + "section and faculty"
+                    "Course offering already exists for this course, section and faculty."
             );
         }
 
-        CourseOffering offering = new CourseOffering();
+        CourseOffering offering =
+                new CourseOffering();
 
-        offering.setCourseId(request.getCourseId());
-        offering.setSectionId(request.getSectionId());
-        offering.setFacultyId(request.getFacultyId());
+        offering.setCourseId(
+                request.getCourseId()
+        );
+
+        offering.setSectionId(
+                request.getSectionId()
+        );
+
+        offering.setFacultyId(
+                request.getFacultyId()
+        );
+
         offering.setOfferingStatus(
-                request.getOfferingStatus().trim()
+                request.getOfferingStatus()
         );
 
         CourseOffering savedOffering =
@@ -97,58 +155,87 @@ public class CourseOfferingService {
         return toResponse(savedOffering);
     }
 
-    @Transactional
+    // =========================================================
+    // UPDATE OFFERING
+    // =========================================================
+
     public CourseOfferingResponse updateOffering(
-            Long offeringId,
+            Long id,
             CourseOfferingRequest request) {
 
-        validateRequest(request);
-
         CourseOffering offering =
-                courseOfferingRepository.findById(offeringId)
+                courseOfferingRepository
+                        .findById(id)
                         .orElseThrow(() ->
                                 new RuntimeException(
-                                        "Course offering not found with ID: "
-                                                + offeringId
+                                        "Course offering not found with id: "
+                                                + id
                                 ));
 
         if (!courseRepository.existsById(request.getCourseId())) {
+
             throw new RuntimeException(
-                    "Course not found with ID: "
+                    "Course not found with id: "
                             + request.getCourseId()
             );
         }
 
-        if (!facultyRepository.existsById(request.getFacultyId())) {
+        if (!sectionRepository.existsById(request.getSectionId())) {
+
             throw new RuntimeException(
-                    "Faculty not found with ID: "
+                    "Section not found with id: "
+                            + request.getSectionId()
+            );
+        }
+
+        if (!facultyRepository.existsById(request.getFacultyId())) {
+
+            throw new RuntimeException(
+                    "Faculty not found with id: "
                             + request.getFacultyId()
             );
         }
 
         boolean combinationChanged =
-                !offering.getCourseId().equals(request.getCourseId())
-                        || !offering.getSectionId().equals(request.getSectionId())
-                        || !offering.getFacultyId().equals(request.getFacultyId());
+                !request.getCourseId()
+                        .equals(offering.getCourseId())
+                        || !request.getSectionId()
+                        .equals(offering.getSectionId())
+                        || !request.getFacultyId()
+                        .equals(offering.getFacultyId());
 
-        if (combinationChanged
-                && courseOfferingRepository
-                .existsByCourseIdAndSectionIdAndFacultyId(
-                        request.getCourseId(),
-                        request.getSectionId(),
-                        request.getFacultyId())) {
+        if (combinationChanged) {
 
-            throw new RuntimeException(
-                    "Another course offering already exists "
-                            + "for the selected course, section and faculty"
-            );
+            boolean exists =
+                    courseOfferingRepository
+                            .existsByCourseIdAndSectionIdAndFacultyId(
+                                    request.getCourseId(),
+                                    request.getSectionId(),
+                                    request.getFacultyId()
+                            );
+
+            if (exists) {
+
+                throw new RuntimeException(
+                        "Another course offering already exists for this course, section and faculty."
+                );
+            }
         }
 
-        offering.setCourseId(request.getCourseId());
-        offering.setSectionId(request.getSectionId());
-        offering.setFacultyId(request.getFacultyId());
+        offering.setCourseId(
+                request.getCourseId()
+        );
+
+        offering.setSectionId(
+                request.getSectionId()
+        );
+
+        offering.setFacultyId(
+                request.getFacultyId()
+        );
+
         offering.setOfferingStatus(
-                request.getOfferingStatus().trim()
+                request.getOfferingStatus()
         );
 
         CourseOffering updatedOffering =
@@ -157,58 +244,100 @@ public class CourseOfferingService {
         return toResponse(updatedOffering);
     }
 
-    @Transactional
-    public void deleteOffering(Long offeringId) {
+    // =========================================================
+    // DELETE OFFERING
+    // =========================================================
 
-        CourseOffering offering =
-                courseOfferingRepository.findById(offeringId)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Course offering not found with ID: "
-                                                + offeringId
-                                ));
+    public void deleteOffering(Long id) {
 
-        courseOfferingRepository.delete(offering);
+        if (!courseOfferingRepository.existsById(id)) {
+
+            throw new RuntimeException(
+                    "Course offering not found with id: " + id
+            );
+        }
+
+        courseOfferingRepository.deleteById(id);
     }
 
-    private void validateRequest(
-            CourseOfferingRequest request) {
-
-        if (request.getCourseId() == null) {
-            throw new RuntimeException(
-                    "Course ID is required"
-            );
-        }
-
-        if (request.getSectionId() == null) {
-            throw new RuntimeException(
-                    "Section ID is required"
-            );
-        }
-
-        if (request.getFacultyId() == null) {
-            throw new RuntimeException(
-                    "Faculty ID is required"
-            );
-        }
-
-        if (request.getOfferingStatus() == null
-                || request.getOfferingStatus().isBlank()) {
-
-            throw new RuntimeException(
-                    "Offering status is required"
-            );
-        }
-    }
+    // =========================================================
+    // CONVERT ENTITY TO RESPONSE
+    // =========================================================
 
     private CourseOfferingResponse toResponse(
             CourseOffering offering) {
 
+        // -------------------------------
+        // COURSE
+        // -------------------------------
+
+        Course course =
+                courseRepository
+                        .findById(offering.getCourseId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course not found with id: "
+                                                + offering.getCourseId()
+                                ));
+
+        // -------------------------------
+        // SECTION
+        // -------------------------------
+
+        Section section =
+                sectionRepository
+                        .findById(offering.getSectionId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Section not found with id: "
+                                                + offering.getSectionId()
+                                ));
+
+        // -------------------------------
+        // FACULTY
+        // -------------------------------
+
+        Faculty faculty =
+                facultyRepository
+                        .findById(offering.getFacultyId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Faculty not found with id: "
+                                                + offering.getFacultyId()
+                                ));
+
+        // -------------------------------
+        // FACULTY NAME
+        // -------------------------------
+
+        String facultyName =
+                faculty.getFirstName();
+
+        if (faculty.getLastName() != null
+                && !faculty.getLastName().isBlank()) {
+
+            facultyName +=
+                    " " + faculty.getLastName();
+        }
+
+        // -------------------------------
+        // RESPONSE
+        // -------------------------------
+
         return new CourseOfferingResponse(
+
                 offering.getOfferingId(),
-                offering.getCourseId(),
-                offering.getSectionId(),
-                offering.getFacultyId(),
+
+                course.getCourseId(),
+                course.getCourseCode(),
+                course.getCourseName(),
+
+                section.getSectionId(),
+                section.getSectionName(),
+
+                faculty.getFacultyId(),
+                facultyName,
+
                 offering.getOfferingStatus()
         );
     }

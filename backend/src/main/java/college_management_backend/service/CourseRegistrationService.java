@@ -2,13 +2,22 @@ package college_management_backend.service;
 
 import college_management_backend.dto.CourseRegistrationRequest;
 import college_management_backend.dto.CourseRegistrationResponse;
+
+import college_management_backend.entity.Course;
 import college_management_backend.entity.CourseOffering;
 import college_management_backend.entity.CourseRegistration;
+import college_management_backend.entity.Faculty;
+import college_management_backend.entity.Section;
 import college_management_backend.entity.Student;
+
 import college_management_backend.exception.DuplicateRegistrationException;
 import college_management_backend.exception.RegistrationNotFoundException;
+
 import college_management_backend.repository.CourseOfferingRepository;
 import college_management_backend.repository.CourseRegistrationRepository;
+import college_management_backend.repository.CourseRepository;
+import college_management_backend.repository.FacultyRepository;
+import college_management_backend.repository.SectionRepository;
 import college_management_backend.repository.StudentRepository;
 
 import org.springframework.stereotype.Service;
@@ -23,15 +32,28 @@ public class CourseRegistrationService {
     private final CourseRegistrationRepository
             courseRegistrationRepository;
 
-    private final StudentRepository studentRepository;
+    private final StudentRepository
+            studentRepository;
 
     private final CourseOfferingRepository
             courseOfferingRepository;
 
+    private final CourseRepository
+            courseRepository;
+
+    private final FacultyRepository
+            facultyRepository;
+
+    private final SectionRepository
+            sectionRepository;
+
     public CourseRegistrationService(
             CourseRegistrationRepository courseRegistrationRepository,
             StudentRepository studentRepository,
-            CourseOfferingRepository courseOfferingRepository) {
+            CourseOfferingRepository courseOfferingRepository,
+            CourseRepository courseRepository,
+            FacultyRepository facultyRepository,
+            SectionRepository sectionRepository) {
 
         this.courseRegistrationRepository =
                 courseRegistrationRepository;
@@ -41,15 +63,33 @@ public class CourseRegistrationService {
 
         this.courseOfferingRepository =
                 courseOfferingRepository;
+
+        this.courseRepository =
+                courseRepository;
+
+        this.facultyRepository =
+                facultyRepository;
+
+        this.sectionRepository =
+                sectionRepository;
     }
+
+    // =========================================================
+    // GET ALL REGISTRATIONS
+    // =========================================================
 
     public List<CourseRegistrationResponse> getAllRegistrations() {
 
-        return courseRegistrationRepository.findAll()
+        return courseRegistrationRepository
+                .findAll()
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
+
+    // =========================================================
+    // GET REGISTRATION BY ID
+    // =========================================================
 
     public CourseRegistrationResponse getRegistrationById(
             Long registrationId) {
@@ -67,8 +107,12 @@ public class CourseRegistrationService {
         return toResponse(registration);
     }
 
-    public List<CourseRegistrationResponse> getRegistrationsByStudent(
-            Long studentId) {
+    // =========================================================
+    // GET REGISTRATIONS BY STUDENT
+    // =========================================================
+
+    public List<CourseRegistrationResponse>
+    getRegistrationsByStudent(Long studentId) {
 
         return courseRegistrationRepository
                 .findByStudentId(studentId)
@@ -77,6 +121,10 @@ public class CourseRegistrationService {
                 .toList();
     }
 
+    // =========================================================
+    // REGISTER STUDENT
+    // =========================================================
+
     @Transactional
     public CourseRegistrationResponse registerStudent(
             CourseRegistrationRequest request) {
@@ -84,7 +132,8 @@ public class CourseRegistrationService {
         validateRequest(request);
 
         Student student =
-                studentRepository.findById(request.getStudentId())
+                studentRepository
+                        .findById(request.getStudentId())
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Student not found with ID: "
@@ -143,7 +192,9 @@ public class CourseRegistrationService {
                 LocalDateTime.now()
         );
 
-        registration.setStatus("REGISTERED");
+        registration.setStatus(
+                "REGISTERED"
+        );
 
         CourseRegistration savedRegistration =
                 courseRegistrationRepository.save(
@@ -152,6 +203,10 @@ public class CourseRegistrationService {
 
         return toResponse(savedRegistration);
     }
+
+    // =========================================================
+    // UPDATE REGISTRATION
+    // =========================================================
 
     @Transactional
     public CourseRegistrationResponse updateRegistration(
@@ -170,8 +225,13 @@ public class CourseRegistrationService {
                                 )
                         );
 
-        validateStudent(request.getStudentId());
-        validateOffering(request.getOfferingId());
+        validateStudent(
+                request.getStudentId()
+        );
+
+        validateOffering(
+                request.getOfferingId()
+        );
 
         boolean studentChanged =
                 !registration.getStudentId()
@@ -190,7 +250,8 @@ public class CourseRegistrationService {
                     )
                     .ifPresent(existing -> {
 
-                        if (!existing.getRegistrationId()
+                        if (!existing
+                                .getRegistrationId()
                                 .equals(registrationId)) {
 
                             throw new DuplicateRegistrationException(
@@ -217,8 +278,13 @@ public class CourseRegistrationService {
         return toResponse(updatedRegistration);
     }
 
+    // =========================================================
+    // DELETE REGISTRATION
+    // =========================================================
+
     @Transactional
-    public void deleteRegistration(Long registrationId) {
+    public void deleteRegistration(
+            Long registrationId) {
 
         CourseRegistration registration =
                 courseRegistrationRepository
@@ -230,35 +296,50 @@ public class CourseRegistrationService {
                                 )
                         );
 
-        courseRegistrationRepository.delete(registration);
+        courseRegistrationRepository.delete(
+                registration
+        );
     }
+
+    // =========================================================
+    // VALIDATE REQUEST
+    // =========================================================
 
     private void validateRequest(
             CourseRegistrationRequest request) {
 
         if (request == null) {
+
             throw new RuntimeException(
                     "Registration request is required"
             );
         }
 
         if (request.getStudentId() == null) {
+
             throw new RuntimeException(
                     "Student ID is required"
             );
         }
 
         if (request.getOfferingId() == null) {
+
             throw new RuntimeException(
                     "Offering ID is required"
             );
         }
     }
 
-    private void validateStudent(Long studentId) {
+    // =========================================================
+    // VALIDATE STUDENT
+    // =========================================================
+
+    private void validateStudent(
+            Long studentId) {
 
         Student student =
-                studentRepository.findById(studentId)
+                studentRepository
+                        .findById(studentId)
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Student not found with ID: "
@@ -275,10 +356,16 @@ public class CourseRegistrationService {
         }
     }
 
-    private void validateOffering(Long offeringId) {
+    // =========================================================
+    // VALIDATE OFFERING
+    // =========================================================
+
+    private void validateOffering(
+            Long offeringId) {
 
         CourseOffering offering =
-                courseOfferingRepository.findById(offeringId)
+                courseOfferingRepository
+                        .findById(offeringId)
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Course offering not found with ID: "
@@ -295,14 +382,114 @@ public class CourseRegistrationService {
         }
     }
 
+    // =========================================================
+    // CONVERT REGISTRATION TO RESPONSE
+    // =========================================================
+
     private CourseRegistrationResponse toResponse(
             CourseRegistration registration) {
 
+        // -----------------------------------------
+        // COURSE OFFERING
+        // -----------------------------------------
+
+        CourseOffering offering =
+                courseOfferingRepository
+                        .findById(
+                                registration.getOfferingId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course offering not found with ID: "
+                                                + registration
+                                                .getOfferingId()
+                                )
+                        );
+
+        // -----------------------------------------
+        // COURSE
+        // -----------------------------------------
+
+        Course course =
+                courseRepository
+                        .findById(
+                                offering.getCourseId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course not found with ID: "
+                                                + offering.getCourseId()
+                                )
+                        );
+
+        // -----------------------------------------
+        // SECTION
+        // -----------------------------------------
+
+        Section section =
+                sectionRepository
+                        .findById(
+                                offering.getSectionId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Section not found with ID: "
+                                                + offering.getSectionId()
+                                )
+                        );
+
+        // -----------------------------------------
+        // FACULTY
+        // -----------------------------------------
+
+        Faculty faculty =
+                facultyRepository
+                        .findById(
+                                offering.getFacultyId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Faculty not found with ID: "
+                                                + offering.getFacultyId()
+                                )
+                        );
+
+        // -----------------------------------------
+        // FACULTY NAME
+        // -----------------------------------------
+
+        String facultyName =
+                faculty.getFirstName();
+
+        if (faculty.getLastName() != null
+                && !faculty.getLastName().isBlank()) {
+
+            facultyName +=
+                    " " + faculty.getLastName();
+        }
+
+        // -----------------------------------------
+        // RESPONSE
+        // -----------------------------------------
+
         return new CourseRegistrationResponse(
+
                 registration.getRegistrationId(),
+
                 registration.getStudentId(),
+
                 registration.getOfferingId(),
+
+                course.getCourseCode(),
+
+                course.getCourseName(),
+
+                section.getSectionName(),
+
+                facultyName,
+
                 registration.getRegistrationDate(),
+
                 registration.getStatus()
         );
     }

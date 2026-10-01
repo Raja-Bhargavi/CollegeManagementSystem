@@ -19,5 +19,11 @@ public interface CourseRegistrationRepository
             Long offeringId
     );
 
-    List<CourseRegistration> findByStudentId(Long studentId);
+    List<CourseRegistration> findByStudentId(
+            Long studentId
+    );
+
+    List<CourseRegistration> findByOfferingId(
+            Long offeringId
+    );
 }

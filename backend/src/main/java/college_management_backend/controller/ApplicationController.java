@@ -4,11 +4,18 @@ import college_management_backend.dto.ApplicationRequest;
 import college_management_backend.dto.ApplicationResponse;
 import college_management_backend.dto.ApplicationStatusRequest;
 import college_management_backend.service.ApplicationService;
+import college_management_backend.service.StudentService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +26,14 @@ import java.util.List;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+    private final StudentService studentService;
 
     public ApplicationController(
-            ApplicationService applicationService) {
+            ApplicationService applicationService,
+            StudentService studentService) {
 
         this.applicationService = applicationService;
+        this.studentService = studentService;
     }
 
     @GetMapping
@@ -36,6 +46,25 @@ public class ApplicationController {
         );
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<ApplicationResponse>>
+    getMyApplications(
+            Authentication authentication) {
+
+        Long userId =
+                studentService
+                        .getStudentEntityByUsername(
+                                authentication.getName()
+                        )
+                        .getUserId();
+
+        return ResponseEntity.ok(
+                applicationService
+                        .getApplicationsByUser(userId)
+        );
+    }
+
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
     public ResponseEntity<ApplicationResponse>
@@ -43,7 +72,8 @@ public class ApplicationController {
             @PathVariable Long applicationId) {
 
         return ResponseEntity.ok(
-                applicationService.getApplicationById(applicationId)
+                applicationService
+                        .getApplicationById(applicationId)
         );
     }
 
@@ -78,7 +108,8 @@ public class ApplicationController {
             @Valid @RequestBody ApplicationRequest request) {
 
         ApplicationResponse response =
-                applicationService.createApplication(request);
+                applicationService
+                        .createApplication(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

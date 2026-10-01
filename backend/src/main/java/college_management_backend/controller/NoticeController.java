@@ -3,10 +3,14 @@ package college_management_backend.controller;
 import college_management_backend.dto.NoticeRequest;
 import college_management_backend.dto.NoticeResponse;
 import college_management_backend.service.NoticeService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +28,19 @@ public class NoticeController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
     public ResponseEntity<List<NoticeResponse>> getAllNotices() {
-        return ResponseEntity.ok(noticeService.getAllNotices());
+        return ResponseEntity.ok(
+                noticeService.getAllNotices()
+        );
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<NoticeResponse>>
+    getStudentNotices() {
+
+        return ResponseEntity.ok(
+                noticeService.getStudentNotices()
+        );
     }
 
     @GetMapping("/{noticeId}")
@@ -32,7 +48,9 @@ public class NoticeController {
     public ResponseEntity<NoticeResponse> getNoticeById(
             @PathVariable Long noticeId) {
 
-        return ResponseEntity.ok(noticeService.getNoticeById(noticeId));
+        return ResponseEntity.ok(
+                noticeService.getNoticeById(noticeId)
+        );
     }
 
     @GetMapping("/created-by/{createdBy}")
@@ -67,15 +85,17 @@ public class NoticeController {
 
     @GetMapping("/filter")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
-    public ResponseEntity<List<NoticeResponse>> getNoticesByVisibilityAndStatus(
+    public ResponseEntity<List<NoticeResponse>>
+    getNoticesByVisibilityAndStatus(
             @RequestParam String visibility,
             @RequestParam String status) {
 
         return ResponseEntity.ok(
-                noticeService.getNoticesByVisibilityAndStatus(
-                        visibility,
-                        status
-                )
+                noticeService
+                        .getNoticesByVisibilityAndStatus(
+                                visibility,
+                                status
+                        )
         );
     }
 
@@ -95,7 +115,10 @@ public class NoticeController {
             @Valid @RequestBody NoticeRequest request) {
 
         return ResponseEntity.ok(
-                noticeService.updateNotice(noticeId, request)
+                noticeService.updateNotice(
+                        noticeId,
+                        request
+                )
         );
     }
 

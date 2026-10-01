@@ -9,18 +9,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import college_management_backend.service.StudentService;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/results")
 @SecurityRequirement(name = "bearerAuth")
+
 public class ResultController {
 
     private final ResultService resultService;
+    private final StudentService studentService;
 
-    public ResultController(ResultService resultService) {
+    public ResultController(ResultService resultService,StudentService studentService) {
         this.resultService = resultService;
+        this.studentService = studentService;
     }
 
     @GetMapping
@@ -28,6 +33,20 @@ public class ResultController {
     public List<ResultResponse> getAllResults() {
         return resultService.getAllResults();
     }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<ResultResponse> getMyResults(
+            Authentication authentication) {
+
+        Long studentId =
+                studentService
+                        .getStudentByUsername(authentication.getName())
+                        .getStudentId();
+
+        return resultService.getResultsByStudent(studentId);
+    }
+
 
     @GetMapping("/{resultId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")

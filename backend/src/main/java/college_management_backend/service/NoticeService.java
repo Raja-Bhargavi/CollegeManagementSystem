@@ -118,4 +118,23 @@ public class NoticeService {
 
         noticeRepository.deleteById(noticeId);
     }
+
+        public List<NoticeResponse> getStudentNotices() {
+
+                return noticeRepository
+                .findByStatus("PUBLISHED")
+                .stream()
+                .filter(notice ->
+                        notice.getVisibility() != null
+                                && (
+                                "STUDENT".equalsIgnoreCase(
+                                        notice.getVisibility())
+                                ||
+                                "ALL".equalsIgnoreCase(
+                                        notice.getVisibility())
+                        )
+                )
+                .map(NoticeResponse::new)
+                .toList();
+        }
 }

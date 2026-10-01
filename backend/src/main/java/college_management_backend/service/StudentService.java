@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import college_management_backend.dto.StudentRequest;
 import college_management_backend.dto.StudentResponse;
 import college_management_backend.entity.Student;
+import college_management_backend.entity.User;
 import college_management_backend.exception.DuplicateStudentException;
 import college_management_backend.exception.StudentNotFoundException;
 import college_management_backend.repository.StudentRepository;
@@ -40,7 +41,26 @@ public class StudentService {
         return toResponse(student);
     }
 
-    
+    public Student getStudentEntityByUsername(String username) {
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found with username: "
+                                        + username
+                        )
+                );
+
+        return studentRepository
+                .findByUserId(user.getUserId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Student profile not found for username: "
+                                        + username
+                        )
+                );
+        }
 
     public List<StudentResponse> getAllStudents() {
 

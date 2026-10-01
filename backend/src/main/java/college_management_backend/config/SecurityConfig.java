@@ -36,13 +36,10 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-            // Disable CSRF because this is a JWT/stateless API
             .csrf(csrf -> csrf.disable())
 
-            // Enable CORS
             .cors(cors -> {})
 
-            // No HTTP session
             .sessionManagement(session ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
@@ -51,8 +48,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // IMPORTANT:
-                // Allow browser CORS preflight requests
+                // CORS preflight
                 .requestMatchers(
                     HttpMethod.OPTIONS,
                     "/**"
@@ -75,23 +71,43 @@ public class SecurityConfig {
                     "/api/auth/**"
                 ).permitAll()
 
-                // Admin URL
+                // Admin
                 .requestMatchers(
                     "/api/admin/**"
                 ).hasRole("ADMIN")
 
-                // Management URL
+                // Management
                 .requestMatchers(
                     "/api/management/**"
                 ).hasRole("MANAGEMENT")
 
-                // Student self-service URL
+                // Student self-service endpoints
+                .requestMatchers(
+                    "/api/students/me",
+                    "/api/course-registrations/me",
+                    "/api/attendance/me",
+                    "/api/marks/me",
+                    "/api/results/me",
+                    "/api/fees/me",
+                    "/api/payments/me",
+                    "/api/applications/me",
+                    "/api/notices/me"
+                ).hasRole("STUDENT")
+
+                // Faculty self-service
+                .requestMatchers(
+                        "/api/faculty/me",
+                        "/api/course-offerings/me"
+                    ).hasRole("FACULTY")
+                    
+                // Keep support for any singular student URL
                 .requestMatchers(
                     "/api/student/**"
                 ).hasRole("STUDENT")
 
-                // All other API endpoints require authentication.
-                // Controller @PreAuthorize handles the exact roles.
+                // Everything else requires authentication.
+                // Individual controllers use @PreAuthorize
+                // for more specific role restrictions.
                 .anyRequest().authenticated()
             )
 
@@ -111,4 +127,3 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-
