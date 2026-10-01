@@ -1,29 +1,56 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import {
+    NavLink,
+    useNavigate,
+} from "react-router-dom";
 
 const menuItems = [
-    { label: "Dashboard", path: "/student" },
-    { label: "My Profile", path: "/student/profile" },
-    { label: "My Courses", path: "/student/courses" },
-    { label: "My Attendance", path: "/student/attendance" },
-    { label: "My Marks", path: "/student/marks" },
-    { label: "My Results", path: "/student/results" },
-    { label: "My Fees", path: "/student/fees" },
-    { label: "My Payments", path: "/student/payments" },
-    { label: "My Applications", path: "/student/applications" },
-    { label: "Notices", path: "/student/notices" },
+    {
+        label: "Dashboard",
+        path: "/faculty",
+    },
+    {
+        label: "My Profile",
+        path: "/faculty/profile",
+    },
+    {
+        label: "My Courses",
+        path: "/faculty/courses",
+    },
+    {
+        label: "Attendance",
+        path: "/faculty/attendance",
+    },
+    {
+        label: "Examinations",
+        path: "/faculty/examinations",
+    },
+    {
+        label: "Marks",
+        path: "/faculty/marks",
+    },
+    {
+        label: "Results",
+        path: "/faculty/results",
+    },
+    {
+        label: "Notices",
+        path: "/faculty/notices",
+    },
 ];
 
-export default function StudentSidebar() {
+export default function FacultySidebar() {
 
-    // ✅ Hook must be inside the component
     const navigate = useNavigate();
 
     const handleLogout = () => {
+
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
 
-        navigate("/login", { replace: true });
+        navigate("/login", {
+            replace: true,
+        });
     };
 
     return (
@@ -31,13 +58,19 @@ export default function StudentSidebar() {
             style={{
                 width: "240px",
                 minHeight: "100vh",
-                padding: "20px",
                 backgroundColor: "#1f2937",
+                padding: "20px",
                 boxSizing: "border-box",
             }}
         >
-            <h2 style={{ color: "white" }}>
-                Student Portal
+
+            <h2
+                style={{
+                    color: "white",
+                    marginBottom: "30px",
+                }}
+            >
+                Faculty Portal
             </h2>
 
             <nav
@@ -45,42 +78,52 @@ export default function StudentSidebar() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "8px",
-                    marginTop: "25px",
                 }}
             >
+
                 {menuItems.map((item) => (
+
                     <NavLink
                         key={item.path}
                         to={item.path}
-                        end={item.path === "/student"}
+                        end={item.path === "/faculty"}
                         style={({ isActive }) => ({
                             padding: "12px",
                             borderRadius: "6px",
                             textDecoration: "none",
                             color: "white",
-                            backgroundColor: isActive
-                                ? "#374151"
-                                : "transparent",
+                            backgroundColor:
+                                isActive
+                                    ? "#374151"
+                                    : "transparent",
                         })}
                     >
                         {item.label}
                     </NavLink>
+
                 ))}
 
                 <button
+                    type="button"
                     onClick={handleLogout}
                     style={{
-                        marginTop: "20px",
+                        marginTop: "25px",
                         width: "100%",
                         padding: "12px",
                         border: "none",
                         borderRadius: "6px",
                         cursor: "pointer",
+                        backgroundColor: "white",
+                        color: "#1f2937",
+                        fontSize: "15px",
+                        fontWeight: "bold",
                     }}
                 >
                     Logout
                 </button>
+
             </nav>
+
         </aside>
     );
 }

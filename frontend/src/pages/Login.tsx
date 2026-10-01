@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
 
 function Login() {
+
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
@@ -14,84 +15,169 @@ function Login() {
     const handleSubmit = async (
         event: React.FormEvent
     ) => {
+
         event.preventDefault();
 
         setError("");
         setLoading(true);
 
+        /*
+         * IMPORTANT:
+         * Remove any previous login session before
+         * attempting a new login.
+         *
+         * This prevents an old Student JWT from being
+         * reused when attempting to log in as Faculty,
+         * Staff, etc.
+         */
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("role");
+
         try {
+
             const response = await login({
                 username,
                 password,
             });
 
-            console.log("Login successful:", response);
-            console.log("User role:", response.role);
+            console.log(
+                "Login successful:",
+                response.username
+            );
 
-            // Store JWT
+            console.log(
+                "User role:",
+                response.role
+            );
+
+            /*
+             * Make sure the backend actually returned
+             * the required authentication information.
+             */
+            if (
+                !response.token ||
+                !response.username ||
+                !response.role
+            ) {
+                throw new Error(
+                    "Invalid login response from server."
+                );
+            }
+
+            /*
+             * Store the NEW JWT.
+             */
             localStorage.setItem(
                 "token",
                 response.token
             );
 
-            // Store username
+            /*
+             * Store the authenticated username.
+             */
             localStorage.setItem(
                 "username",
                 response.username
             );
 
-            // Store role
+            /*
+             * Store the authenticated role.
+             */
             localStorage.setItem(
                 "role",
                 response.role
             );
 
-            console.log("JWT stored successfully");
+            console.log(
+                "JWT stored successfully"
+            );
+
             console.log(
                 "Logged in as:",
                 response.username
             );
+
             console.log(
                 "Role:",
                 response.role
             );
 
-            // Role-based navigation
+            /*
+             * Navigate according to the role returned
+             * by the BACKEND.
+             */
             switch (response.role) {
+
                 case "ADMIN":
-                    navigate("/admin");
+                    navigate("/admin", {
+                        replace: true,
+                    });
                     break;
 
                 case "FACULTY":
-                    navigate("/faculty");
+                    navigate("/faculty", {
+                        replace: true,
+                    });
                     break;
 
                 case "STAFF":
-                    navigate("/staff");
+                    navigate("/staff", {
+                        replace: true,
+                    });
                     break;
 
                 case "MANAGEMENT":
-                    navigate("/management");
+                    navigate("/management", {
+                        replace: true,
+                    });
                     break;
 
                 case "STUDENT":
-                    navigate("/student");
+                    navigate("/student", {
+                        replace: true,
+                    });
                     break;
 
                 default:
-                    navigate("/unauthorized");
+
+                    /*
+                     * Unknown role should never be allowed
+                     * into a protected portal.
+                     */
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    localStorage.removeItem("role");
+
+                    navigate("/unauthorized", {
+                        replace: true,
+                    });
+
                     break;
             }
+
         } catch (error) {
+
             console.error(
                 "Login failed:",
                 error
             );
 
+            /*
+             * Very important:
+             * If login fails, make sure an old session
+             * cannot remain active.
+             */
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            localStorage.removeItem("role");
+
             setError(
                 "Invalid username or password."
             );
+
         } finally {
+
             setLoading(false);
         }
     };
