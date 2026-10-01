@@ -3,11 +3,18 @@ package college_management_backend.controller;
 import college_management_backend.dto.AttendanceRequest;
 import college_management_backend.dto.AttendanceResponse;
 import college_management_backend.service.AttendanceService;
+import college_management_backend.service.StudentService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +25,14 @@ import java.util.List;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final StudentService studentService;
 
     public AttendanceController(
-            AttendanceService attendanceService) {
+            AttendanceService attendanceService,
+            StudentService studentService) {
 
         this.attendanceService = attendanceService;
+        this.studentService = studentService;
     }
 
     @GetMapping
@@ -30,6 +40,20 @@ public class AttendanceController {
     public List<AttendanceResponse> getAllAttendance() {
 
         return attendanceService.getAllAttendance();
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<AttendanceResponse> getMyAttendance(
+            Authentication authentication) {
+
+        Long studentId =
+                studentService
+                        .getStudentByUsername(authentication.getName())
+                        .getStudentId();
+
+        return attendanceService
+                .getAttendanceByStudent(studentId);
     }
 
     @GetMapping("/{id}")

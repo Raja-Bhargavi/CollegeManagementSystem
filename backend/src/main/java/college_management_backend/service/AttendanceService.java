@@ -6,10 +6,12 @@ import college_management_backend.entity.Attendance;
 import college_management_backend.entity.CourseRegistration;
 import college_management_backend.repository.AttendanceRepository;
 import college_management_backend.repository.CourseRegistrationRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,14 +19,17 @@ import java.util.stream.Collectors;
 public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
-    private final CourseRegistrationRepository courseRegistrationRepository;
+
+    private final CourseRegistrationRepository
+            courseRegistrationRepository;
 
     public AttendanceService(
             AttendanceRepository attendanceRepository,
             CourseRegistrationRepository courseRegistrationRepository) {
 
         this.attendanceRepository = attendanceRepository;
-        this.courseRegistrationRepository = courseRegistrationRepository;
+        this.courseRegistrationRepository =
+                courseRegistrationRepository;
     }
 
     public List<AttendanceResponse> getAllAttendance() {
@@ -35,7 +40,37 @@ public class AttendanceService {
                 .collect(Collectors.toList());
     }
 
-    public AttendanceResponse getAttendanceById(Long attendanceId) {
+    public List<AttendanceResponse> getAttendanceByStudent(
+            Long studentId) {
+
+        List<CourseRegistration> registrations =
+                courseRegistrationRepository
+                        .findByStudentId(studentId);
+
+        List<AttendanceResponse> result =
+                new ArrayList<>();
+
+        for (CourseRegistration registration : registrations) {
+
+            List<Attendance> attendanceList =
+                    attendanceRepository
+                            .findByRegistrationId(
+                                    registration.getRegistrationId()
+                            );
+
+            result.addAll(
+                    attendanceList
+                            .stream()
+                            .map(this::toResponse)
+                            .toList()
+            );
+        }
+
+        return result;
+    }
+
+    public AttendanceResponse getAttendanceById(
+            Long attendanceId) {
 
         Attendance attendance =
                 attendanceRepository.findById(attendanceId)
@@ -97,10 +132,9 @@ public class AttendanceService {
                 LocalDateTime.now()
         );
 
-        Attendance savedAttendance =
-                attendanceRepository.save(attendance);
-
-        return toResponse(savedAttendance);
+        return toResponse(
+                attendanceRepository.save(attendance)
+        );
     }
 
     @Transactional
@@ -153,17 +187,15 @@ public class AttendanceService {
                 LocalDateTime.now()
         );
 
-        Attendance updatedAttendance =
-                attendanceRepository.save(attendance);
-
-        return toResponse(updatedAttendance);
+        return toResponse(
+                attendanceRepository.save(attendance)
+        );
     }
 
     @Transactional
     public void deleteAttendance(Long attendanceId) {
 
         if (!attendanceRepository.existsById(attendanceId)) {
-
             throw new RuntimeException(
                     "Attendance not found with ID: "
                             + attendanceId

@@ -3,11 +3,18 @@ package college_management_backend.controller;
 import college_management_backend.dto.MarkRequest;
 import college_management_backend.dto.MarkResponse;
 import college_management_backend.service.MarkService;
+import college_management_backend.service.StudentService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,16 +25,33 @@ import java.util.List;
 public class MarkController {
 
     private final MarkService markService;
+    private final StudentService studentService;
 
-    public MarkController(MarkService markService) {
+    public MarkController(
+            MarkService markService,
+            StudentService studentService) {
+
         this.markService = markService;
+        this.studentService = studentService;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<MarkResponse> getAllMarks() {
-
         return markService.getAllMarks();
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<MarkResponse> getMyMarks(
+            Authentication authentication) {
+
+        Long studentId =
+                studentService
+                        .getStudentByUsername(authentication.getName())
+                        .getStudentId();
+
+        return markService.getMarksByStudent(studentId);
     }
 
     @GetMapping("/{id}")
@@ -59,12 +83,9 @@ public class MarkController {
     public ResponseEntity<MarkResponse> createMark(
             @Valid @RequestBody MarkRequest request) {
 
-        MarkResponse response =
-                markService.createMark(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(markService.createMark(request));
     }
 
     @PutMapping("/{id}")
@@ -73,10 +94,7 @@ public class MarkController {
             @PathVariable Long id,
             @Valid @RequestBody MarkRequest request) {
 
-        return markService.updateMark(
-                id,
-                request
-        );
+        return markService.updateMark(id, request);
     }
 
     @DeleteMapping("/{id}")

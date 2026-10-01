@@ -67,6 +67,16 @@ public class CourseRegistrationService {
         return toResponse(registration);
     }
 
+    public List<CourseRegistrationResponse> getRegistrationsByStudent(
+            Long studentId) {
+
+        return courseRegistrationRepository
+                .findByStudentId(studentId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     @Transactional
     public CourseRegistrationResponse registerStudent(
             CourseRegistrationRequest request) {

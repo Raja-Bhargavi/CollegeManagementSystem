@@ -3,11 +3,18 @@ package college_management_backend.controller;
 import college_management_backend.dto.FeeRequest;
 import college_management_backend.dto.FeeResponse;
 import college_management_backend.service.FeeService;
+import college_management_backend.service.StudentService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,15 +25,33 @@ import java.util.List;
 public class FeeController {
 
     private final FeeService feeService;
+    private final StudentService studentService;
 
-    public FeeController(FeeService feeService) {
+    public FeeController(
+            FeeService feeService,
+            StudentService studentService) {
+
         this.feeService = feeService;
+        this.studentService = studentService;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<FeeResponse> getAllFees() {
         return feeService.getAllFees();
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<FeeResponse> getMyFees(
+            Authentication authentication) {
+
+        Long studentId =
+                studentService
+                        .getStudentByUsername(authentication.getName())
+                        .getStudentId();
+
+        return feeService.getFeesByStudent(studentId);
     }
 
     @GetMapping("/{feeId}")
@@ -78,7 +103,8 @@ public class FeeController {
             @Valid @RequestBody FeeRequest request) {
 
         return ResponseEntity.ok(
-                feeService.updateFee(feeId, request));
+                feeService.updateFee(feeId, request)
+        );
     }
 
     @DeleteMapping("/{feeId}")
