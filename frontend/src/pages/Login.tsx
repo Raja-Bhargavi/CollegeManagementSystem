@@ -1,15 +1,8 @@
-import {
-    useState
-} from "react";
-
-import {
-    useNavigate
-} from "react-router-dom";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
 
 function Login() {
-
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
@@ -21,14 +14,12 @@ function Login() {
     const handleSubmit = async (
         event: React.FormEvent
     ) => {
-
         event.preventDefault();
 
         setError("");
         setLoading(true);
 
         try {
-
             const response = await login({
                 username,
                 password,
@@ -36,7 +27,7 @@ function Login() {
 
             console.log("Login successful:", response);
             console.log("User role:", response.role);
-            
+
             // Store JWT
             localStorage.setItem(
                 "token",
@@ -49,23 +40,49 @@ function Login() {
                 response.username
             );
 
-            //store roles
+            // Store role
             localStorage.setItem(
                 "role",
                 response.role
             );
 
-
+            console.log("JWT stored successfully");
             console.log(
-                "JWT stored successfully"
+                "Logged in as:",
+                response.username
+            );
+            console.log(
+                "Role:",
+                response.role
             );
 
-            if (response.role === "ADMIN") {
-                navigate("/admin");
+            // Role-based navigation
+            switch (response.role) {
+                case "ADMIN":
+                    navigate("/admin");
+                    break;
+
+                case "FACULTY":
+                    navigate("/faculty");
+                    break;
+
+                case "STAFF":
+                    navigate("/staff");
+                    break;
+
+                case "MANAGEMENT":
+                    navigate("/management");
+                    break;
+
+                case "STUDENT":
+                    navigate("/student");
+                    break;
+
+                default:
+                    navigate("/unauthorized");
+                    break;
             }
-
         } catch (error) {
-
             console.error(
                 "Login failed:",
                 error
@@ -74,9 +91,7 @@ function Login() {
             setError(
                 "Invalid username or password."
             );
-
         } finally {
-
             setLoading(false);
         }
     };

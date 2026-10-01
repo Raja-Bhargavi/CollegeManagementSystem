@@ -7,6 +7,10 @@ import {
 
 import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
+
+// =========================
+// ADMIN PAGES
+// =========================
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Students from "./pages/admin/Students";
 import DepartmentPage from "./pages/admin/Department";
@@ -24,24 +28,65 @@ import NoticesPage from "./pages/admin/Notices";
 import Fees from "./pages/admin/Fees";
 import Payments from "./pages/admin/Payments";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
+
+// =========================
+// STUDENT PAGES
+// =========================
+import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentProfile from "./pages/student/StudentProfile";
+
+// =========================
+// OTHER ROLE DASHBOARDS
+// =========================
+import FacultyDashboard from "./pages/faculty/FacultyDashboard";
+import StaffDashboard from "./pages/staff/StaffDashboard";
+import ManagementDashboard from "./pages/management/ManagementDashboard";
+
+// =========================
+// COMPONENTS / LAYOUTS
+// =========================
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
+import StudentLayout from "./layouts/StudentLayout";
+
+
+function StudentComingSoon({
+    title,
+}: {
+    title: string;
+}) {
+    return (
+        <div>
+            <h1>{title}</h1>
+
+            <p>
+                This Student Portal module will be
+                connected to the backend next.
+            </p>
+        </div>
+    );
+}
 
 
 function App() {
-
     return (
         <BrowserRouter>
-
             <Routes>
 
-                {/* Login */}
+                {/* =========================
+                    LOGIN
+                ========================= */}
+
                 <Route
                     path="/login"
                     element={<Login />}
                 />
 
-                {/* Admin */}
+
+                {/* =========================
+                    ADMIN
+                ========================= */}
+
                 <Route
                     path="/admin"
                     element={
@@ -64,10 +109,10 @@ function App() {
                         element={<Students />}
                     />
 
-                    {/* Faculty */} 
-                    <Route 
-                        path="faculty" 
-                        element={<FacultyPage />} 
+                    {/* Faculty */}
+                    <Route
+                        path="faculty"
+                        element={<FacultyPage />}
                     />
 
                     {/* Staff */}
@@ -94,15 +139,17 @@ function App() {
                         element={<CourseOfferingPage />}
                     />
 
-                    {/* Course Registration */} 
-                    <Route 
-                        path="course-registrations" 
-                        element={<CourseRegistrationPage />} 
+                    {/* Course Registrations */}
+                    <Route
+                        path="course-registrations"
+                        element={
+                            <CourseRegistrationPage />
+                        }
                     />
 
-                    {/* Departments */} 
-                    <Route 
-                        path="departments" 
+                    {/* Departments */}
+                    <Route
+                        path="departments"
                         element={<DepartmentPage />}
                     />
 
@@ -115,7 +162,9 @@ function App() {
                     {/* Examinations */}
                     <Route
                         path="examinations"
-                        element={<ExaminationsPage />}
+                        element={
+                            <ExaminationsPage />
+                        }
                     />
 
                     {/* Marks */}
@@ -132,22 +181,14 @@ function App() {
 
                     {/* Fees */}
                     <Route
-                        path="/admin/fees"
-                        element={
-                            <ProtectedRoute allowedRoles={["ADMIN"]}>
-                            <Fees />
-                            </ProtectedRoute>
-                        }
-                        />
+                        path="fees"
+                        element={<Fees />}
+                    />
 
                     {/* Payments */}
                     <Route
-                        path="/admin/payments"
-                        element={
-                        <ProtectedRoute allowedRoles={["ADMIN"]}>
-                        <Payments />
-                        </ProtectedRoute>
-                    }
+                        path="payments"
+                        element={<Payments />}
                     />
 
                     {/* Results */}
@@ -159,18 +200,184 @@ function App() {
                     {/* Attendance */}
                     <Route
                         path="attendance"
-                        element={<AttendancePage />}
+                        element={
+                            <AttendancePage />
+                        }
                     />
-
                 </Route>
 
-                {/* Unauthorized */}
+
+                {/* =========================
+                    STUDENT
+                ========================= */}
+
+                <Route
+                    path="/student"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["STUDENT"]}
+                        >
+                            <StudentLayout />
+                        </ProtectedRoute>
+                    }
+                >
+
+                    {/* Student Dashboard */}
+                    <Route
+                        index
+                        element={<StudentDashboard />}
+                    />
+
+                    {/* My Profile */}
+                    <Route
+                        path="profile"
+                        element={<StudentProfile />}
+                    />
+
+                    {/* My Courses */}
+                    <Route
+                        path="courses"
+                        element={
+                            <StudentComingSoon
+                                title="My Courses"
+                            />
+                        }
+                    />
+
+                    {/* My Attendance */}
+                    <Route
+                        path="attendance"
+                        element={
+                            <StudentComingSoon
+                                title="My Attendance"
+                            />
+                        }
+                    />
+
+                    {/* My Marks */}
+                    <Route
+                        path="marks"
+                        element={
+                            <StudentComingSoon
+                                title="My Marks"
+                            />
+                        }
+                    />
+
+                    {/* My Results */}
+                    <Route
+                        path="results"
+                        element={
+                            <StudentComingSoon
+                                title="My Results"
+                            />
+                        }
+                    />
+
+                    {/* My Fees */}
+                    <Route
+                        path="fees"
+                        element={
+                            <StudentComingSoon
+                                title="My Fees"
+                            />
+                        }
+                    />
+
+                    {/* My Payments */}
+                    <Route
+                        path="payments"
+                        element={
+                            <StudentComingSoon
+                                title="My Payments"
+                            />
+                        }
+                    />
+
+                    {/* My Applications */}
+                    <Route
+                        path="applications"
+                        element={
+                            <StudentComingSoon
+                                title="My Applications"
+                            />
+                        }
+                    />
+
+                    {/* Notices */}
+                    <Route
+                        path="notices"
+                        element={
+                            <StudentComingSoon
+                                title="Notices"
+                            />
+                        }
+                    />
+                </Route>
+
+
+                {/* =========================
+                    FACULTY
+                ========================= */}
+
+                <Route
+                    path="/faculty"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["FACULTY"]}
+                        >
+                            <FacultyDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+
+                {/* =========================
+                    STAFF
+                ========================= */}
+
+                <Route
+                    path="/staff"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["STAFF"]}
+                        >
+                            <StaffDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+
+                {/* =========================
+                    MANAGEMENT
+                ========================= */}
+
+                <Route
+                    path="/management"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["MANAGEMENT"]}
+                        >
+                            <ManagementDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+
+                {/* =========================
+                    UNAUTHORIZED
+                ========================= */}
+
                 <Route
                     path="/unauthorized"
                     element={<Unauthorized />}
                 />
 
-                {/* Default */}
+
+                {/* =========================
+                    DEFAULT
+                ========================= */}
+
                 <Route
                     path="*"
                     element={
@@ -182,7 +389,6 @@ function App() {
                 />
 
             </Routes>
-
         </BrowserRouter>
     );
 }
