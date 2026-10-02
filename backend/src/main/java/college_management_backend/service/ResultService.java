@@ -2,26 +2,52 @@ package college_management_backend.service;
 
 import college_management_backend.dto.ResultRequest;
 import college_management_backend.dto.ResultResponse;
+import college_management_backend.entity.CourseOffering;
+import college_management_backend.entity.CourseRegistration;
 import college_management_backend.entity.Result;
+import college_management_backend.entity.Student;
+import college_management_backend.repository.CourseOfferingRepository;
+import college_management_backend.repository.CourseRegistrationRepository;
 import college_management_backend.repository.ResultRepository;
+import college_management_backend.repository.StudentRepository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ResultService {
 
     private final ResultRepository resultRepository;
 
+    private final CourseOfferingRepository courseOfferingRepository;
+
+    private final CourseRegistrationRepository courseRegistrationRepository;
+
+    private final StudentRepository studentRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    public ResultService(ResultRepository resultRepository) {
+    public ResultService(
+            ResultRepository resultRepository,
+            CourseOfferingRepository courseOfferingRepository,
+            CourseRegistrationRepository courseRegistrationRepository,
+            StudentRepository studentRepository) {
+
         this.resultRepository = resultRepository;
+        this.courseOfferingRepository = courseOfferingRepository;
+        this.courseRegistrationRepository =
+                courseRegistrationRepository;
+        this.studentRepository = studentRepository;
     }
 
     public List<ResultResponse> getAllResults() {
@@ -37,12 +63,14 @@ public class ResultService {
         Result result = resultRepository.findById(resultId)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Result not found with ID: " + resultId));
+                                "Result not found with ID: "
+                                        + resultId));
 
         return new ResultResponse(result);
     }
 
-    public List<ResultResponse> getResultsByStudent(Long studentId) {
+    public List<ResultResponse> getResultsByStudent(
+            Long studentId) {
 
         return resultRepository.findByStudentId(studentId)
                 .stream()
@@ -50,7 +78,8 @@ public class ResultService {
                 .toList();
     }
 
-    public List<ResultResponse> getResultsBySemester(Long semesterId) {
+    public List<ResultResponse> getResultsBySemester(
+            Long semesterId) {
 
         return resultRepository.findBySemesterId(semesterId)
                 .stream()
@@ -58,24 +87,103 @@ public class ResultService {
                 .toList();
     }
 
-    @Transactional
-    public void publishResult(ResultRequest request) {
+    /**
+     * Returns results for students who are registered
+     * in courses assigned to the given faculty.
+     */
+    public List<ResultResponse> getResultsByFaculty(
+            Long facultyId) {
 
-        if (resultRepository.existsByStudentIdAndSemesterId(
-                request.getStudentId(),
-                request.getSemesterId())) {
+        List<CourseOffering> offerings =
+                courseOfferingRepository
+                        .findByFacultyId(facultyId);
+
+        Set<Long> studentIds = new HashSet<>();
+
+        for (CourseOffering offering : offerings) {
+
+            List<CourseRegistration> registrations =
+                    courseRegistrationRepository
+                            .findByOfferingId(
+                                    offering.getOfferingId()
+                            );
+
+            for (CourseRegistration registration
+                    : registrations) {
+
+                studentIds.add(
+                        registration.getStudentId()
+                );
+            }
+        }
+
+        List<ResultResponse> results =
+                new ArrayList<>();
+
+        for (Long studentId : studentIds) {
+
+            List<Result> studentResults =
+                    resultRepository
+                            .findByStudentId(studentId);
+
+            for (Result result : studentResults) {
+
+                Student student =
+                        studentRepository
+                                .findById(studentId)
+                                .orElse(null);
+
+                String studentName = "";
+
+                if (student != null) {
+
+                    studentName =
+                            student.getFirstName()
+                                    + " "
+                                    + student.getLastName();
+                }
+
+                results.add(
+                        new ResultResponse(
+                                result,
+                                studentName
+                        )
+                );
+            }
+        }
+
+        return results;
+    }
+
+    @Transactional
+    public void publishResult(
+            ResultRequest request) {
+
+        if (resultRepository
+                .existsByStudentIdAndSemesterId(
+                        request.getStudentId(),
+                        request.getSemesterId())) {
 
             throw new RuntimeException(
-                    "Result already exists for this student and semester");
+                    "Result already exists for this student and semester"
+            );
         }
 
         entityManager
                 .createNativeQuery(
                         "CALL publish_student_result(:studentId, :semesterId, :sgpa, :cgpa)")
-                .setParameter("studentId", request.getStudentId())
-                .setParameter("semesterId", request.getSemesterId())
-                .setParameter("sgpa", request.getSgpa())
-                .setParameter("cgpa", request.getCgpa())
+                .setParameter(
+                        "studentId",
+                        request.getStudentId())
+                .setParameter(
+                        "semesterId",
+                        request.getSemesterId())
+                .setParameter(
+                        "sgpa",
+                        request.getSgpa())
+                .setParameter(
+                        "cgpa",
+                        request.getCgpa())
                 .executeUpdate();
     }
 
@@ -84,10 +192,13 @@ public class ResultService {
             Long resultId,
             ResultRequest request) {
 
-        Result result = resultRepository.findById(resultId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Result not found with ID: " + resultId));
+        Result result =
+                resultRepository
+                        .findById(resultId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Result not found with ID: "
+                                                + resultId));
 
         boolean duplicate =
                 resultRepository
@@ -98,24 +209,37 @@ public class ResultService {
                         );
 
         if (duplicate) {
+
             throw new RuntimeException(
-                    "Another result already exists for this student and semester");
+                    "Another result already exists for this student and semester"
+            );
         }
 
-        result.setStudentId(request.getStudentId());
-        result.setSemesterId(request.getSemesterId());
-        result.setSgpa(request.getSgpa());
-        result.setCgpa(request.getCgpa());
+        result.setStudentId(
+                request.getStudentId());
 
-        return new ResultResponse(resultRepository.save(result));
+        result.setSemesterId(
+                request.getSemesterId());
+
+        result.setSgpa(
+                request.getSgpa());
+
+        result.setCgpa(
+                request.getCgpa());
+
+        return new ResultResponse(
+                resultRepository.save(result)
+        );
     }
 
     @Transactional
     public void deleteResult(Long resultId) {
 
         if (!resultRepository.existsById(resultId)) {
+
             throw new RuntimeException(
-                    "Result not found with ID: " + resultId);
+                    "Result not found with ID: "
+                            + resultId);
         }
 
         resultRepository.deleteById(resultId);

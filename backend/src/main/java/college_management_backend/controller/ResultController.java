@@ -3,34 +3,50 @@ package college_management_backend.controller;
 import college_management_backend.dto.ResultRequest;
 import college_management_backend.dto.ResultResponse;
 import college_management_backend.service.ResultService;
+import college_management_backend.service.StudentService;
+import college_management_backend.service.FacultyService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import college_management_backend.service.StudentService;
 import org.springframework.security.core.Authentication;
+
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/results")
 @SecurityRequirement(name = "bearerAuth")
-
 public class ResultController {
 
     private final ResultService resultService;
+
     private final StudentService studentService;
 
-    public ResultController(ResultService resultService,StudentService studentService) {
+    private final FacultyService facultyService;
+
+    public ResultController(
+            ResultService resultService,
+            StudentService studentService,
+            FacultyService facultyService) {
+
         this.resultService = resultService;
+
         this.studentService = studentService;
+
+        this.facultyService = facultyService;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<ResultResponse> getAllResults() {
+
         return resultService.getAllResults();
     }
 
@@ -41,19 +57,39 @@ public class ResultController {
 
         Long studentId =
                 studentService
-                        .getStudentByUsername(authentication.getName())
+                        .getStudentByUsername(
+                                authentication.getName())
                         .getStudentId();
 
-        return resultService.getResultsByStudent(studentId);
+        return resultService
+                .getResultsByStudent(studentId);
     }
 
+    /*
+     * Faculty self-service results
+     */
+    @GetMapping("/faculty/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public List<ResultResponse> getMyFacultyResults(
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName())
+                        .getFacultyId();
+
+        return resultService
+                .getResultsByFaculty(facultyId);
+    }
 
     @GetMapping("/{resultId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public ResultResponse getResultById(
             @PathVariable Long resultId) {
 
-        return resultService.getResultById(resultId);
+        return resultService
+                .getResultById(resultId);
     }
 
     @GetMapping("/student/{studentId}")
@@ -61,7 +97,8 @@ public class ResultController {
     public List<ResultResponse> getResultsByStudent(
             @PathVariable Long studentId) {
 
-        return resultService.getResultsByStudent(studentId);
+        return resultService
+                .getResultsByStudent(studentId);
     }
 
     @GetMapping("/semester/{semesterId}")
@@ -69,7 +106,8 @@ public class ResultController {
     public List<ResultResponse> getResultsBySemester(
             @PathVariable Long semesterId) {
 
-        return resultService.getResultsBySemester(semesterId);
+        return resultService
+                .getResultsBySemester(semesterId);
     }
 
     @PostMapping("/publish")
@@ -81,7 +119,9 @@ public class ResultController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Student result published successfully");
+                .body(
+                        "Student result published successfully"
+                );
     }
 
     @PutMapping("/{resultId}")
@@ -91,7 +131,11 @@ public class ResultController {
             @Valid @RequestBody ResultRequest request) {
 
         return ResponseEntity.ok(
-                resultService.updateResult(resultId, request));
+                resultService.updateResult(
+                        resultId,
+                        request
+                )
+        );
     }
 
     @DeleteMapping("/{resultId}")
@@ -101,6 +145,8 @@ public class ResultController {
 
         resultService.deleteResult(resultId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

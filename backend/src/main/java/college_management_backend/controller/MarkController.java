@@ -2,6 +2,7 @@ package college_management_backend.controller;
 
 import college_management_backend.dto.MarkRequest;
 import college_management_backend.dto.MarkResponse;
+import college_management_backend.service.FacultyService;
 import college_management_backend.service.MarkService;
 import college_management_backend.service.StudentService;
 
@@ -26,21 +27,28 @@ public class MarkController {
 
     private final MarkService markService;
     private final StudentService studentService;
+    private final FacultyService facultyService;
 
     public MarkController(
             MarkService markService,
-            StudentService studentService) {
+            StudentService studentService,
+            FacultyService facultyService) {
 
         this.markService = markService;
         this.studentService = studentService;
+        this.facultyService = facultyService;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
     public List<MarkResponse> getAllMarks() {
+
         return markService.getAllMarks();
     }
 
+    /*
+     * Student self-service.
+     */
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
     public List<MarkResponse> getMyMarks(
@@ -52,6 +60,25 @@ public class MarkController {
                         .getStudentId();
 
         return markService.getMarksByStudent(studentId);
+    }
+
+    /*
+     * Faculty self-service.
+     *
+     * Returns only marks belonging to examinations
+     * of the faculty's assigned course offerings.
+     */
+    @GetMapping("/faculty/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public List<MarkResponse> getMyFacultyMarks(
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(authentication.getName())
+                        .getFacultyId();
+
+        return markService.getMarksByFaculty(facultyId);
     }
 
     @GetMapping("/{id}")
@@ -78,8 +105,11 @@ public class MarkController {
         return markService.getMarksByStudent(studentId);
     }
 
+    /*
+     * Only ADMIN and STAFF can create marks.
+     */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<MarkResponse> createMark(
             @Valid @RequestBody MarkRequest request) {
 
@@ -88,8 +118,11 @@ public class MarkController {
                 .body(markService.createMark(request));
     }
 
+    /*
+     * Only ADMIN and STAFF can update marks.
+     */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public MarkResponse updateMark(
             @PathVariable Long id,
             @Valid @RequestBody MarkRequest request) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,65 @@ public class ExaminationService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Returns examinations only for course offerings
+     * assigned to the specified faculty.
+     */
+    public List<ExaminationResponse> getExaminationsByFaculty(
+        Long facultyId) {
+
+        System.out.println("=================================");
+        System.out.println("EXAMINATION FACULTY REQUEST");
+        System.out.println("facultyId = " + facultyId);
+
+        List<CourseOffering> offerings =
+                courseOfferingRepository.findByFacultyId(facultyId);
+
+        System.out.println(
+                "Course offerings found = " + offerings.size()
+        );
+
+        List<ExaminationResponse> result = new ArrayList<>();
+
+        for (CourseOffering offering : offerings) {
+
+                System.out.println(
+                        "Offering ID = " + offering.getOfferingId()
+                );
+
+                List<Examination> examinations =
+                        examinationRepository
+                                .findByOfferingId(
+                                        offering.getOfferingId()
+                                );
+
+                System.out.println(
+                        "Examinations found = "
+                                + examinations.size()
+                );
+
+                for (Examination examination : examinations) {
+
+                System.out.println(
+                        "Exam ID = "
+                                + examination.getExamId()
+                                + ", Type = "
+                                + examination.getExamType()
+                );
+
+                result.add(toResponse(examination));
+                }
+        }
+
+        System.out.println(
+                "FINAL EXAMINATION COUNT = " + result.size()
+        );
+
+        System.out.println("=================================");
+
+        return result;
+        }
 
     @Transactional
     public ExaminationResponse createExamination(

@@ -3,11 +3,13 @@ package college_management_backend.controller;
 import college_management_backend.dto.ExaminationRequest;
 import college_management_backend.dto.ExaminationResponse;
 import college_management_backend.service.ExaminationService;
+import college_management_backend.service.FacultyService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +20,14 @@ import java.util.List;
 public class ExaminationController {
 
     private final ExaminationService examinationService;
+    private final FacultyService facultyService;
 
     public ExaminationController(
-            ExaminationService examinationService) {
+            ExaminationService examinationService,
+            FacultyService facultyService) {
 
         this.examinationService = examinationService;
+        this.facultyService = facultyService;
     }
 
     @GetMapping
@@ -30,6 +35,26 @@ public class ExaminationController {
     public List<ExaminationResponse> getAllExaminations() {
 
         return examinationService.getAllExaminations();
+    }
+
+    /*
+     * Faculty self-service endpoint.
+     *
+     * Returns only examinations belonging to
+     * course offerings assigned to the logged-in faculty.
+     */
+    @GetMapping("/faculty/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public List<ExaminationResponse> getMyExaminations(
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(authentication.getName())
+                        .getFacultyId();
+
+        return examinationService
+                .getExaminationsByFaculty(facultyId);
     }
 
     @GetMapping("/{id}")

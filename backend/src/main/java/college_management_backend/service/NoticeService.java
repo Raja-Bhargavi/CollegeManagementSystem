@@ -137,4 +137,23 @@ public class NoticeService {
                 .map(NoticeResponse::new)
                 .toList();
         }
+
+        public List<NoticeResponse> getFacultyNotices() {
+
+            return noticeRepository
+                    .findByStatus("PUBLISHED")
+                    .stream()
+                    .filter(notice ->
+                            notice.getVisibility() != null
+                                    && (
+                                    "FACULTY".equalsIgnoreCase(
+                                            notice.getVisibility())
+                                    ||
+                                    "ALL".equalsIgnoreCase(
+                                            notice.getVisibility())
+                            )
+                    )
+                    .map(NoticeResponse::new)
+                    .toList();
+        }
 }

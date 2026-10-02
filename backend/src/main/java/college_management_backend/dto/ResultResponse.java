@@ -7,20 +7,54 @@ import java.time.LocalDateTime;
 public class ResultResponse {
 
     private Long resultId;
+
     private Long studentId;
+    private String studentName;
+
     private Long semesterId;
+
     private Double sgpa;
     private Double cgpa;
+
     private String resultStatus;
+
     private LocalDateTime publishedAt;
 
     public ResultResponse(Result result) {
+
         this.resultId = result.getResultId();
+
         this.studentId = result.getStudentId();
+
         this.semesterId = result.getSemesterId();
+
         this.sgpa = result.getSgpa();
+
         this.cgpa = result.getCgpa();
+
         this.resultStatus = result.getResultStatus();
+
+        this.publishedAt = result.getPublishedAt();
+    }
+
+    public ResultResponse(
+            Result result,
+            String studentName) {
+
+        this.resultId = result.getResultId();
+
+        this.studentId = result.getStudentId();
+
+        this.studentName = studentName;
+
+        this.semesterId = result.getSemesterId();
+
+        this.sgpa = result.getSgpa();
+
+        this.cgpa = result.getCgpa();
+
+        this.resultStatus = result.getResultStatus();
+
         this.publishedAt = result.getPublishedAt();
     }
 
@@ -30,6 +64,10 @@ public class ResultResponse {
 
     public Long getStudentId() {
         return studentId;
+    }
+
+    public String getStudentName() {
+        return studentName;
     }
 
     public Long getSemesterId() {

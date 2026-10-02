@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -42,6 +43,16 @@ public class NoticeController {
                 noticeService.getStudentNotices()
         );
     }
+
+        @GetMapping("/faculty/me")
+        @PreAuthorize("hasRole('FACULTY')")
+        public ResponseEntity<List<NoticeResponse>>
+        getFacultyNotices() {
+
+        return ResponseEntity.ok(
+                noticeService.getFacultyNotices()
+        );
+        }
 
     @GetMapping("/{noticeId}")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")

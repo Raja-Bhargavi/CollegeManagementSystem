@@ -2,17 +2,21 @@ package college_management_backend.service;
 
 import college_management_backend.dto.MarkRequest;
 import college_management_backend.dto.MarkResponse;
+import college_management_backend.entity.CourseOffering;
 import college_management_backend.entity.Examination;
 import college_management_backend.entity.Mark;
 import college_management_backend.entity.Student;
 import college_management_backend.exception.DuplicateMarkException;
 import college_management_backend.exception.InvalidMarksException;
+import college_management_backend.repository.CourseOfferingRepository;
 import college_management_backend.repository.ExaminationRepository;
 import college_management_backend.repository.MarkRepository;
 import college_management_backend.repository.StudentRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,15 +26,18 @@ public class MarkService {
     private final MarkRepository markRepository;
     private final ExaminationRepository examinationRepository;
     private final StudentRepository studentRepository;
+    private final CourseOfferingRepository courseOfferingRepository;
 
     public MarkService(
             MarkRepository markRepository,
             ExaminationRepository examinationRepository,
-            StudentRepository studentRepository) {
+            StudentRepository studentRepository,
+            CourseOfferingRepository courseOfferingRepository) {
 
         this.markRepository = markRepository;
         this.examinationRepository = examinationRepository;
         this.studentRepository = studentRepository;
+        this.courseOfferingRepository = courseOfferingRepository;
     }
 
     public List<MarkResponse> getAllMarks() {
@@ -72,6 +79,84 @@ public class MarkService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Returns marks only for examinations belonging
+     * to course offerings assigned to the faculty.
+     */
+    public List<MarkResponse> getMarksByFaculty(Long facultyId) {
+
+        System.out.println("=================================");
+        System.out.println("FACULTY MARKS REQUEST");
+        System.out.println("facultyId = " + facultyId);
+
+        List<CourseOffering> offerings =
+                courseOfferingRepository.findByFacultyId(facultyId);
+
+        System.out.println(
+                "Course offerings found = " + offerings.size()
+        );
+
+        List<MarkResponse> result = new ArrayList<>();
+
+        for (CourseOffering offering : offerings) {
+
+                System.out.println(
+                        "Offering ID = " + offering.getOfferingId()
+                );
+
+                List<Examination> examinations =
+                        examinationRepository.findByOfferingId(
+                                offering.getOfferingId()
+                        );
+
+                System.out.println(
+                        "Examinations found = " + examinations.size()
+                );
+
+                for (Examination examination : examinations) {
+
+                System.out.println(
+                        "Exam ID = " + examination.getExamId()
+                );
+
+                List<Mark> marks =
+                        markRepository.findByExamId(
+                                examination.getExamId()
+                        );
+
+                System.out.println(
+                        "Marks found for exam "
+                                + examination.getExamId()
+                                + " = "
+                                + marks.size()
+                );
+
+                for (Mark mark : marks) {
+
+                        System.out.println(
+                                "Mark ID = "
+                                        + mark.getMarkId()
+                                        + ", Student ID = "
+                                        + mark.getStudentId()
+                                        + ", Marks = "
+                                        + mark.getMarksObtained()
+                        );
+
+                        result.add(toResponse(mark));
+                }
+                }
+        }
+
+        System.out.println(
+                "FINAL FACULTY MARK COUNT = "
+                        + result.size()
+        );
+
+        System.out.println("=================================");
+
+        return result;
+        }
 
     @Transactional
     public MarkResponse createMark(
@@ -187,14 +272,13 @@ public class MarkService {
 
     private void validateStudent(Long studentId) {
 
-        Student student =
-                studentRepository.findById(studentId)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Student not found with ID: "
-                                                + studentId
-                                )
-                        );
+        studentRepository.findById(studentId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Student not found with ID: "
+                                        + studentId
+                        )
+                );
     }
 
     private void validateMarks(
@@ -219,12 +303,37 @@ public class MarkService {
 
     private MarkResponse toResponse(Mark mark) {
 
+        Examination examination = examinationRepository
+                .findById(mark.getExamId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Examination not found with ID: "
+                                        + mark.getExamId()
+                        )
+                );
+
+        Student student = studentRepository
+                .findById(mark.getStudentId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Student not found with ID: "
+                                        + mark.getStudentId()
+                        )
+                );
+
+        String studentName =
+                student.getFirstName()
+                        + " "
+                        + student.getLastName();
+
         return new MarkResponse(
                 mark.getMarkId(),
                 mark.getExamId(),
+                examination.getExamType(),
                 mark.getStudentId(),
+                studentName,
                 mark.getMarksObtained(),
                 mark.getRemarks()
         );
-    }
+        }
 }
