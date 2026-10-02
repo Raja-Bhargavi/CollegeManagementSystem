@@ -59,10 +59,16 @@ import FacultyResults from "./pages/faculty/FacultyResults";
 import FacultyNotices from "./pages/faculty/FacultyNotices";
 
 // =========================
-// OTHER ROLES
+// STAFF
 // =========================
 
 import StaffDashboard from "./pages/staff/StaffDashboard";
+import StaffProfile from "./pages/staff/StaffProfile";
+
+// =========================
+// MANAGEMENT
+// =========================
+
 import ManagementDashboard from "./pages/management/ManagementDashboard";
 
 // =========================
@@ -74,11 +80,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
 import StudentLayout from "./layouts/StudentLayout";
 import FacultyLayout from "./layouts/FacultyLayout";
+import StaffLayout from "./layouts/StaffLayout";
 
 
 function App() {
 
     return (
+
         <BrowserRouter>
 
             <Routes>
@@ -89,7 +97,9 @@ function App() {
 
                 <Route
                     path="/login"
-                    element={<Login />}
+                    element={
+                        <Login />
+                    }
                 />
 
 
@@ -101,7 +111,9 @@ function App() {
                     path="/admin"
                     element={
                         <ProtectedRoute
-                            allowedRoles={["ADMIN"]}
+                            allowedRoles={[
+                                "ADMIN",
+                            ]}
                         >
                             <AdminLayout />
                         </ProtectedRoute>
@@ -110,32 +122,44 @@ function App() {
 
                     <Route
                         index
-                        element={<AdminDashboard />}
+                        element={
+                            <AdminDashboard />
+                        }
                     />
 
                     <Route
                         path="students"
-                        element={<Students />}
+                        element={
+                            <Students />
+                        }
                     />
 
                     <Route
                         path="faculty"
-                        element={<FacultyPage />}
+                        element={
+                            <FacultyPage />
+                        }
                     />
 
                     <Route
                         path="staff"
-                        element={<StaffPage />}
+                        element={
+                            <StaffPage />
+                        }
                     />
 
                     <Route
                         path="applications"
-                        element={<Applications />}
+                        element={
+                            <Applications />
+                        }
                     />
 
                     <Route
                         path="courses"
-                        element={<CoursePage />}
+                        element={
+                            <CoursePage />
+                        }
                     />
 
                     <Route
@@ -161,7 +185,9 @@ function App() {
 
                     <Route
                         path="events"
-                        element={<EventsPage />}
+                        element={
+                            <EventsPage />
+                        }
                     />
 
                     <Route
@@ -173,27 +199,37 @@ function App() {
 
                     <Route
                         path="marks"
-                        element={<MarksPage />}
+                        element={
+                            <MarksPage />
+                        }
                     />
 
                     <Route
                         path="notices"
-                        element={<NoticesPage />}
+                        element={
+                            <NoticesPage />
+                        }
                     />
 
                     <Route
                         path="fees"
-                        element={<Fees />}
+                        element={
+                            <Fees />
+                        }
                     />
 
                     <Route
                         path="payments"
-                        element={<Payments />}
+                        element={
+                            <Payments />
+                        }
                     />
 
                     <Route
                         path="results"
-                        element={<ResultsPage />}
+                        element={
+                            <ResultsPage />
+                        }
                     />
 
                     <Route
@@ -214,7 +250,9 @@ function App() {
                     path="/student"
                     element={
                         <ProtectedRoute
-                            allowedRoles={["STUDENT"]}
+                            allowedRoles={[
+                                "STUDENT",
+                            ]}
                         >
                             <StudentLayout />
                         </ProtectedRoute>
@@ -223,17 +261,23 @@ function App() {
 
                     <Route
                         index
-                        element={<StudentDashboard />}
+                        element={
+                            <StudentDashboard />
+                        }
                     />
 
                     <Route
                         path="profile"
-                        element={<StudentProfile />}
+                        element={
+                            <StudentProfile />
+                        }
                     />
 
                     <Route
                         path="courses"
-                        element={<StudentCourses />}
+                        element={
+                            <StudentCourses />
+                        }
                     />
 
                     <Route
@@ -245,17 +289,23 @@ function App() {
 
                     <Route
                         path="marks"
-                        element={<StudentMarks />}
+                        element={
+                            <StudentMarks />
+                        }
                     />
 
                     <Route
                         path="results"
-                        element={<StudentResults />}
+                        element={
+                            <StudentResults />
+                        }
                     />
 
                     <Route
                         path="fees"
-                        element={<StudentFees />}
+                        element={
+                            <StudentFees />
+                        }
                     />
 
                     <Route
@@ -274,7 +324,9 @@ function App() {
 
                     <Route
                         path="notices"
-                        element={<StudentNotices />}
+                        element={
+                            <StudentNotices />
+                        }
                     />
 
                 </Route>
@@ -288,7 +340,9 @@ function App() {
                     path="/faculty"
                     element={
                         <ProtectedRoute
-                            allowedRoles={["FACULTY"]}
+                            allowedRoles={[
+                                "FACULTY",
+                            ]}
                         >
                             <FacultyLayout />
                         </ProtectedRoute>
@@ -297,42 +351,58 @@ function App() {
 
                     <Route
                         index
-                        element={<FacultyDashboard />}
+                        element={
+                            <FacultyDashboard />
+                        }
                     />
 
                     <Route
                         path="profile"
-                        element={<FacultyProfile />}
+                        element={
+                            <FacultyProfile />
+                        }
                     />
 
                     <Route
                         path="courses"
-                        element={<FacultyCourses />}
+                        element={
+                            <FacultyCourses />
+                        }
                     />
 
-                     <Route
+                    <Route
                         path="attendance"
-                        element={<FacultyAttendance />}
+                        element={
+                            <FacultyAttendance />
+                        }
                     />
 
-                    <Route 
-                        path="examinations" 
-                        element={<FacultyExaminations />} 
+                    <Route
+                        path="examinations"
+                        element={
+                            <FacultyExaminations />
+                        }
                     />
 
-                    <Route 
-                        path="marks" 
-                        element={<FacultyMarks />} 
+                    <Route
+                        path="marks"
+                        element={
+                            <FacultyMarks />
+                        }
                     />
 
                     <Route
                         path="results"
-                        element={<FacultyResults />}
+                        element={
+                            <FacultyResults />
+                        }
                     />
 
                     <Route
                         path="notices"
-                        element={<FacultyNotices />}
+                        element={
+                            <FacultyNotices />
+                        }
                     />
 
                 </Route>
@@ -346,12 +416,135 @@ function App() {
                     path="/staff"
                     element={
                         <ProtectedRoute
-                            allowedRoles={["STAFF"]}
+                            allowedRoles={[
+                                "STAFF",
+                            ]}
                         >
-                            <StaffDashboard />
+                            <StaffLayout />
                         </ProtectedRoute>
                     }
-                />
+                >
+
+                    <Route
+                        index
+                        element={
+                            <StaffDashboard />
+                        }
+                    />
+
+                    <Route
+                        path="profile"
+                        element={
+                            <StaffProfile />
+                        }
+                    />
+
+                    <Route
+                        path="students"
+                        element={
+                            <Students />
+                        }
+                    />
+
+                    <Route
+                        path="faculty"
+                        element={
+                            <FacultyPage />
+                        }
+                    />
+
+                    <Route
+                        path="applications"
+                        element={
+                            <Applications />
+                        }
+                    />
+
+                    <Route
+                        path="departments"
+                        element={
+                            <DepartmentPage />
+                        }
+                    />
+
+                    <Route
+                        path="courses"
+                        element={
+                            <CoursePage />
+                        }
+                    />
+
+                    <Route
+                        path="course-offerings"
+                        element={
+                            <CourseOfferingPage />
+                        }
+                    />
+
+                    <Route
+                        path="course-registrations"
+                        element={
+                            <CourseRegistrationPage />
+                        }
+                    />
+
+                    <Route
+                        path="attendance"
+                        element={
+                            <AttendancePage />
+                        }
+                    />
+
+                    <Route
+                        path="examinations"
+                        element={
+                            <ExaminationsPage />
+                        }
+                    />
+
+                    <Route
+                        path="marks"
+                        element={
+                            <MarksPage />
+                        }
+                    />
+
+                    <Route
+                        path="results"
+                        element={
+                            <ResultsPage />
+                        }
+                    />
+
+                    <Route
+                        path="fees"
+                        element={
+                            <Fees />
+                        }
+                    />
+
+                    <Route
+                        path="payments"
+                        element={
+                            <Payments />
+                        }
+                    />
+
+                    <Route
+                        path="events"
+                        element={
+                            <EventsPage />
+                        }
+                    />
+
+                    <Route
+                        path="notices"
+                        element={
+                            <NoticesPage />
+                        }
+                    />
+
+                </Route>
 
 
                 {/* =========================
@@ -362,7 +555,9 @@ function App() {
                     path="/management"
                     element={
                         <ProtectedRoute
-                            allowedRoles={["MANAGEMENT"]}
+                            allowedRoles={[
+                                "MANAGEMENT",
+                            ]}
                         >
                             <ManagementDashboard />
                         </ProtectedRoute>
@@ -376,7 +571,9 @@ function App() {
 
                 <Route
                     path="/unauthorized"
-                    element={<Unauthorized />}
+                    element={
+                        <Unauthorized />
+                    }
                 />
 
 
