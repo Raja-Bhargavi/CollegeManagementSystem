@@ -66,3 +66,100 @@ export const getMyFacultyAttendance =
 
         return response.data;
     };
+
+
+    export interface FacultyExamination {
+    examId: number;
+    offeringId: number;
+    examType: string;
+    examDate: string;
+    maximumMarks: number;
+    status: string;
+    }
+
+    export const getMyFacultyExaminations =
+    async (): Promise<FacultyExamination[]> => {
+        const response = await api.get("/api/examinations/faculty/me");
+        return response.data;
+    };
+
+    export interface FacultyMark {
+        markId: number;
+        examId: number;
+        examType: string;
+        studentId: number;
+        studentName: string;
+        marksObtained: number;
+        remarks: string;
+    }
+
+    export const getMyFacultyMarks = async (): Promise<FacultyMark[]> => {
+    const response = await api.get("/api/marks/faculty/me");
+    return response.data;
+    };
+
+    // =========================================================
+// FACULTY RESULTS
+// =========================================================
+
+export interface FacultyResult {
+
+    resultId: number;
+
+    studentId: number;
+    studentName: string;
+
+    semesterId: number;
+
+    sgpa: number;
+    cgpa: number;
+
+    resultStatus: string;
+
+    publishedAt: string;
+}
+
+export const getMyFacultyResults =
+    async (): Promise<FacultyResult[]> => {
+
+        const response =
+            await api.get(
+                "/api/results/faculty/me"
+            );
+
+        return response.data;
+    };
+
+    // =========================================================
+// FACULTY NOTICES
+// =========================================================
+
+export interface FacultyNotice {
+
+    noticeId: number;
+
+    title: string;
+
+    content: string;
+
+    createdBy: number;
+
+    publishedAt: string;
+
+    expiryDate: string | null;
+
+    visibility: string;
+
+    status: string;
+}
+
+    export const getMyFacultyNotices =
+        async (): Promise<FacultyNotice[]> => {
+
+            const response =
+                await api.get(
+                    "/api/notices/faculty/me"
+                );
+
+            return response.data;
+    };

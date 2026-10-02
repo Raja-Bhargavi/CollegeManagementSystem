@@ -53,6 +53,10 @@ import FacultyDashboard from "./pages/faculty/FacultyDashboard";
 import FacultyProfile from "./pages/faculty/FacultyProfile";
 import FacultyCourses from "./pages/faculty/FacultyCourses";
 import FacultyAttendance from "./pages/faculty/FacultyAttendance";
+import FacultyExaminations from "./pages/faculty/FacultyExaminations";
+import FacultyMarks from "./pages/faculty/FacultyMarks";
+import FacultyResults from "./pages/faculty/FacultyResults";
+import FacultyNotices from "./pages/faculty/FacultyNotices";
 
 // =========================
 // OTHER ROLES
@@ -311,52 +315,24 @@ function App() {
                         element={<FacultyAttendance />}
                     />
 
-                    <Route
-                        path="examinations"
-                        element={
-                            <div>
-                                <h1>Examinations</h1>
-                                <p>
-                                    Faculty examinations module.
-                                </p>
-                            </div>
-                        }
+                    <Route 
+                        path="examinations" 
+                        element={<FacultyExaminations />} 
                     />
 
-                    <Route
-                        path="marks"
-                        element={
-                            <div>
-                                <h1>Marks</h1>
-                                <p>
-                                    Faculty marks module.
-                                </p>
-                            </div>
-                        }
+                    <Route 
+                        path="marks" 
+                        element={<FacultyMarks />} 
                     />
 
                     <Route
                         path="results"
-                        element={
-                            <div>
-                                <h1>Results</h1>
-                                <p>
-                                    Faculty results module.
-                                </p>
-                            </div>
-                        }
+                        element={<FacultyResults />}
                     />
 
                     <Route
                         path="notices"
-                        element={
-                            <div>
-                                <h1>Notices</h1>
-                                <p>
-                                    Faculty notices module.
-                                </p>
-                            </div>
-                        }
+                        element={<FacultyNotices />}
                     />
 
                 </Route>
