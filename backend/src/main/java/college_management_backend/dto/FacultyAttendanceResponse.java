@@ -7,6 +7,10 @@ public class FacultyAttendanceResponse {
 
     private Long attendanceId;
 
+    private Long registrationId;
+
+    private Long studentId;
+
     private String courseCode;
     private String courseName;
 
@@ -23,6 +27,8 @@ public class FacultyAttendanceResponse {
 
     public FacultyAttendanceResponse(
             Long attendanceId,
+            Long registrationId,
+            Long studentId,
             String courseCode,
             String courseName,
             String sectionName,
@@ -33,6 +39,8 @@ public class FacultyAttendanceResponse {
             LocalDateTime markedAt) {
 
         this.attendanceId = attendanceId;
+        this.registrationId = registrationId;
+        this.studentId = studentId;
 
         this.courseCode = courseCode;
         this.courseName = courseName;
@@ -48,6 +56,14 @@ public class FacultyAttendanceResponse {
 
     public Long getAttendanceId() {
         return attendanceId;
+    }
+
+    public Long getRegistrationId() {
+        return registrationId;
+    }
+
+    public Long getStudentId() {
+        return studentId;
     }
 
     public String getCourseCode() {

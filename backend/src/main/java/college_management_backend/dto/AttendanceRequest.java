@@ -1,22 +1,21 @@
 package college_management_backend.dto;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public class AttendanceRequest {
 
-    @NotNull(message = "Registration ID is required")
+    @NotNull
     private Long registrationId;
 
-    @NotNull(message = "Attendance date is required")
+    @NotNull
     private LocalDate attendanceDate;
 
-    @NotBlank(message = "Attendance status is required")
+    @NotBlank
     private String status;
 
-    @NotNull(message = "Marked by user ID is required")
     private Long markedBy;
 
     public Long getRegistrationId() {

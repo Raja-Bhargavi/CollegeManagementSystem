@@ -1,5 +1,6 @@
 package college_management_backend.controller;
 
+import college_management_backend.dto.FacultyMarkUpdateRequest;
 import college_management_backend.dto.MarkRequest;
 import college_management_backend.dto.MarkResponse;
 import college_management_backend.service.FacultyService;
@@ -39,16 +40,23 @@ public class MarkController {
         this.facultyService = facultyService;
     }
 
+    // =========================================================
+    // VIEW ALL MARKS
+    // =========================================================
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<MarkResponse> getAllMarks() {
 
         return markService.getAllMarks();
     }
 
-    /*
-     * Student self-service.
-     */
+    // =========================================================
+    // STUDENT - MY MARKS
+    // =========================================================
+
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
     public List<MarkResponse> getMyMarks(
@@ -56,18 +64,18 @@ public class MarkController {
 
         Long studentId =
                 studentService
-                        .getStudentByUsername(authentication.getName())
+                        .getStudentByUsername(
+                                authentication.getName()
+                        )
                         .getStudentId();
 
         return markService.getMarksByStudent(studentId);
     }
 
-    /*
-     * Faculty self-service.
-     *
-     * Returns only marks belonging to examinations
-     * of the faculty's assigned course offerings.
-     */
+    // =========================================================
+    // FACULTY - MY MARKS
+    // =========================================================
+
     @GetMapping("/faculty/me")
     @PreAuthorize("hasRole('FACULTY')")
     public List<MarkResponse> getMyFacultyMarks(
@@ -75,41 +83,63 @@ public class MarkController {
 
         Long facultyId =
                 facultyService
-                        .getFacultyByUsername(authentication.getName())
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
                         .getFacultyId();
 
         return markService.getMarksByFaculty(facultyId);
     }
 
+    // =========================================================
+    // GET BY ID
+    // =========================================================
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public MarkResponse getMarkById(
             @PathVariable Long id) {
 
         return markService.getMarkById(id);
     }
 
+    // =========================================================
+    // GET BY EXAM
+    // =========================================================
+
     @GetMapping("/exam/{examId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<MarkResponse> getMarksByExam(
             @PathVariable Long examId) {
 
         return markService.getMarksByExam(examId);
     }
 
+    // =========================================================
+    // GET BY STUDENT
+    // =========================================================
+
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<MarkResponse> getMarksByStudent(
             @PathVariable Long studentId) {
 
         return markService.getMarksByStudent(studentId);
     }
 
-    /*
-     * Only ADMIN and STAFF can create marks.
-     */
+    // =========================================================
+    // CREATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MarkResponse> createMark(
             @Valid @RequestBody MarkRequest request) {
 
@@ -118,17 +148,52 @@ public class MarkController {
                 .body(markService.createMark(request));
     }
 
-    /*
-     * Only ADMIN and STAFF can update marks.
-     */
+    // =========================================================
+    // UPDATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public MarkResponse updateMark(
             @PathVariable Long id,
             @Valid @RequestBody MarkRequest request) {
 
-        return markService.updateMark(id, request);
+        return markService.updateMark(
+                id,
+                request
+        );
     }
+
+    // =========================================================
+    // FACULTY - UPDATE OWN EXAM MARKS
+    // =========================================================
+
+    @PutMapping("/faculty/{id}")
+    @PreAuthorize("hasRole('FACULTY')")
+    public MarkResponse updateMarkByFaculty(
+            @PathVariable Long id,
+            @Valid @RequestBody FacultyMarkUpdateRequest request,
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        return markService.updateMarkByFaculty(
+                id,
+                request,
+                facultyId
+        );
+    }
+
+    // =========================================================
+    // DELETE
+    // ADMIN ONLY
+    // =========================================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

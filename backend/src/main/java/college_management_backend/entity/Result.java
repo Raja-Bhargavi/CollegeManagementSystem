@@ -30,6 +30,9 @@ public class Result {
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
+    @Column(name = "remarks", length = 255)
+    private String remarks;
+
     public Long getResultId() {
         return resultId;
     }
@@ -84,5 +87,13 @@ public class Result {
 
     public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

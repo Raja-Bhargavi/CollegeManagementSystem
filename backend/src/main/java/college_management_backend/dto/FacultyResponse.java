@@ -11,6 +11,7 @@ public class FacultyResponse {
     private String employeeNumber;
     private String firstName;
     private String lastName;
+    private String email;
     private String phone;
     private String designation;
     private Long departmentId;
@@ -20,12 +21,16 @@ public class FacultyResponse {
     public FacultyResponse() {
     }
 
-    public FacultyResponse(Faculty faculty) {
+    public FacultyResponse(
+            Faculty faculty,
+            String email) {
+
         this.facultyId = faculty.getFacultyId();
         this.userId = faculty.getUserId();
         this.employeeNumber = faculty.getEmployeeNumber();
         this.firstName = faculty.getFirstName();
         this.lastName = faculty.getLastName();
+        this.email = email;
         this.phone = faculty.getPhone();
         this.designation = faculty.getDesignation();
         this.departmentId = faculty.getDepartmentId();
@@ -71,6 +76,14 @@ public class FacultyResponse {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhone() {

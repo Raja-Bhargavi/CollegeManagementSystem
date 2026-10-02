@@ -1,7 +1,5 @@
 package college_management_backend.dto;
 
-import java.time.LocalDate;
-
 public class FacultyRequest {
 
     private Long userId;
@@ -9,9 +7,10 @@ public class FacultyRequest {
     private String firstName;
     private String lastName;
     private String phone;
+    private String email;
     private String designation;
     private Long departmentId;
-    private LocalDate joiningDate;
+    private java.time.LocalDate joiningDate;
     private String facultyStatus;
 
     public FacultyRequest() {
@@ -57,6 +56,14 @@ public class FacultyRequest {
         this.phone = phone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getDesignation() {
         return designation;
     }
@@ -73,11 +80,11 @@ public class FacultyRequest {
         this.departmentId = departmentId;
     }
 
-    public LocalDate getJoiningDate() {
+    public java.time.LocalDate getJoiningDate() {
         return joiningDate;
     }
 
-    public void setJoiningDate(LocalDate joiningDate) {
+    public void setJoiningDate(java.time.LocalDate joiningDate) {
         this.joiningDate = joiningDate;
     }
 

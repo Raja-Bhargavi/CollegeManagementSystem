@@ -9,16 +9,20 @@ public class ResultResponse {
     private Long resultId;
 
     private Long studentId;
+
     private String studentName;
 
     private Long semesterId;
 
     private Double sgpa;
+
     private Double cgpa;
 
     private String resultStatus;
 
     private LocalDateTime publishedAt;
+
+    private String remarks;
 
     public ResultResponse(Result result) {
 
@@ -35,6 +39,8 @@ public class ResultResponse {
         this.resultStatus = result.getResultStatus();
 
         this.publishedAt = result.getPublishedAt();
+
+        this.remarks = result.getRemarks();
     }
 
     public ResultResponse(
@@ -56,6 +62,8 @@ public class ResultResponse {
         this.resultStatus = result.getResultStatus();
 
         this.publishedAt = result.getPublishedAt();
+
+        this.remarks = result.getRemarks();
     }
 
     public Long getResultId() {
@@ -88,5 +96,9 @@ public class ResultResponse {
 
     public LocalDateTime getPublishedAt() {
         return publishedAt;
+    }
+
+    public String getRemarks() {
+        return remarks;
     }
 }

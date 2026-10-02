@@ -1,10 +1,11 @@
 package college_management_backend.controller;
 
+import college_management_backend.dto.FacultyResultUpdateRequest;
 import college_management_backend.dto.ResultRequest;
 import college_management_backend.dto.ResultResponse;
+import college_management_backend.service.FacultyService;
 import college_management_backend.service.ResultService;
 import college_management_backend.service.StudentService;
-import college_management_backend.service.FacultyService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -26,9 +27,7 @@ import java.util.List;
 public class ResultController {
 
     private final ResultService resultService;
-
     private final StudentService studentService;
-
     private final FacultyService facultyService;
 
     public ResultController(
@@ -37,18 +36,26 @@ public class ResultController {
             FacultyService facultyService) {
 
         this.resultService = resultService;
-
         this.studentService = studentService;
-
         this.facultyService = facultyService;
     }
 
+    // =========================================================
+    // VIEW RESULTS
+    // =========================================================
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<ResultResponse> getAllResults() {
 
         return resultService.getAllResults();
     }
+
+    // =========================================================
+    // STUDENT
+    // =========================================================
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
@@ -58,16 +65,17 @@ public class ResultController {
         Long studentId =
                 studentService
                         .getStudentByUsername(
-                                authentication.getName())
+                                authentication.getName()
+                        )
                         .getStudentId();
 
-        return resultService
-                .getResultsByStudent(studentId);
+        return resultService.getResultsByStudent(studentId);
     }
 
-    /*
-     * Faculty self-service results
-     */
+    // =========================================================
+    // FACULTY - OWN RESULTS
+    // =========================================================
+
     @GetMapping("/faculty/me")
     @PreAuthorize("hasRole('FACULTY')")
     public List<ResultResponse> getMyFacultyResults(
@@ -76,42 +84,89 @@ public class ResultController {
         Long facultyId =
                 facultyService
                         .getFacultyByUsername(
-                                authentication.getName())
+                                authentication.getName()
+                        )
                         .getFacultyId();
 
-        return resultService
-                .getResultsByFaculty(facultyId);
+        return resultService.getResultsByFaculty(facultyId);
     }
 
+    // =========================================================
+    // FACULTY - UPDATE OWN RESULT
+    // =========================================================
+
+    @PutMapping("/faculty/{resultId}")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<ResultResponse> updateResultByFaculty(
+            @PathVariable Long resultId,
+            @Valid @RequestBody FacultyResultUpdateRequest request,
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        return ResponseEntity.ok(
+                resultService.updateResultByFaculty(
+                        resultId,
+                        request,
+                        facultyId
+                )
+        );
+    }
+
+    // =========================================================
+    // GET BY ID
+    // =========================================================
+
     @GetMapping("/{resultId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public ResultResponse getResultById(
             @PathVariable Long resultId) {
 
-        return resultService
-                .getResultById(resultId);
+        return resultService.getResultById(resultId);
     }
 
+    // =========================================================
+    // GET BY STUDENT
+    // =========================================================
+
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<ResultResponse> getResultsByStudent(
             @PathVariable Long studentId) {
 
-        return resultService
-                .getResultsByStudent(studentId);
+        return resultService.getResultsByStudent(studentId);
     }
 
+    // =========================================================
+    // GET BY SEMESTER
+    // =========================================================
+
     @GetMapping("/semester/{semesterId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public List<ResultResponse> getResultsBySemester(
             @PathVariable Long semesterId) {
 
-        return resultService
-                .getResultsBySemester(semesterId);
+        return resultService.getResultsBySemester(semesterId);
     }
 
+    // =========================================================
+    // PUBLISH
+    // ADMIN ONLY
+    // =========================================================
+
     @PostMapping("/publish")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> publishResult(
             @Valid @RequestBody ResultRequest request) {
 
@@ -124,8 +179,13 @@ public class ResultController {
                 );
     }
 
+    // =========================================================
+    // UPDATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PutMapping("/{resultId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResultResponse> updateResult(
             @PathVariable Long resultId,
             @Valid @RequestBody ResultRequest request) {
@@ -138,6 +198,11 @@ public class ResultController {
         );
     }
 
+    // =========================================================
+    // DELETE
+    // ADMIN ONLY
+    // =========================================================
+
     @DeleteMapping("/{resultId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteResult(
@@ -145,8 +210,6 @@ public class ResultController {
 
         resultService.deleteResult(resultId);
 
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

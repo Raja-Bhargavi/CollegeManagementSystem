@@ -3,12 +3,13 @@ package college_management_backend.controller;
 import college_management_backend.dto.FacultyRequest;
 import college_management_backend.dto.FacultyResponse;
 import college_management_backend.service.FacultyService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,18 +25,48 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
+    // =========================================================
+    // FACULTY - MY PROFILE
+    // =========================================================
+
     @GetMapping("/me")
     @PreAuthorize("hasRole('FACULTY')")
     public ResponseEntity<FacultyResponse> getMyProfile(
             Authentication authentication) {
 
         return ResponseEntity.ok(
-                facultyService.getFacultyByUsername(authentication.getName())
+                facultyService.getFacultyByUsername(
+                        authentication.getName()
+                )
         );
     }
 
+    // =========================================================
+    // FACULTY - UPDATE MY PROFILE
+    // =========================================================
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<FacultyResponse> updateMyProfile(
+            @RequestBody FacultyRequest request,
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                facultyService.updateMyProfile(
+                        authentication.getName(),
+                        request
+                )
+        );
+    }
+
+    // =========================================================
+    // GET ALL FACULTY
+    // =========================================================
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ResponseEntity<List<FacultyResponse>> getAllFaculty() {
 
         return ResponseEntity.ok(
@@ -43,8 +74,14 @@ public class FacultyController {
         );
     }
 
+    // =========================================================
+    // GET FACULTY BY ID
+    // =========================================================
+
     @GetMapping("/{facultyId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ResponseEntity<FacultyResponse> getFacultyById(
             @PathVariable Long facultyId) {
 
@@ -53,8 +90,14 @@ public class FacultyController {
         );
     }
 
+    // =========================================================
+    // GET FACULTY BY USER ID
+    // =========================================================
+
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ResponseEntity<FacultyResponse> getFacultyByUserId(
             @PathVariable Long userId) {
 
@@ -63,26 +106,44 @@ public class FacultyController {
         );
     }
 
+    // =========================================================
+    // CREATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FacultyResponse> createFaculty(
             @RequestBody FacultyRequest request) {
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(facultyService.createFaculty(request));
+        return ResponseEntity.ok(
+                facultyService.createFaculty(request)
+        );
     }
 
+    // =========================================================
+    // FULL UPDATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PutMapping("/{facultyId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FacultyResponse> updateFaculty(
             @PathVariable Long facultyId,
             @RequestBody FacultyRequest request) {
 
         return ResponseEntity.ok(
-                facultyService.updateFaculty(facultyId, request)
+                facultyService.updateFaculty(
+                        facultyId,
+                        request
+                )
         );
     }
+
+    // =========================================================
+    // DELETE
+    // ADMIN ONLY
+    // =========================================================
 
     @DeleteMapping("/{facultyId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -94,4 +155,3 @@ public class FacultyController {
         return ResponseEntity.noContent().build();
     }
 }
-

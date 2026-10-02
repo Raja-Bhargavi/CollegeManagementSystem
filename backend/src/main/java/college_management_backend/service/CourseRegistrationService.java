@@ -121,6 +121,43 @@ public class CourseRegistrationService {
                 .toList();
     }
 
+         // =========================================================
+        // GET REGISTRATIONS BY FACULTY
+        // FACULTY - MY REGISTERED STUDENTS
+        // =========================================================
+
+        public List<CourseRegistrationResponse>
+        getRegistrationsByFaculty(Long facultyId) {
+
+        if (!facultyRepository.existsById(facultyId)) {
+
+                throw new RuntimeException(
+                        "Faculty not found with ID: " + facultyId
+                );
+        }
+
+        List<CourseOffering> offerings =
+                courseOfferingRepository
+                        .findByFacultyId(facultyId);
+
+        return offerings
+                .stream()
+                .flatMap(offering ->
+                        courseRegistrationRepository
+                                .findByOfferingId(
+                                        offering.getOfferingId()
+                                )
+                                .stream()
+                )
+                .filter(registration ->
+                        "REGISTERED".equalsIgnoreCase(
+                                registration.getStatus()
+                        )
+                )
+                .map(this::toResponse)
+                .toList();
+        }
+
     // =========================================================
     // REGISTER STUDENT
     // =========================================================

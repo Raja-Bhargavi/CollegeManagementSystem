@@ -740,6 +740,10 @@ public class AttendanceService {
 
                 attendance.getAttendanceId(),
 
+                registration.getRegistrationId(),
+
+                student.getStudentId(),
+
                 course.getCourseCode(),
                 course.getCourseName(),
 
@@ -754,5 +758,5 @@ public class AttendanceService {
 
                 attendance.getMarkedAt()
         );
-    }
+            }
 }

@@ -151,6 +151,7 @@ public class SecurityConfig {
                         ).hasAnyRole(
                                 "ADMIN",
                                 "STAFF",
+                                "FACULTY",
                                 "STUDENT"
                         )
 

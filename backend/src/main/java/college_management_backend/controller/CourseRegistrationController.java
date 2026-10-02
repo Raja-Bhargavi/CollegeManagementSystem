@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.web.bind.annotation.*;
+import college_management_backend.service.FacultyService;
 
 import java.util.List;
 
@@ -28,17 +29,23 @@ public class CourseRegistrationController {
             courseRegistrationService;
 
     private final StudentService studentService;
+    private final FacultyService facultyService;
+    
 
     public CourseRegistrationController(
-            CourseRegistrationService courseRegistrationService,
-            StudentService studentService) {
+        CourseRegistrationService courseRegistrationService,
+        StudentService studentService,
+        FacultyService facultyService) {
 
         this.courseRegistrationService =
                 courseRegistrationService;
 
         this.studentService =
                 studentService;
-    }
+
+        this.facultyService =
+                facultyService;
+        }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
@@ -60,6 +67,27 @@ public class CourseRegistrationController {
         return courseRegistrationService
                 .getRegistrationsByStudent(studentId);
     }
+
+        // =========================================================
+        // FACULTY - MY REGISTERED STUDENTS
+        // =========================================================
+
+        @GetMapping("/faculty/me")
+        @PreAuthorize("hasRole('FACULTY')")
+        public List<CourseRegistrationResponse>
+        getMyFacultyRegistrations(
+                Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        return courseRegistrationService
+                .getRegistrationsByFaculty(facultyId);
+        }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")

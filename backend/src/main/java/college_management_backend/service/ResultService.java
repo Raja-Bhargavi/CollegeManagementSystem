@@ -1,5 +1,6 @@
 package college_management_backend.service;
 
+import college_management_backend.dto.FacultyResultUpdateRequest;
 import college_management_backend.dto.ResultRequest;
 import college_management_backend.dto.ResultResponse;
 import college_management_backend.entity.CourseOffering;
@@ -17,7 +18,6 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,10 +44,15 @@ public class ResultService {
             StudentRepository studentRepository) {
 
         this.resultRepository = resultRepository;
-        this.courseOfferingRepository = courseOfferingRepository;
+
+        this.courseOfferingRepository =
+                courseOfferingRepository;
+
         this.courseRegistrationRepository =
                 courseRegistrationRepository;
-        this.studentRepository = studentRepository;
+
+        this.studentRepository =
+                studentRepository;
     }
 
     public List<ResultResponse> getAllResults() {
@@ -60,11 +65,14 @@ public class ResultService {
 
     public ResultResponse getResultById(Long resultId) {
 
-        Result result = resultRepository.findById(resultId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Result not found with ID: "
-                                        + resultId));
+        Result result =
+                resultRepository.findById(resultId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Result not found with ID: "
+                                                + resultId
+                                )
+                        );
 
         return new ResultResponse(result);
     }
@@ -72,7 +80,8 @@ public class ResultService {
     public List<ResultResponse> getResultsByStudent(
             Long studentId) {
 
-        return resultRepository.findByStudentId(studentId)
+        return resultRepository
+                .findByStudentId(studentId)
                 .stream()
                 .map(ResultResponse::new)
                 .toList();
@@ -81,7 +90,8 @@ public class ResultService {
     public List<ResultResponse> getResultsBySemester(
             Long semesterId) {
 
-        return resultRepository.findBySemesterId(semesterId)
+        return resultRepository
+                .findBySemesterId(semesterId)
                 .stream()
                 .map(ResultResponse::new)
                 .toList();
@@ -98,7 +108,8 @@ public class ResultService {
                 courseOfferingRepository
                         .findByFacultyId(facultyId);
 
-        Set<Long> studentIds = new HashSet<>();
+        Set<Long> studentIds =
+                new HashSet<>();
 
         for (CourseOffering offering : offerings) {
 
@@ -111,9 +122,13 @@ public class ResultService {
             for (CourseRegistration registration
                     : registrations) {
 
-                studentIds.add(
-                        registration.getStudentId()
-                );
+                if ("REGISTERED".equalsIgnoreCase(
+                        registration.getStatus())) {
+
+                    studentIds.add(
+                            registration.getStudentId()
+                    );
+                }
             }
         }
 
@@ -126,22 +141,22 @@ public class ResultService {
                     resultRepository
                             .findByStudentId(studentId);
 
+            Student student =
+                    studentRepository
+                            .findById(studentId)
+                            .orElse(null);
+
+            String studentName = "";
+
+            if (student != null) {
+
+                studentName =
+                        student.getFirstName()
+                                + " "
+                                + student.getLastName();
+            }
+
             for (Result result : studentResults) {
-
-                Student student =
-                        studentRepository
-                                .findById(studentId)
-                                .orElse(null);
-
-                String studentName = "";
-
-                if (student != null) {
-
-                    studentName =
-                            student.getFirstName()
-                                    + " "
-                                    + student.getLastName();
-                }
 
                 results.add(
                         new ResultResponse(
@@ -153,6 +168,135 @@ public class ResultService {
         }
 
         return results;
+    }
+
+    /**
+     * Faculty can update only:
+     * - SGPA
+     * - Remarks
+     * - Result Status
+     *
+     * Student, semester and CGPA cannot be changed
+     * through this faculty endpoint.
+     */
+    @Transactional
+    public ResultResponse updateResultByFaculty(
+            Long resultId,
+            FacultyResultUpdateRequest request,
+            Long facultyId) {
+
+        Result result =
+                resultRepository.findById(resultId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Result not found with ID: "
+                                                + resultId
+                                )
+                        );
+
+        boolean facultyOwnsStudent =
+                false;
+
+        List<CourseOffering> offerings =
+                courseOfferingRepository
+                        .findByFacultyId(facultyId);
+
+        for (CourseOffering offering : offerings) {
+
+            List<CourseRegistration> registrations =
+                    courseRegistrationRepository
+                            .findByOfferingId(
+                                    offering.getOfferingId()
+                            );
+
+            for (CourseRegistration registration
+                    : registrations) {
+
+                if (
+                        registration.getStudentId()
+                                .equals(result.getStudentId())
+                        &&
+                        "REGISTERED".equalsIgnoreCase(
+                                registration.getStatus())
+                ) {
+
+                    facultyOwnsStudent = true;
+
+                    break;
+                }
+            }
+
+            if (facultyOwnsStudent) {
+                break;
+            }
+        }
+
+        if (!facultyOwnsStudent) {
+
+            throw new RuntimeException(
+                    "You are not authorized to update this result"
+            );
+        }
+
+        if (request.getSgpa() == null) {
+
+            throw new RuntimeException(
+                    "SGPA is required"
+            );
+        }
+
+        if (
+                request.getSgpa() < 0.0
+                        ||
+                request.getSgpa() > 10.0
+        ) {
+
+            throw new RuntimeException(
+                    "SGPA must be between 0 and 10"
+            );
+        }
+
+        if (request.getResultStatus() == null
+                || request.getResultStatus()
+                .trim()
+                .isEmpty()) {
+
+            throw new RuntimeException(
+                    "Result status is required"
+            );
+        }
+
+        String status =
+                request.getResultStatus()
+                        .trim()
+                        .toUpperCase();
+
+        if (
+                !status.equals("PENDING")
+                        &&
+                !status.equals("PUBLISHED")
+        ) {
+
+            throw new RuntimeException(
+                    "Result status must be PENDING or PUBLISHED"
+            );
+        }
+
+        result.setSgpa(
+                request.getSgpa()
+        );
+
+        result.setRemarks(
+                request.getRemarks()
+        );
+
+        result.setResultStatus(
+                status
+        );
+
+        return new ResultResponse(
+                resultRepository.save(result)
+        );
     }
 
     @Transactional
@@ -171,19 +315,24 @@ public class ResultService {
 
         entityManager
                 .createNativeQuery(
-                        "CALL publish_student_result(:studentId, :semesterId, :sgpa, :cgpa)")
+                        "CALL publish_student_result(:studentId, :semesterId, :sgpa, :cgpa)"
+                )
                 .setParameter(
                         "studentId",
-                        request.getStudentId())
+                        request.getStudentId()
+                )
                 .setParameter(
                         "semesterId",
-                        request.getSemesterId())
+                        request.getSemesterId()
+                )
                 .setParameter(
                         "sgpa",
-                        request.getSgpa())
+                        request.getSgpa()
+                )
                 .setParameter(
                         "cgpa",
-                        request.getCgpa())
+                        request.getCgpa()
+                )
                 .executeUpdate();
     }
 
@@ -198,7 +347,9 @@ public class ResultService {
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Result not found with ID: "
-                                                + resultId));
+                                                + resultId
+                                )
+                        );
 
         boolean duplicate =
                 resultRepository
@@ -216,16 +367,20 @@ public class ResultService {
         }
 
         result.setStudentId(
-                request.getStudentId());
+                request.getStudentId()
+        );
 
         result.setSemesterId(
-                request.getSemesterId());
+                request.getSemesterId()
+        );
 
         result.setSgpa(
-                request.getSgpa());
+                request.getSgpa()
+        );
 
         result.setCgpa(
-                request.getCgpa());
+                request.getCgpa()
+        );
 
         return new ResultResponse(
                 resultRepository.save(result)
@@ -239,7 +394,8 @@ public class ResultService {
 
             throw new RuntimeException(
                     "Result not found with ID: "
-                            + resultId);
+                            + resultId
+            );
         }
 
         resultRepository.deleteById(resultId);

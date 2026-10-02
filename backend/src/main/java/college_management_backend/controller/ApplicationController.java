@@ -36,8 +36,14 @@ public class ApplicationController {
         this.studentService = studentService;
     }
 
+    // =========================================================
+    // GET ALL
+    // =========================================================
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
+    )
     public ResponseEntity<List<ApplicationResponse>>
     getAllApplications() {
 
@@ -45,6 +51,10 @@ public class ApplicationController {
                 applicationService.getAllApplications()
         );
     }
+
+    // =========================================================
+    // STUDENT - MY APPLICATIONS
+    // =========================================================
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
@@ -60,64 +70,89 @@ public class ApplicationController {
                         .getUserId();
 
         return ResponseEntity.ok(
-                applicationService
-                        .getApplicationsByUser(userId)
+                applicationService.getApplicationsByUser(userId)
         );
     }
 
+    // =========================================================
+    // GET BY ID
+    // =========================================================
+
     @GetMapping("/{applicationId}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
+    )
     public ResponseEntity<ApplicationResponse>
     getApplicationById(
             @PathVariable Long applicationId) {
 
         return ResponseEntity.ok(
-                applicationService
-                        .getApplicationById(applicationId)
+                applicationService.getApplicationById(applicationId)
         );
     }
 
+    // =========================================================
+    // GET BY USER
+    // =========================================================
+
     @GetMapping("/user/{applicantUserId}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
+    )
     public ResponseEntity<List<ApplicationResponse>>
     getApplicationsByUser(
             @PathVariable Long applicantUserId) {
 
         return ResponseEntity.ok(
-                applicationService
-                        .getApplicationsByUser(applicantUserId)
+                applicationService.getApplicationsByUser(
+                        applicantUserId
+                )
         );
     }
 
+    // =========================================================
+    // GET BY STATUS
+    // =========================================================
+
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
+    )
     public ResponseEntity<List<ApplicationResponse>>
     getApplicationsByStatus(
             @PathVariable String status) {
 
         return ResponseEntity.ok(
-                applicationService
-                        .getApplicationsByStatus(status)
+                applicationService.getApplicationsByStatus(status)
         );
     }
 
+    // =========================================================
+    // CREATE
+    // STUDENT / ADMIN ONLY
+    // =========================================================
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN','STUDENT')")
     public ResponseEntity<ApplicationResponse>
     createApplication(
             @Valid @RequestBody ApplicationRequest request) {
 
         ApplicationResponse response =
-                applicationService
-                        .createApplication(request);
+                applicationService.createApplication(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
+    // =========================================================
+    // FULL UPDATE
+    // ADMIN ONLY
+    // =========================================================
+
     @PutMapping("/{applicationId}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApplicationResponse>
     updateApplication(
             @PathVariable Long applicationId,
@@ -131,8 +166,14 @@ public class ApplicationController {
         );
     }
 
+    // =========================================================
+    // STAFF / MANAGEMENT - PROCESS APPLICATION
+    // =========================================================
+
     @PutMapping("/{applicationId}/status")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','MANAGEMENT')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN','STAFF','MANAGEMENT')"
+    )
     public ResponseEntity<ApplicationResponse>
     updateApplicationStatus(
             @PathVariable Long applicationId,
@@ -145,6 +186,11 @@ public class ApplicationController {
                 )
         );
     }
+
+    // =========================================================
+    // DELETE
+    // ADMIN ONLY
+    // =========================================================
 
     @DeleteMapping("/{applicationId}")
     @PreAuthorize("hasRole('ADMIN')")
