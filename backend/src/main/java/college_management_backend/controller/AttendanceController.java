@@ -27,9 +27,7 @@ import java.util.List;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
-
     private final StudentService studentService;
-
     private final FacultyService facultyService;
 
     public AttendanceController(
@@ -37,29 +35,23 @@ public class AttendanceController {
             StudentService studentService,
             FacultyService facultyService) {
 
-        this.attendanceService =
-                attendanceService;
-
-        this.studentService =
-                studentService;
-
-        this.facultyService =
-                facultyService;
+        this.attendanceService = attendanceService;
+        this.studentService = studentService;
+        this.facultyService = facultyService;
     }
 
     // =========================================================
-    // ADMIN / STAFF / FACULTY - ALL ATTENDANCE
+    // ADMIN / STAFF - ALL ATTENDANCE
+    // Faculty must use /faculty/me
     // =========================================================
 
     @GetMapping
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF')"
     )
-    public List<AttendanceResponse>
-    getAllAttendance() {
+    public List<AttendanceResponse> getAllAttendance() {
 
-        return attendanceService
-                .getAllAttendance();
+        return attendanceService.getAllAttendance();
     }
 
     // =========================================================
@@ -68,8 +60,7 @@ public class AttendanceController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
-    public List<AttendanceResponse>
-    getMyAttendance(
+    public List<AttendanceResponse> getMyAttendance(
             Authentication authentication) {
 
         Long studentId =
@@ -79,10 +70,7 @@ public class AttendanceController {
                         )
                         .getStudentId();
 
-        return attendanceService
-                .getAttendanceByStudent(
-                        studentId
-                );
+        return attendanceService.getAttendanceByStudent(studentId);
     }
 
     // =========================================================
@@ -91,8 +79,7 @@ public class AttendanceController {
 
     @GetMapping("/faculty/me")
     @PreAuthorize("hasRole('FACULTY')")
-    public List<FacultyAttendanceResponse>
-    getMyFacultyAttendance(
+    public List<FacultyAttendanceResponse> getMyFacultyAttendance(
             Authentication authentication) {
 
         Long facultyId =
@@ -102,64 +89,51 @@ public class AttendanceController {
                         )
                         .getFacultyId();
 
-        return attendanceService
-                .getAttendanceByFaculty(
-                        facultyId
-                );
+        return attendanceService.getAttendanceByFaculty(facultyId);
     }
 
     // =========================================================
-    // GET ATTENDANCE BY ID
+    // ADMIN / STAFF - GET ATTENDANCE BY ID
     // =========================================================
 
     @GetMapping("/{id}")
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF')"
     )
-    public AttendanceResponse
-    getAttendanceById(
+    public AttendanceResponse getAttendanceById(
             @PathVariable Long id) {
 
-        return attendanceService
-                .getAttendanceById(id);
+        return attendanceService.getAttendanceById(id);
     }
 
     // =========================================================
-    // GET BY REGISTRATION
+    // ADMIN / STAFF - GET BY REGISTRATION
     // =========================================================
 
-    @GetMapping(
-            "/registration/{registrationId}"
-    )
+    @GetMapping("/registration/{registrationId}")
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF')"
     )
-    public List<AttendanceResponse>
-    getAttendanceByRegistration(
+    public List<AttendanceResponse> getAttendanceByRegistration(
             @PathVariable Long registrationId) {
 
         return attendanceService
-                .getAttendanceByRegistration(
-                        registrationId
-                );
+                .getAttendanceByRegistration(registrationId);
     }
 
     // =========================================================
-    // MARK
+    // ADMIN / STAFF - MARK ATTENDANCE
     // =========================================================
 
     @PostMapping
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF')"
     )
-    public ResponseEntity<AttendanceResponse>
-    markAttendance(
-            @Valid
-            @RequestBody AttendanceRequest request) {
+    public ResponseEntity<AttendanceResponse> markAttendance(
+            @Valid @RequestBody AttendanceRequest request) {
 
         AttendanceResponse response =
-                attendanceService
-                        .markAttendance(request);
+                attendanceService.markAttendance(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -167,38 +141,87 @@ public class AttendanceController {
     }
 
     // =========================================================
-    // UPDATE
+    // FACULTY - MARK ATTENDANCE FOR OWN COURSE
+    // =========================================================
+
+    @PostMapping("/faculty")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<AttendanceResponse> markFacultyAttendance(
+            @Valid @RequestBody AttendanceRequest request,
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        AttendanceResponse response =
+                attendanceService.markAttendanceByFaculty(
+                        request,
+                        facultyId
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    // =========================================================
+    // ADMIN / STAFF - UPDATE ATTENDANCE
     // =========================================================
 
     @PutMapping("/{id}")
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF')"
     )
-    public AttendanceResponse
-    updateAttendance(
+    public AttendanceResponse updateAttendance(
             @PathVariable Long id,
-            @Valid
-            @RequestBody AttendanceRequest request) {
+            @Valid @RequestBody AttendanceRequest request) {
 
-        return attendanceService
-                .updateAttendance(
-                        id,
-                        request
-                );
+        return attendanceService.updateAttendance(
+                id,
+                request
+        );
+    }
+
+    // =========================================================
+    // FACULTY - UPDATE ATTENDANCE FOR OWN COURSE
+    // =========================================================
+
+    @PutMapping("/faculty/{id}")
+    @PreAuthorize("hasRole('FACULTY')")
+    public AttendanceResponse updateFacultyAttendance(
+            @PathVariable Long id,
+            @Valid @RequestBody AttendanceRequest request,
+            Authentication authentication) {
+
+        Long facultyId =
+                facultyService
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
+                        .getFacultyId();
+
+        return attendanceService.updateAttendanceByFaculty(
+                id,
+                request,
+                facultyId
+        );
     }
 
     // =========================================================
     // DELETE
+    // Only ADMIN can delete attendance
     // =========================================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void>
-    deleteAttendance(
+    public ResponseEntity<Void> deleteAttendance(
             @PathVariable Long id) {
 
-        attendanceService
-                .deleteAttendance(id);
+        attendanceService.deleteAttendance(id);
 
         return ResponseEntity
                 .noContent()

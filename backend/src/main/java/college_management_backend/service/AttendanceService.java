@@ -8,7 +8,6 @@ import college_management_backend.entity.Attendance;
 import college_management_backend.entity.Course;
 import college_management_backend.entity.CourseOffering;
 import college_management_backend.entity.CourseRegistration;
-import college_management_backend.entity.Faculty;
 import college_management_backend.entity.Section;
 import college_management_backend.entity.Student;
 
@@ -84,6 +83,7 @@ public class AttendanceService {
 
     // =========================================================
     // GET ALL ATTENDANCE
+    // ADMIN / STAFF
     // =========================================================
 
     public List<AttendanceResponse> getAllAttendance() {
@@ -114,8 +114,7 @@ public class AttendanceService {
             List<Attendance> attendanceList =
                     attendanceRepository
                             .findByRegistrationId(
-                                    registration
-                                            .getRegistrationId()
+                                    registration.getRegistrationId()
                             );
 
             result.addAll(
@@ -133,139 +132,150 @@ public class AttendanceService {
     // FACULTY - MY ATTENDANCE
     // =========================================================
 
-        public List<FacultyAttendanceResponse>
-                getAttendanceByFaculty(Long facultyId) {
+    public List<FacultyAttendanceResponse>
+    getAttendanceByFaculty(Long facultyId) {
 
-                System.out.println("======================================");
-                System.out.println("FACULTY ATTENDANCE REQUEST");
-                System.out.println("facultyId = " + facultyId);
+        System.out.println("======================================");
+        System.out.println("FACULTY ATTENDANCE REQUEST");
+        System.out.println("facultyId = " + facultyId);
 
-                if (!facultyRepository.existsById(facultyId)) {
-                        throw new RuntimeException(
-                                "Faculty not found with ID: " + facultyId
-                        );
-                }
+        if (!facultyRepository.existsById(facultyId)) {
 
-                List<CourseOffering> offerings =
-                        courseOfferingRepository.findByFacultyId(facultyId);
+            throw new RuntimeException(
+                    "Faculty not found with ID: " + facultyId
+            );
+        }
 
-                System.out.println(
-                        "Course offerings found = " + offerings.size()
-                );
+        List<CourseOffering> offerings =
+                courseOfferingRepository
+                        .findByFacultyId(facultyId);
 
-                List<FacultyAttendanceResponse> result =
-                        new ArrayList<>();
+        System.out.println(
+                "Course offerings found = "
+                        + offerings.size()
+        );
 
-                for (CourseOffering offering : offerings) {
+        List<FacultyAttendanceResponse> result =
+                new ArrayList<>();
 
-                        System.out.println(
-                                "Offering ID = " + offering.getOfferingId()
-                        );
+        for (CourseOffering offering : offerings) {
 
-                        System.out.println(
-                                "Course ID = " + offering.getCourseId()
-                        );
+            System.out.println(
+                    "Offering ID = "
+                            + offering.getOfferingId()
+            );
 
-                        System.out.println(
-                                "Section ID = " + offering.getSectionId()
-                        );
+            System.out.println(
+                    "Course ID = "
+                            + offering.getCourseId()
+            );
 
-                        System.out.println(
-                                "Faculty ID = " + offering.getFacultyId()
-                        );
+            System.out.println(
+                    "Section ID = "
+                            + offering.getSectionId()
+            );
 
-                        List<CourseRegistration> registrations =
-                                courseRegistrationRepository
-                                        .findByOfferingId(
-                                                offering.getOfferingId()
-                                        );
+            System.out.println(
+                    "Faculty ID = "
+                            + offering.getFacultyId()
+            );
 
-                        System.out.println(
-                                "Registrations found = "
-                                        + registrations.size()
-                        );
+            List<CourseRegistration> registrations =
+                    courseRegistrationRepository
+                            .findByOfferingId(
+                                    offering.getOfferingId()
+                            );
 
-                        for (CourseRegistration registration :
-                                registrations) {
+            System.out.println(
+                    "Registrations found = "
+                            + registrations.size()
+            );
 
-                        System.out.println(
-                                "Registration ID = "
-                                        + registration.getRegistrationId()
-                        );
-
-                        List<Attendance> attendanceList =
-                                attendanceRepository
-                                        .findByRegistrationId(
-                                                registration
-                                                        .getRegistrationId()
-                                        );
-
-                        System.out.println(
-                                "Attendance records found = "
-                                        + attendanceList.size()
-                        );
-
-                        for (Attendance attendance :
-                                attendanceList) {
-
-                                System.out.println(
-                                        "Attendance ID = "
-                                                + attendance.getAttendanceId()
-                                );
-
-                                System.out.println(
-                                        "Date = "
-                                                + attendance.getAttendanceDate()
-                                );
-
-                                System.out.println(
-                                        "Status = "
-                                                + attendance.getStatus()
-                                );
-
-                                result.add(
-                                        toFacultyResponse(
-                                                attendance,
-                                                offering,
-                                                registration
-                                        )
-                                );
-                        }
-                        }
-                }
+            for (CourseRegistration registration :
+                    registrations) {
 
                 System.out.println(
-                        "FINAL FACULTY ATTENDANCE COUNT = "
-                                + result.size()
+                        "Registration ID = "
+                                + registration.getRegistrationId()
                 );
 
-                System.out.println("======================================");
+                List<Attendance> attendanceList =
+                        attendanceRepository
+                                .findByRegistrationId(
+                                        registration
+                                                .getRegistrationId()
+                                );
 
-                return result;
+                System.out.println(
+                        "Attendance records found = "
+                                + attendanceList.size()
+                );
+
+                for (Attendance attendance :
+                        attendanceList) {
+
+                    System.out.println(
+                            "Attendance ID = "
+                                    + attendance.getAttendanceId()
+                    );
+
+                    System.out.println(
+                            "Date = "
+                                    + attendance.getAttendanceDate()
+                    );
+
+                    System.out.println(
+                            "Status = "
+                                    + attendance.getStatus()
+                    );
+
+                    result.add(
+                            toFacultyResponse(
+                                    attendance,
+                                    offering,
+                                    registration
+                            )
+                    );
                 }
+            }
+        }
+
+        System.out.println(
+                "FINAL FACULTY ATTENDANCE COUNT = "
+                        + result.size()
+        );
+
+        System.out.println(
+                "======================================"
+        );
+
+        return result;
+    }
 
     // =========================================================
     // GET ATTENDANCE BY ID
+    // ADMIN / STAFF
     // =========================================================
 
     public AttendanceResponse getAttendanceById(
             Long attendanceId) {
 
         Attendance attendance =
-                attendanceRepository.findById(
-                        attendanceId
-                ).orElseThrow(() ->
-                        new RuntimeException(
-                                "Attendance not found with ID: "
-                                        + attendanceId
-                        )
-                );
+                attendanceRepository
+                        .findById(attendanceId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Attendance not found with ID: "
+                                                + attendanceId
+                                )
+                        );
 
         return toResponse(attendance);
     }
 
     // =========================================================
     // GET BY REGISTRATION
+    // ADMIN / STAFF
     // =========================================================
 
     public List<AttendanceResponse>
@@ -280,7 +290,7 @@ public class AttendanceService {
     }
 
     // =========================================================
-    // MARK ATTENDANCE
+    // ADMIN / STAFF - MARK ATTENDANCE
     // =========================================================
 
     @Transactional
@@ -326,14 +336,88 @@ public class AttendanceService {
         );
 
         return toResponse(
-                attendanceRepository.save(
-                        attendance
-                )
+                attendanceRepository.save(attendance)
         );
     }
 
     // =========================================================
-    // UPDATE ATTENDANCE
+    // FACULTY - MARK ATTENDANCE
+    // =========================================================
+
+    @Transactional
+    public AttendanceResponse markAttendanceByFaculty(
+            AttendanceRequest request,
+            Long facultyId) {
+
+        CourseRegistration registration =
+                courseRegistrationRepository
+                        .findById(
+                                request.getRegistrationId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course registration not found with ID: "
+                                                + request.getRegistrationId()
+                                )
+                        );
+
+        // IMPORTANT:
+        // Faculty can only mark attendance for
+        // students registered in their own courses.
+        validateFacultyOwnsRegistration(
+                registration,
+                facultyId
+        );
+
+        if (!"REGISTERED".equalsIgnoreCase(
+                registration.getStatus())) {
+
+            throw new RuntimeException(
+                    "Attendance can only be marked for a REGISTERED course registration"
+            );
+        }
+
+        if (attendanceRepository
+                .existsByRegistrationIdAndAttendanceDate(
+                        request.getRegistrationId(),
+                        request.getAttendanceDate()
+                )) {
+
+            throw new RuntimeException(
+                    "Attendance already marked for this registration on this date"
+            );
+        }
+
+        Attendance attendance =
+                new Attendance();
+
+        attendance.setRegistrationId(
+                request.getRegistrationId()
+        );
+
+        attendance.setAttendanceDate(
+                request.getAttendanceDate()
+        );
+
+        attendance.setStatus(
+                request.getStatus()
+        );
+
+        attendance.setMarkedBy(
+                request.getMarkedBy()
+        );
+
+        attendance.setMarkedAt(
+                LocalDateTime.now()
+        );
+
+        return toResponse(
+                attendanceRepository.save(attendance)
+        );
+    }
+
+    // =========================================================
+    // ADMIN / STAFF - UPDATE ATTENDANCE
     // =========================================================
 
     @Transactional
@@ -391,9 +475,114 @@ public class AttendanceService {
         );
 
         return toResponse(
-                attendanceRepository.save(
-                        attendance
-                )
+                attendanceRepository.save(attendance)
+        );
+    }
+
+    // =========================================================
+    // FACULTY - UPDATE ATTENDANCE
+    // =========================================================
+
+    @Transactional
+    public AttendanceResponse updateAttendanceByFaculty(
+            Long attendanceId,
+            AttendanceRequest request,
+            Long facultyId) {
+
+        Attendance attendance =
+                attendanceRepository
+                        .findById(attendanceId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Attendance not found with ID: "
+                                                + attendanceId
+                                )
+                        );
+
+        // Get the existing registration.
+        CourseRegistration existingRegistration =
+                courseRegistrationRepository
+                        .findById(
+                                attendance.getRegistrationId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Existing course registration not found"
+                                )
+                        );
+
+        // Verify that the existing attendance belongs
+        // to one of this faculty's courses.
+        validateFacultyOwnsRegistration(
+                existingRegistration,
+                facultyId
+        );
+
+        // Get the registration supplied in the update request.
+        CourseRegistration requestedRegistration =
+                courseRegistrationRepository
+                        .findById(
+                                request.getRegistrationId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course registration not found with ID: "
+                                                + request.getRegistrationId()
+                                )
+                        );
+
+        // Verify that the requested registration also
+        // belongs to this faculty.
+        validateFacultyOwnsRegistration(
+                requestedRegistration,
+                facultyId
+        );
+
+        if (!"REGISTERED".equalsIgnoreCase(
+                requestedRegistration.getStatus())) {
+
+            throw new RuntimeException(
+                    "Attendance can only be marked for a REGISTERED course registration"
+            );
+        }
+
+        boolean duplicate =
+                attendanceRepository
+                        .existsByRegistrationIdAndAttendanceDateAndAttendanceIdNot(
+                                request.getRegistrationId(),
+                                request.getAttendanceDate(),
+                                attendanceId
+                        );
+
+        if (duplicate) {
+
+            throw new RuntimeException(
+                    "Attendance already marked for this registration on this date"
+            );
+        }
+
+        attendance.setRegistrationId(
+                request.getRegistrationId()
+        );
+
+        attendance.setAttendanceDate(
+                request.getAttendanceDate()
+        );
+
+        attendance.setStatus(
+                request.getStatus()
+        );
+
+        attendance.setMarkedBy(
+                request.getMarkedBy()
+        );
+
+        attendance.setMarkedAt(
+                LocalDateTime.now()
+        );
+
+        return toResponse(
+                attendanceRepository.save(attendance)
         );
     }
 
@@ -421,6 +610,7 @@ public class AttendanceService {
 
     // =========================================================
     // VALIDATE REGISTRATION
+    // ADMIN / STAFF
     // =========================================================
 
     private void validateRegistration(
@@ -441,6 +631,35 @@ public class AttendanceService {
 
             throw new RuntimeException(
                     "Attendance can only be marked for a REGISTERED course registration"
+            );
+        }
+    }
+
+    // =========================================================
+    // VALIDATE FACULTY COURSE OWNERSHIP
+    // =========================================================
+
+    private void validateFacultyOwnsRegistration(
+            CourseRegistration registration,
+            Long facultyId) {
+
+        CourseOffering offering =
+                courseOfferingRepository
+                        .findById(
+                                registration.getOfferingId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Course offering not found with ID: "
+                                                + registration.getOfferingId()
+                                )
+                        );
+
+        if (!facultyId.equals(
+                offering.getFacultyId())) {
+
+            throw new RuntimeException(
+                    "You are not authorized to manage attendance for this course"
             );
         }
     }
