@@ -4,6 +4,7 @@ import college_management_backend.dto.CourseRegistrationRequest;
 import college_management_backend.dto.CourseRegistrationResponse;
 import college_management_backend.service.CourseRegistrationService;
 import college_management_backend.service.StudentService;
+import college_management_backend.service.FacultyService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -16,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.web.bind.annotation.*;
-import college_management_backend.service.FacultyService;
 
 import java.util.List;
 
@@ -29,13 +29,13 @@ public class CourseRegistrationController {
             courseRegistrationService;
 
     private final StudentService studentService;
+
     private final FacultyService facultyService;
-    
 
     public CourseRegistrationController(
-        CourseRegistrationService courseRegistrationService,
-        StudentService studentService,
-        FacultyService facultyService) {
+            CourseRegistrationService courseRegistrationService,
+            StudentService studentService,
+            FacultyService facultyService) {
 
         this.courseRegistrationService =
                 courseRegistrationService;
@@ -45,38 +45,43 @@ public class CourseRegistrationController {
 
         this.facultyService =
                 facultyService;
-        }
+    }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
-    public List<CourseRegistrationResponse> getAllRegistrations() {
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
+    public List<CourseRegistrationResponse>
+    getAllRegistrations() {
 
-        return courseRegistrationService.getAllRegistrations();
+        return courseRegistrationService
+                .getAllRegistrations();
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
-    public List<CourseRegistrationResponse> getMyRegistrations(
+    public List<CourseRegistrationResponse>
+    getMyRegistrations(
             Authentication authentication) {
 
         Long studentId =
                 studentService
-                        .getStudentByUsername(authentication.getName())
+                        .getStudentByUsername(
+                                authentication.getName()
+                        )
                         .getStudentId();
 
         return courseRegistrationService
-                .getRegistrationsByStudent(studentId);
+                .getRegistrationsByStudent(
+                        studentId
+                );
     }
 
-        // =========================================================
-        // FACULTY - MY REGISTERED STUDENTS
-        // =========================================================
-
-        @GetMapping("/faculty/me")
-        @PreAuthorize("hasRole('FACULTY')")
-        public List<CourseRegistrationResponse>
-        getMyFacultyRegistrations(
-                Authentication authentication) {
+    @GetMapping("/faculty/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public List<CourseRegistrationResponse>
+    getMyFacultyRegistrations(
+            Authentication authentication) {
 
         Long facultyId =
                 facultyService
@@ -86,12 +91,17 @@ public class CourseRegistrationController {
                         .getFacultyId();
 
         return courseRegistrationService
-                .getRegistrationsByFaculty(facultyId);
-        }
+                .getRegistrationsByFaculty(
+                        facultyId
+                );
+    }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
-    public CourseRegistrationResponse getRegistrationById(
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
+    public CourseRegistrationResponse
+    getRegistrationById(
             @PathVariable Long id) {
 
         return courseRegistrationService
@@ -99,10 +109,11 @@ public class CourseRegistrationController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<CourseRegistrationResponse>
     registerStudent(
-            @Valid @RequestBody CourseRegistrationRequest request) {
+            @Valid
+            @RequestBody CourseRegistrationRequest request) {
 
         CourseRegistrationResponse response =
                 courseRegistrationService
@@ -114,23 +125,31 @@ public class CourseRegistrationController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public CourseRegistrationResponse updateRegistration(
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    public CourseRegistrationResponse
+    updateRegistration(
             @PathVariable Long id,
-            @Valid @RequestBody CourseRegistrationRequest request) {
+            @Valid
+            @RequestBody CourseRegistrationRequest request) {
 
         return courseRegistrationService
-                .updateRegistration(id, request);
+                .updateRegistration(
+                        id,
+                        request
+                );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteRegistration(
+    public ResponseEntity<Void>
+    deleteRegistration(
             @PathVariable Long id) {
 
         courseRegistrationService
                 .deleteRegistration(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -5,19 +5,32 @@ import java.time.LocalDate;
 public class StudentResponse {
 
     private Long studentId;
+
+    private Long userId;
+
     private String rollNumber;
+
     private String firstName;
+
     private String lastName;
+
     private LocalDate dateOfBirth;
+
     private String gender;
+
     private String phone;
+
     private Long programId;
+
     private Integer admissionYear;
+
     private Integer currentSemester;
+
     private String studentStatus;
 
     public StudentResponse(
             Long studentId,
+            Long userId,
             String rollNumber,
             String firstName,
             String lastName,
@@ -30,6 +43,7 @@ public class StudentResponse {
             String studentStatus) {
 
         this.studentId = studentId;
+        this.userId = userId;
         this.rollNumber = rollNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,6 +58,10 @@ public class StudentResponse {
 
     public Long getStudentId() {
         return studentId;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     public String getRollNumber() {

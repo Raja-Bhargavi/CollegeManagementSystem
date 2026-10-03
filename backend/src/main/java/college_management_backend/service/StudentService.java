@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+
     private final UserRepository userRepository;
 
     public StudentService(
@@ -29,28 +30,40 @@ public class StudentService {
         this.userRepository = userRepository;
     }
 
+    // =====================================================
+    // GET STUDENT BY ID
+    // =====================================================
+
     public StudentResponse getStudentById(Long studentId) {
 
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                "Student not found with ID: " + studentId
-                        )
-                );
+        Student student =
+                studentRepository.findById(studentId)
+                        .orElseThrow(() ->
+                                new StudentNotFoundException(
+                                        "Student not found with ID: "
+                                                + studentId
+                                )
+                        );
 
         return toResponse(student);
     }
 
-    public Student getStudentEntityByUsername(String username) {
+    // =====================================================
+    // GET STUDENT ENTITY BY USERNAME
+    // =====================================================
 
-        User user = userRepository
-                .findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found with username: "
-                                        + username
-                        )
-                );
+    public Student getStudentEntityByUsername(
+            String username) {
+
+        User user =
+                userRepository
+                        .findByUsername(username)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "User not found with username: "
+                                                + username
+                                )
+                        );
 
         return studentRepository
                 .findByUserId(user.getUserId())
@@ -60,7 +73,11 @@ public class StudentService {
                                         + username
                         )
                 );
-        }
+    }
+
+    // =====================================================
+    // GET ALL STUDENTS
+    // =====================================================
 
     public List<StudentResponse> getAllStudents() {
 
@@ -70,30 +87,48 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
-    public StudentResponse getStudentByUsername(String username) {
+    // =====================================================
+    // GET STUDENT BY USERNAME
+    // =====================================================
 
-        Long userId = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                "User not found: " + username
-                        )
-                )
-                .getUserId();
+    public StudentResponse getStudentByUsername(
+            String username) {
 
-        Student student = studentRepository.findByUserId(userId)
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                "Student profile not found for user: " + username
+        Long userId =
+                userRepository
+                        .findByUsername(username)
+                        .orElseThrow(() ->
+                                new StudentNotFoundException(
+                                        "User not found: "
+                                                + username
+                                )
                         )
-                );
+                        .getUserId();
+
+        Student student =
+                studentRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() ->
+                                new StudentNotFoundException(
+                                        "Student profile not found for user: "
+                                                + username
+                                )
+                        );
 
         return toResponse(student);
     }
 
-    @Transactional
-    public StudentResponse createStudent(StudentRequest request) {
+    // =====================================================
+    // CREATE STUDENT
+    // =====================================================
 
-        if (studentRepository.existsByRollNumber(request.getRollNumber())) {
+    @Transactional
+    public StudentResponse createStudent(
+            StudentRequest request) {
+
+        if (studentRepository.existsByRollNumber(
+                request.getRollNumber())) {
+
             throw new DuplicateStudentException(
                     "Student with roll number "
                             + request.getRollNumber()
@@ -101,7 +136,9 @@ public class StudentService {
             );
         }
 
-        if (studentRepository.existsByUserId(request.getUserId())) {
+        if (studentRepository.existsByUserId(
+                request.getUserId())) {
+
             throw new DuplicateStudentException(
                     "User ID "
                             + request.getUserId()
@@ -111,37 +148,90 @@ public class StudentService {
 
         Student student = new Student();
 
-        student.setUserId(request.getUserId());
-        student.setRollNumber(request.getRollNumber());
-        student.setFirstName(request.getFirstName());
-        student.setLastName(request.getLastName());
-        student.setDateOfBirth(request.getDateOfBirth());
-        student.setGender(request.getGender());
-        student.setPhone(request.getPhone());
-        student.setProgramId(request.getProgramId());
-        student.setAdmissionYear(request.getAdmissionYear());
-        student.setCurrentSemester(request.getCurrentSemester());
-        student.setStudentStatus(request.getStudentStatus());
+        student.setUserId(
+                request.getUserId()
+        );
 
-        return toResponse(studentRepository.save(student));
+        student.setRollNumber(
+                request.getRollNumber()
+        );
+
+        student.setFirstName(
+                request.getFirstName()
+        );
+
+        student.setLastName(
+                request.getLastName()
+        );
+
+        student.setDateOfBirth(
+                request.getDateOfBirth()
+        );
+
+        student.setGender(
+                request.getGender()
+        );
+
+        student.setPhone(
+                request.getPhone()
+        );
+
+        student.setProgramId(
+                request.getProgramId()
+        );
+
+        student.setAdmissionYear(
+                request.getAdmissionYear()
+        );
+
+        student.setCurrentSemester(
+                request.getCurrentSemester()
+        );
+
+        student.setStudentStatus(
+                request.getStudentStatus()
+        );
+
+        Student savedStudent =
+                studentRepository.save(student);
+
+        return toResponse(savedStudent);
     }
+
+    // =====================================================
+    // UPDATE STUDENT
+    // =====================================================
 
     @Transactional
     public StudentResponse updateStudent(
             Long studentId,
             StudentRequest request) {
 
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                "Student not found with ID: " + studentId
-                        )
-                );
+        Student student =
+                studentRepository.findById(studentId)
+                        .orElseThrow(() ->
+                                new StudentNotFoundException(
+                                        "Student not found with ID: "
+                                                + studentId
+                                )
+                        );
 
-        if (!student.getRollNumber().equals(request.getRollNumber())
-                && studentRepository.existsByRollNumberAndStudentIdNot(
-                        request.getRollNumber(),
-                        studentId)) {
+        // =================================================
+        // ROLL NUMBER DUPLICATE CHECK
+        // =================================================
+
+        if (
+                !student.getRollNumber()
+                        .equals(request.getRollNumber())
+
+                        &&
+
+                studentRepository
+                        .existsByRollNumberAndStudentIdNot(
+                                request.getRollNumber(),
+                                studentId
+                        )
+        ) {
 
             throw new DuplicateStudentException(
                     "Student with roll number "
@@ -150,40 +240,101 @@ public class StudentService {
             );
         }
 
-        // userId is intentionally not changed.
-        student.setRollNumber(request.getRollNumber());
-        student.setFirstName(request.getFirstName());
-        student.setLastName(request.getLastName());
-        student.setDateOfBirth(request.getDateOfBirth());
-        student.setGender(request.getGender());
-        student.setPhone(request.getPhone());
-        student.setProgramId(request.getProgramId());
-        student.setAdmissionYear(request.getAdmissionYear());
-        student.setCurrentSemester(request.getCurrentSemester());
-        student.setStudentStatus(request.getStudentStatus());
+        // =================================================
+        // IMPORTANT
+        // =================================================
+        //
+        // userId is intentionally NOT changed here.
+        //
+        // The existing user account remains permanently
+        // associated with this student during normal
+        // student-detail editing.
+        //
+        // Only the student profile fields are updated.
+        // =================================================
 
-        return toResponse(studentRepository.save(student));
+        student.setRollNumber(
+                request.getRollNumber()
+        );
+
+        student.setFirstName(
+                request.getFirstName()
+        );
+
+        student.setLastName(
+                request.getLastName()
+        );
+
+        student.setDateOfBirth(
+                request.getDateOfBirth()
+        );
+
+        student.setGender(
+                request.getGender()
+        );
+
+        student.setPhone(
+                request.getPhone()
+        );
+
+        student.setProgramId(
+                request.getProgramId()
+        );
+
+        student.setAdmissionYear(
+                request.getAdmissionYear()
+        );
+
+        student.setCurrentSemester(
+                request.getCurrentSemester()
+        );
+
+        student.setStudentStatus(
+                request.getStudentStatus()
+        );
+
+        Student updatedStudent =
+                studentRepository.save(student);
+
+        return toResponse(updatedStudent);
     }
+
+    // =====================================================
+    // DEACTIVATE STUDENT
+    // =====================================================
 
     @Transactional
-    public StudentResponse deactivateStudent(Long studentId) {
+    public StudentResponse deactivateStudent(
+            Long studentId) {
 
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                "Student not found with ID: " + studentId
-                        )
-                );
+        Student student =
+                studentRepository.findById(studentId)
+                        .orElseThrow(() ->
+                                new StudentNotFoundException(
+                                        "Student not found with ID: "
+                                                + studentId
+                                )
+                        );
 
-        student.setStudentStatus("INACTIVE");
+        student.setStudentStatus(
+                "INACTIVE"
+        );
 
-        return toResponse(studentRepository.save(student));
+        return toResponse(
+                studentRepository.save(student)
+        );
     }
 
-    private StudentResponse toResponse(Student student) {
+    // =====================================================
+    // CONVERT ENTITY TO RESPONSE
+    // =====================================================
+
+    private StudentResponse toResponse(
+            Student student) {
 
         return new StudentResponse(
                 student.getStudentId(),
+                student.getUserId(),
                 student.getRollNumber(),
                 student.getFirstName(),
                 student.getLastName(),

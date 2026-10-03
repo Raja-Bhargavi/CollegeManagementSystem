@@ -33,29 +33,19 @@ public class CourseOfferingController {
                 facultyService;
     }
 
-    // =========================================================
-    // GET ALL
-    // =========================================================
-
     @GetMapping
     @PreAuthorize(
             "hasAnyRole('ADMIN','STAFF','FACULTY')"
     )
-    public List<CourseOfferingResponse>
-    getAllOfferings() {
+    public List<CourseOfferingResponse> getAllOfferings() {
 
         return courseOfferingService
                 .getAllOfferings();
     }
 
-    // =========================================================
-    // FACULTY - MY COURSES
-    // =========================================================
-
     @GetMapping("/me")
     @PreAuthorize("hasRole('FACULTY')")
-    public List<CourseOfferingResponse>
-    getMyCourses(
+    public List<CourseOfferingResponse> getMyCourses(
             Authentication authentication) {
 
         Long facultyId =
@@ -66,49 +56,32 @@ public class CourseOfferingController {
                         .getFacultyId();
 
         return courseOfferingService
-                .getOfferingsByFaculty(
-                        facultyId
-                );
+                .getOfferingsByFaculty(facultyId);
     }
-
-    // =========================================================
-    // GET BY ID
-    // =========================================================
 
     @GetMapping("/{id}")
     @PreAuthorize(
             "hasAnyRole('ADMIN','STAFF','FACULTY')"
     )
-    public CourseOfferingResponse
-    getOfferingById(
+    public CourseOfferingResponse getOfferingById(
             @PathVariable Long id) {
 
         return courseOfferingService
                 .getOfferingById(id);
     }
 
-    // =========================================================
-    // CREATE
-    // =========================================================
-
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public CourseOfferingResponse
-    createOffering(
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    public CourseOfferingResponse createOffering(
             @RequestBody CourseOfferingRequest request) {
 
         return courseOfferingService
                 .createOffering(request);
     }
 
-    // =========================================================
-    // UPDATE
-    // =========================================================
-
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public CourseOfferingResponse
-    updateOffering(
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    public CourseOfferingResponse updateOffering(
             @PathVariable Long id,
             @RequestBody CourseOfferingRequest request) {
 
@@ -118,10 +91,6 @@ public class CourseOfferingController {
                         request
                 );
     }
-
-    // =========================================================
-    // DELETE
-    // =========================================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
