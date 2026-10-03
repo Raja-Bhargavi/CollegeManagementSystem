@@ -1,7 +1,8 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
-import "../styles/visitor.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const VisitorLayout = () => {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -13,107 +14,111 @@ const VisitorLayout = () => {
   };
 
   return (
-    <div className="visitor-site">
+    <div className="visitor-layout">
 
       {/* HEADER */}
       <header className="visitor-header">
 
         <div className="visitor-header-inner">
 
-          <Link to="/" className="visitor-brand">
-            <div className="visitor-brand-mark">
-              CMS
-            </div>
+          <button
+            type="button"
+            className="visitor-brand"
+            onClick={() => navigate("/")}
+          >
+            <span className="visitor-brand-title">
+              College Management System
+            </span>
 
-            <div className="visitor-brand-text">
-              <h1>College Management System</h1>
-              <p>Academic & Institutional Portal</p>
-            </div>
-          </Link>
+            <span className="visitor-brand-subtitle">
+              Institutional Information Portal
+            </span>
+          </button>
 
-          {/* MAIN NAVIGATION */}
-          <nav className="visitor-nav">
+          <nav className="visitor-navigation">
 
-            <Link
-              to="/"
-              className={isActive("/") ? "visitor-nav-link active" : "visitor-nav-link"}
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/") ? "active" : ""
+              }`}
+              onClick={() => navigate("/")}
             >
               Home
-            </Link>
+            </button>
 
-            <Link
-              to="/about"
-              className={
-                isActive("/about")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/about") ? "active" : ""
+              }`}
+              onClick={() => navigate("/about")}
             >
               About
-            </Link>
+            </button>
 
-            {/* ACADEMICS IS ONE MAIN BUTTON */}
-            <Link
-              to="/academics"
-              className={
+            <button
+              type="button"
+              className={`visitor-nav-button ${
                 location.pathname.startsWith("/academics") ||
                 location.pathname.startsWith("/departments") ||
                 location.pathname.startsWith("/courses") ||
                 location.pathname.startsWith("/faculty-info")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => navigate("/academics")}
             >
               Academics
-            </Link>
+            </button>
 
-            <Link
-              to="/admissions"
-              className={
-                isActive("/admissions")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/admissions") ? "active" : ""
+              }`}
+              onClick={() => navigate("/admissions")}
             >
               Admissions
-            </Link>
+            </button>
 
-            <Link
-              to="/events"
-              className={
-                isActive("/events")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/events") ? "active" : ""
+              }`}
+              onClick={() => navigate("/events")}
             >
               Events
-            </Link>
+            </button>
 
-            <Link
-              to="/notices"
-              className={
-                isActive("/notices")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/notices") ? "active" : ""
+              }`}
+              onClick={() => navigate("/notices")}
             >
               Notices
-            </Link>
+            </button>
 
-            <Link
-              to="/contact"
-              className={
-                isActive("/contact")
-                  ? "visitor-nav-link active"
-                  : "visitor-nav-link"
-              }
+            <button
+              type="button"
+              className={`visitor-nav-button ${
+                isActive("/contact") ? "active" : ""
+              }`}
+              onClick={() => navigate("/contact")}
             >
               Contact
-            </Link>
+            </button>
 
-            <Link to="/login" className="visitor-login-button">
+            <button
+              type="button"
+              className="visitor-nav-login"
+              onClick={() => navigate("/login")}
+            >
               Login
-            </Link>
+            </button>
 
           </nav>
 
@@ -131,42 +136,45 @@ const VisitorLayout = () => {
 
         <div className="visitor-footer-inner">
 
-          <div className="visitor-footer-column">
-            <h3>College Management System</h3>
+          <div>
+            <strong>College Management System</strong>
             <p>
-              Academic and institutional information portal for students,
-              faculty, staff, management and visitors.
+              Institutional Information Portal
             </p>
           </div>
 
-          <div className="visitor-footer-column">
-            <h3>Explore</h3>
+          <div className="visitor-footer-actions">
 
-            <Link to="/about">About</Link>
-            <Link to="/academics">Academics</Link>
-            <Link to="/admissions">Admissions</Link>
-            <Link to="/events">Events</Link>
-            <Link to="/notices">Notices</Link>
+            <button
+              type="button"
+              onClick={() => navigate("/academics")}
+            >
+              Academics
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/events")}
+            >
+              Events
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/notices")}
+            >
+              Notices
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/contact")}
+            >
+              Contact
+            </button>
+
           </div>
 
-          <div className="visitor-footer-column">
-            <h3>Academic Sections</h3>
-
-            <Link to="/departments">Departments</Link>
-            <Link to="/faculty-info">Faculty</Link>
-          </div>
-
-          <div className="visitor-footer-column">
-            <h3>Portal</h3>
-
-            <Link to="/login">Login</Link>
-            <Link to="/contact">Contact</Link>
-          </div>
-
-        </div>
-
-        <div className="visitor-footer-bottom">
-          © {new Date().getFullYear()} College Management System
         </div>
 
       </footer>
