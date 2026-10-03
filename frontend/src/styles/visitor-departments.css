@@ -1,0 +1,206 @@
+/* =========================================================
+   VISITOR DEPARTMENTS
+   Institutional directory style
+   ========================================================= */
+
+.visitor-departments-page {
+  min-height: calc(100vh - 140px);
+  background: #f7f7f7;
+  color: #111111;
+  padding: 0;
+}
+
+.visitor-departments-container {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: calc(100vh - 140px);
+}
+
+/* ---------------------------------------------------------
+   Page Header
+   --------------------------------------------------------- */
+
+.visitor-departments-header {
+  border-top: 1px solid #d7d7d7;
+  border-bottom: 1px solid #dedede;
+  background: #fafafa;
+  padding: 22px 32px;
+}
+
+.visitor-departments-header h1 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 400;
+  color: #111111;
+  letter-spacing: 0.1px;
+}
+
+/* ---------------------------------------------------------
+   Department Sections
+   --------------------------------------------------------- */
+
+.visitor-department-section {
+  padding: 38px 32px 0;
+}
+
+.visitor-department-section:last-of-type {
+  padding-bottom: 60px;
+}
+
+.visitor-department-section h2 {
+  margin: 0 0 15px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #222222;
+  letter-spacing: 0;
+}
+
+/* ---------------------------------------------------------
+   Department List
+   --------------------------------------------------------- */
+
+.visitor-department-list {
+  width: 100%;
+  border-top: 1px solid #dddddd;
+}
+
+/* ---------------------------------------------------------
+   Individual Department
+   --------------------------------------------------------- */
+
+.visitor-department-row {
+  width: 100%;
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px 0 2px;
+
+  border: none;
+  border-bottom: 1px solid #dddddd;
+
+  background: #ffffff;
+  color: #111111;
+
+  text-align: left;
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    padding-left 0.15s ease;
+}
+
+.visitor-department-row:hover {
+  background: #f2f2f2;
+  padding-left: 8px;
+}
+
+.visitor-department-row:focus-visible {
+  outline: 2px solid #555555;
+  outline-offset: -2px;
+}
+
+.visitor-department-name {
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #222222;
+}
+
+.visitor-department-arrow {
+  flex-shrink: 0;
+
+  margin-left: 20px;
+
+  font-size: 18px;
+  font-style: normal;
+  color: #555555;
+
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+
+.visitor-department-row:hover .visitor-department-arrow {
+  color: #111111;
+  transform: translateX(3px);
+}
+
+/* ---------------------------------------------------------
+   Messages
+   --------------------------------------------------------- */
+
+.visitor-departments-message {
+  margin: 35px 32px;
+  padding: 18px 20px;
+
+  border: 1px solid #dddddd;
+  background: #fafafa;
+
+  color: #444444;
+  font-size: 14px;
+}
+
+.visitor-departments-error {
+  border-color: #cccccc;
+  color: #333333;
+}
+
+/* ---------------------------------------------------------
+   Responsive
+   --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .visitor-departments-container {
+    width: 100%;
+  }
+
+  .visitor-departments-header {
+    padding: 20px;
+  }
+
+  .visitor-departments-header h1 {
+    font-size: 24px;
+  }
+
+  .visitor-department-section {
+    padding: 30px 20px 0;
+  }
+
+  .visitor-department-row {
+    min-height: 52px;
+    padding-right: 8px;
+  }
+
+  .visitor-department-name {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .visitor-departments-header {
+    padding: 18px 16px;
+  }
+
+  .visitor-department-section {
+    padding: 26px 16px 0;
+  }
+
+  .visitor-department-section h2 {
+    font-size: 16px;
+  }
+
+  .visitor-department-row {
+    min-height: 50px;
+  }
+
+  .visitor-department-name {
+    font-size: 13.5px;
+  }
+}

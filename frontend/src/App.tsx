@@ -9,6 +9,30 @@ import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
 
 // =========================
+// VISITOR / PUBLIC
+// =========================
+
+import VisitorLayout from "./layouts/VisitorLayout";
+import VisitorHome from "./pages/visitor/VisitorHome";
+import VisitorAbout from "./pages/visitor/VisitorAbout";
+import VisitorAcademics from "./pages/visitor/VisitorAcademics";
+import VisitorDepartments from "./pages/visitor/VisitorDepartments";
+import VisitorDepartmentDetails from "./pages/visitor/VisitorDepartmentDetails";
+import VisitorCourses from "./pages/visitor/VisitorCourses";
+import VisitorCourseDetails from "./pages/visitor/VisitorCourseDetails";
+import VisitorFaculty from "./pages/visitor/VisitorFaculty";
+import VisitorEvents from "./pages/visitor/VisitorEvents";
+import VisitorNotices from "./pages/visitor/VisitorNotices";
+import VisitorAdmissions from "./pages/visitor/VisitorAdmissions";
+import VisitorContact from "./pages/visitor/VisitorContact";
+
+// If this file already exists in your project,
+// keep this import.
+// If it does not exist yet, we will create it next.
+
+
+
+// =========================
 // ADMIN
 // =========================
 
@@ -30,6 +54,7 @@ import Fees from "./pages/admin/Fees";
 import Payments from "./pages/admin/Payments";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
 
+
 // =========================
 // STUDENT
 // =========================
@@ -45,6 +70,7 @@ import StudentPayments from "./pages/student/StudentPayments";
 import StudentApplications from "./pages/student/StudentApplications";
 import StudentNotices from "./pages/student/StudentNotices";
 
+
 // =========================
 // FACULTY
 // =========================
@@ -57,6 +83,7 @@ import FacultyExaminations from "./pages/faculty/FacultyExaminations";
 import FacultyMarks from "./pages/faculty/FacultyMarks";
 import FacultyResults from "./pages/faculty/FacultyResults";
 import FacultyNotices from "./pages/faculty/FacultyNotices";
+
 
 // =========================
 // STAFF
@@ -80,11 +107,30 @@ import StaffPayments from "./pages/staff/StaffPayments";
 import StaffEvents from "./pages/staff/StaffEvents";
 import StaffNotices from "./pages/staff/StaffNotices";
 
+
 // =========================
 // MANAGEMENT
 // =========================
 
 import ManagementDashboard from "./pages/management/ManagementDashboard";
+import ManagementProfile from "./pages/management/ManagementProfile";
+import ManagementStudents from "./pages/management/ManagementStudents";
+import ManagementFaculty from "./pages/management/ManagementFaculty";
+import ManagementStaff from "./pages/management/ManagementStaff";
+import ManagementDepartments from "./pages/management/ManagementDepartments";
+import ManagementCourses from "./pages/management/ManagementCourses";
+import ManagementCourseOfferings from "./pages/management/ManagementCourseOfferings";
+import ManagementCourseRegistrations from "./pages/management/ManagementCourseRegistrations";
+import ManagementExaminations from "./pages/management/ManagementExaminations";
+import ManagementAttendance from "./pages/management/ManagementAttendance";
+import ManagementMarks from "./pages/management/ManagementMarks";
+import ManagementResults from "./pages/management/ManagementResults";
+import ManagementFees from "./pages/management/ManagementFees";
+import ManagementPayments from "./pages/management/ManagementPayments";
+import ManagementEvents from "./pages/management/ManagementEvents";
+import ManagementNotices from "./pages/management/ManagementNotices";
+import ManagementApplications from "./pages/management/ManagementApplications";
+
 
 // =========================
 // COMPONENTS / LAYOUTS
@@ -96,24 +142,170 @@ import AdminLayout from "./layouts/AdminLayout";
 import StudentLayout from "./layouts/StudentLayout";
 import FacultyLayout from "./layouts/FacultyLayout";
 import StaffLayout from "./layouts/StaffLayout";
+import ManagementLayout from "./layouts/ManagementLayout";
+
 
 function App() {
     return (
         <BrowserRouter>
+
             <Routes>
 
-                {/* =========================
+                {/* =====================================================
+                    PUBLIC / VISITOR PORTAL
+                    ===================================================== */}
+
+                <Route
+                    element={<VisitorLayout />}
+                >
+
+                    {/* =========================
+                        HOME
+                    ========================= */}
+
+                    <Route
+                        path="/"
+                        element={<VisitorHome />}
+                    />
+
+
+                    {/* =========================
+                        ABOUT
+                    ========================= */}
+
+                    <Route
+                        path="/about"
+                        element={<VisitorAbout />}
+                    />
+
+
+                    {/* =================================================
+                        ACADEMICS
+
+                        Academics is the main public academic entry point.
+
+                        Home
+                          ↓
+                        Academics
+                          ↓
+                        Departments / Programs / Courses / Faculty /
+                        Academic Notices / Academic Events
+                        ================================================= */}
+
+                    <Route
+                        path="/academics"
+                        element={<VisitorAcademics />}
+                    />
+
+
+                    {/* =========================
+                        DEPARTMENTS
+                    ========================= */}
+
+                    <Route
+                        path="/departments"
+                        element={<VisitorDepartments />}
+                    />
+
+                    <Route
+                        path="/departments/:departmentId"
+                        element={<VisitorDepartmentDetails />}
+                    />
+
+
+                    {/* =========================
+                        COURSES
+
+                        Course listing can be reached
+                        from department/academic pages.
+
+                        Course detail remains:
+                        /courses/:courseId
+                    ========================= */}
+
+                    <Route
+                        path="/courses"
+                        element={<VisitorCourses />}
+                    />
+
+                    <Route
+                        path="/courses/:courseId"
+                        element={<VisitorCourseDetails />}
+                    />
+
+
+                    {/* =========================
+                        PUBLIC FACULTY
+
+                        IMPORTANT:
+                        /faculty is reserved for the
+                        authenticated Faculty portal.
+
+                        Therefore public faculty uses:
+                        /faculty-info
+                    ========================= */}
+
+                    <Route
+                        path="/faculty-info"
+                        element={<VisitorFaculty />}
+                    />
+
+
+                    {/* =========================
+                        EVENTS
+                    ========================= */}
+
+                    <Route
+                        path="/events"
+                        element={<VisitorEvents />}
+                    />
+
+
+                    {/* =========================
+                        NOTICES
+                    ========================= */}
+
+                    <Route
+                        path="/notices"
+                        element={<VisitorNotices />}
+                    />
+
+
+                    {/* =========================
+                        ADMISSIONS
+                    ========================= */}
+
+                    <Route
+                        path="/admissions"
+                        element={<VisitorAdmissions />}
+                    />
+
+
+                    {/* =========================
+                        CONTACT
+                    ========================= */}
+
+                    <Route
+                        path="/contact"
+                        element={<VisitorContact />}
+                    />
+
+                </Route>
+
+
+                {/* =====================================================
                     LOGIN
-                ========================= */}
+                    ===================================================== */}
 
                 <Route
                     path="/login"
                     element={<Login />}
                 />
 
-                {/* =========================
-                    ADMIN
-                ========================= */}
+
+                {/* =====================================================
+                    ADMIN PORTAL
+                    ===================================================== */}
 
                 <Route
                     path="/admin"
@@ -127,6 +319,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
+
                     <Route
                         index
                         element={<AdminDashboard />}
@@ -164,9 +357,7 @@ function App() {
 
                     <Route
                         path="course-registrations"
-                        element={
-                            <CourseRegistrationPage />
-                        }
+                        element={<CourseRegistrationPage />}
                     />
 
                     <Route
@@ -213,11 +404,13 @@ function App() {
                         path="attendance"
                         element={<AttendancePage />}
                     />
+
                 </Route>
 
-                {/* =========================
-                    STUDENT
-                ========================= */}
+
+                {/* =====================================================
+                    STUDENT PORTAL
+                    ===================================================== */}
 
                 <Route
                     path="/student"
@@ -231,6 +424,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
+
                     <Route
                         index
                         element={<StudentDashboard />}
@@ -273,20 +467,23 @@ function App() {
 
                     <Route
                         path="applications"
-                        element={
-                            <StudentApplications />
-                        }
+                        element={<StudentApplications />}
                     />
 
                     <Route
                         path="notices"
                         element={<StudentNotices />}
                     />
+
                 </Route>
 
-                {/* =========================
-                    FACULTY
-                ========================= */}
+
+                {/* =====================================================
+                    FACULTY PORTAL
+
+                    /faculty is PROTECTED.
+                    Do not use /faculty for public faculty information.
+                    ===================================================== */}
 
                 <Route
                     path="/faculty"
@@ -300,6 +497,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
+
                     <Route
                         index
                         element={<FacultyDashboard />}
@@ -322,9 +520,7 @@ function App() {
 
                     <Route
                         path="examinations"
-                        element={
-                            <FacultyExaminations />
-                        }
+                        element={<FacultyExaminations />}
                     />
 
                     <Route
@@ -341,11 +537,13 @@ function App() {
                         path="notices"
                         element={<FacultyNotices />}
                     />
+
                 </Route>
 
-                {/* =========================
-                    STAFF
-                ========================= */}
+
+                {/* =====================================================
+                    STAFF PORTAL
+                    ===================================================== */}
 
                 <Route
                     path="/staff"
@@ -359,6 +557,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
+
                     <Route
                         index
                         element={<StaffDashboard />}
@@ -396,23 +595,17 @@ function App() {
 
                     <Route
                         path="course-offerings"
-                        element={
-                            <StaffCourseOfferings />
-                        }
+                        element={<StaffCourseOfferings />}
                     />
 
                     <Route
                         path="course-registrations"
-                        element={
-                            <StaffCourseRegistrations />
-                        }
+                        element={<StaffCourseRegistrations />}
                     />
 
                     <Route
                         path="examinations"
-                        element={
-                            <StaffExaminations />
-                        }
+                        element={<StaffExaminations />}
                     />
 
                     <Route
@@ -449,11 +642,13 @@ function App() {
                         path="notices"
                         element={<StaffNotices />}
                     />
+
                 </Route>
 
-                {/* =========================
-                    MANAGEMENT
-                ========================= */}
+
+                {/* =====================================================
+                    MANAGEMENT PORTAL
+                    ===================================================== */}
 
                 <Route
                     path="/management"
@@ -463,35 +658,132 @@ function App() {
                                 "MANAGEMENT",
                             ]}
                         >
-                            <ManagementDashboard />
+                            <ManagementLayout />
                         </ProtectedRoute>
                     }
-                />
+                >
 
-                {/* =========================
+                    <Route
+                        index
+                        element={<ManagementDashboard />}
+                    />
+
+                    <Route
+                        path="profile"
+                        element={<ManagementProfile />}
+                    />
+
+                    <Route
+                        path="students"
+                        element={<ManagementStudents />}
+                    />
+
+                    <Route
+                        path="faculty"
+                        element={<ManagementFaculty />}
+                    />
+
+                    <Route
+                        path="staff"
+                        element={<ManagementStaff />}
+                    />
+
+                    <Route
+                        path="departments"
+                        element={<ManagementDepartments />}
+                    />
+
+                    <Route
+                        path="courses"
+                        element={<ManagementCourses />}
+                    />
+
+                    <Route
+                        path="course-offerings"
+                        element={<ManagementCourseOfferings />}
+                    />
+
+                    <Route
+                        path="course-registrations"
+                        element={<ManagementCourseRegistrations />}
+                    />
+
+                    <Route
+                        path="examinations"
+                        element={<ManagementExaminations />}
+                    />
+
+                    <Route
+                        path="attendance"
+                        element={<ManagementAttendance />}
+                    />
+
+                    <Route
+                        path="marks"
+                        element={<ManagementMarks />}
+                    />
+
+                    <Route
+                        path="results"
+                        element={<ManagementResults />}
+                    />
+
+                    <Route
+                        path="fees"
+                        element={<ManagementFees />}
+                    />
+
+                    <Route
+                        path="payments"
+                        element={<ManagementPayments />}
+                    />
+
+                    <Route
+                        path="events"
+                        element={<ManagementEvents />}
+                    />
+
+                    <Route
+                        path="notices"
+                        element={<ManagementNotices />}
+                    />
+
+                    <Route
+                        path="applications"
+                        element={<ManagementApplications />}
+                    />
+
+                </Route>
+
+
+                {/* =====================================================
                     UNAUTHORIZED
-                ========================= */}
+                    ===================================================== */}
 
                 <Route
                     path="/unauthorized"
                     element={<Unauthorized />}
                 />
 
-                {/* =========================
-                    DEFAULT
-                ========================= */}
+
+                {/* =====================================================
+                    FALLBACK
+
+                    Unknown public URLs return to the visitor home.
+                    ===================================================== */}
 
                 <Route
                     path="*"
                     element={
                         <Navigate
-                            to="/login"
+                            to="/"
                             replace
                         />
                     }
                 />
 
             </Routes>
+
         </BrowserRouter>
     );
 }
