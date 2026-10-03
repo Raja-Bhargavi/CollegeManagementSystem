@@ -64,6 +64,21 @@ import FacultyNotices from "./pages/faculty/FacultyNotices";
 
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import StaffProfile from "./pages/staff/StaffProfile";
+import StaffStudents from "./pages/staff/StaffStudents";
+import StaffFaculty from "./pages/staff/StaffFaculty";
+import StaffApplications from "./pages/staff/StaffApplications";
+import StaffDepartments from "./pages/staff/StaffDepartments";
+import StaffCourses from "./pages/staff/StaffCourses";
+import StaffCourseOfferings from "./pages/staff/StaffCourseOfferings";
+import StaffCourseRegistrations from "./pages/staff/StaffCourseRegistrations";
+import StaffExaminations from "./pages/staff/StaffExaminations";
+import StaffAttendance from "./pages/staff/StaffAttendance";
+import StaffMarks from "./pages/staff/StaffMarks";
+import StaffResults from "./pages/staff/StaffResults";
+import StaffFees from "./pages/staff/StaffFees";
+import StaffPayments from "./pages/staff/StaffPayments";
+import StaffEvents from "./pages/staff/StaffEvents";
+import StaffNotices from "./pages/staff/StaffNotices";
 
 // =========================
 // MANAGEMENT
@@ -82,13 +97,9 @@ import StudentLayout from "./layouts/StudentLayout";
 import FacultyLayout from "./layouts/FacultyLayout";
 import StaffLayout from "./layouts/StaffLayout";
 
-
 function App() {
-
     return (
-
         <BrowserRouter>
-
             <Routes>
 
                 {/* =========================
@@ -97,11 +108,8 @@ function App() {
 
                 <Route
                     path="/login"
-                    element={
-                        <Login />
-                    }
+                    element={<Login />}
                 />
-
 
                 {/* =========================
                     ADMIN
@@ -119,54 +127,39 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-
                     <Route
                         index
-                        element={
-                            <AdminDashboard />
-                        }
+                        element={<AdminDashboard />}
                     />
 
                     <Route
                         path="students"
-                        element={
-                            <Students />
-                        }
+                        element={<Students />}
                     />
 
                     <Route
                         path="faculty"
-                        element={
-                            <FacultyPage />
-                        }
+                        element={<FacultyPage />}
                     />
 
                     <Route
                         path="staff"
-                        element={
-                            <StaffPage />
-                        }
+                        element={<StaffPage />}
                     />
 
                     <Route
                         path="applications"
-                        element={
-                            <Applications />
-                        }
+                        element={<Applications />}
                     />
 
                     <Route
                         path="courses"
-                        element={
-                            <CoursePage />
-                        }
+                        element={<CoursePage />}
                     />
 
                     <Route
                         path="course-offerings"
-                        element={
-                            <CourseOfferingPage />
-                        }
+                        element={<CourseOfferingPage />}
                     />
 
                     <Route
@@ -178,69 +171,49 @@ function App() {
 
                     <Route
                         path="departments"
-                        element={
-                            <DepartmentPage />
-                        }
+                        element={<DepartmentPage />}
                     />
 
                     <Route
                         path="events"
-                        element={
-                            <EventsPage />
-                        }
+                        element={<EventsPage />}
                     />
 
                     <Route
                         path="examinations"
-                        element={
-                            <ExaminationsPage />
-                        }
+                        element={<ExaminationsPage />}
                     />
 
                     <Route
                         path="marks"
-                        element={
-                            <MarksPage />
-                        }
+                        element={<MarksPage />}
                     />
 
                     <Route
                         path="notices"
-                        element={
-                            <NoticesPage />
-                        }
+                        element={<NoticesPage />}
                     />
 
                     <Route
                         path="fees"
-                        element={
-                            <Fees />
-                        }
+                        element={<Fees />}
                     />
 
                     <Route
                         path="payments"
-                        element={
-                            <Payments />
-                        }
+                        element={<Payments />}
                     />
 
                     <Route
                         path="results"
-                        element={
-                            <ResultsPage />
-                        }
+                        element={<ResultsPage />}
                     />
 
                     <Route
                         path="attendance"
-                        element={
-                            <AttendancePage />
-                        }
+                        element={<AttendancePage />}
                     />
-
                 </Route>
-
 
                 {/* =========================
                     STUDENT
@@ -258,61 +231,44 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-
                     <Route
                         index
-                        element={
-                            <StudentDashboard />
-                        }
+                        element={<StudentDashboard />}
                     />
 
                     <Route
                         path="profile"
-                        element={
-                            <StudentProfile />
-                        }
+                        element={<StudentProfile />}
                     />
 
                     <Route
                         path="courses"
-                        element={
-                            <StudentCourses />
-                        }
+                        element={<StudentCourses />}
                     />
 
                     <Route
                         path="attendance"
-                        element={
-                            <StudentAttendance />
-                        }
+                        element={<StudentAttendance />}
                     />
 
                     <Route
                         path="marks"
-                        element={
-                            <StudentMarks />
-                        }
+                        element={<StudentMarks />}
                     />
 
                     <Route
                         path="results"
-                        element={
-                            <StudentResults />
-                        }
+                        element={<StudentResults />}
                     />
 
                     <Route
                         path="fees"
-                        element={
-                            <StudentFees />
-                        }
+                        element={<StudentFees />}
                     />
 
                     <Route
                         path="payments"
-                        element={
-                            <StudentPayments />
-                        }
+                        element={<StudentPayments />}
                     />
 
                     <Route
@@ -324,13 +280,9 @@ function App() {
 
                     <Route
                         path="notices"
-                        element={
-                            <StudentNotices />
-                        }
+                        element={<StudentNotices />}
                     />
-
                 </Route>
-
 
                 {/* =========================
                     FACULTY
@@ -348,33 +300,24 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-
                     <Route
                         index
-                        element={
-                            <FacultyDashboard />
-                        }
+                        element={<FacultyDashboard />}
                     />
 
                     <Route
                         path="profile"
-                        element={
-                            <FacultyProfile />
-                        }
+                        element={<FacultyProfile />}
                     />
 
                     <Route
                         path="courses"
-                        element={
-                            <FacultyCourses />
-                        }
+                        element={<FacultyCourses />}
                     />
 
                     <Route
                         path="attendance"
-                        element={
-                            <FacultyAttendance />
-                        }
+                        element={<FacultyAttendance />}
                     />
 
                     <Route
@@ -386,27 +329,19 @@ function App() {
 
                     <Route
                         path="marks"
-                        element={
-                            <FacultyMarks />
-                        }
+                        element={<FacultyMarks />}
                     />
 
                     <Route
                         path="results"
-                        element={
-                            <FacultyResults />
-                        }
+                        element={<FacultyResults />}
                     />
 
                     <Route
                         path="notices"
-                        element={
-                            <FacultyNotices />
-                        }
+                        element={<FacultyNotices />}
                     />
-
                 </Route>
-
 
                 {/* =========================
                     STAFF
@@ -424,128 +359,97 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-
                     <Route
                         index
-                        element={
-                            <StaffDashboard />
-                        }
+                        element={<StaffDashboard />}
                     />
 
                     <Route
                         path="profile"
-                        element={
-                            <StaffProfile />
-                        }
+                        element={<StaffProfile />}
                     />
 
                     <Route
                         path="students"
-                        element={
-                            <Students />
-                        }
+                        element={<StaffStudents />}
                     />
 
                     <Route
                         path="faculty"
-                        element={
-                            <FacultyPage />
-                        }
+                        element={<StaffFaculty />}
                     />
 
                     <Route
                         path="applications"
-                        element={
-                            <Applications />
-                        }
+                        element={<StaffApplications />}
                     />
 
                     <Route
                         path="departments"
-                        element={
-                            <DepartmentPage />
-                        }
+                        element={<StaffDepartments />}
                     />
 
                     <Route
                         path="courses"
-                        element={
-                            <CoursePage />
-                        }
+                        element={<StaffCourses />}
                     />
 
                     <Route
                         path="course-offerings"
                         element={
-                            <CourseOfferingPage />
+                            <StaffCourseOfferings />
                         }
                     />
 
                     <Route
                         path="course-registrations"
                         element={
-                            <CourseRegistrationPage />
-                        }
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={
-                            <AttendancePage />
+                            <StaffCourseRegistrations />
                         }
                     />
 
                     <Route
                         path="examinations"
                         element={
-                            <ExaminationsPage />
+                            <StaffExaminations />
                         }
+                    />
+
+                    <Route
+                        path="attendance"
+                        element={<StaffAttendance />}
                     />
 
                     <Route
                         path="marks"
-                        element={
-                            <MarksPage />
-                        }
+                        element={<StaffMarks />}
                     />
 
                     <Route
                         path="results"
-                        element={
-                            <ResultsPage />
-                        }
+                        element={<StaffResults />}
                     />
 
                     <Route
                         path="fees"
-                        element={
-                            <Fees />
-                        }
+                        element={<StaffFees />}
                     />
 
                     <Route
                         path="payments"
-                        element={
-                            <Payments />
-                        }
+                        element={<StaffPayments />}
                     />
 
                     <Route
                         path="events"
-                        element={
-                            <EventsPage />
-                        }
+                        element={<StaffEvents />}
                     />
 
                     <Route
                         path="notices"
-                        element={
-                            <NoticesPage />
-                        }
+                        element={<StaffNotices />}
                     />
-
                 </Route>
-
 
                 {/* =========================
                     MANAGEMENT
@@ -564,18 +468,14 @@ function App() {
                     }
                 />
 
-
                 {/* =========================
                     UNAUTHORIZED
                 ========================= */}
 
                 <Route
                     path="/unauthorized"
-                    element={
-                        <Unauthorized />
-                    }
+                    element={<Unauthorized />}
                 />
-
 
                 {/* =========================
                     DEFAULT
@@ -592,7 +492,6 @@ function App() {
                 />
 
             </Routes>
-
         </BrowserRouter>
     );
 }

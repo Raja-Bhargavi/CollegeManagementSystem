@@ -3,7 +3,9 @@ import api from "./axios";
 export interface Mark {
     markId: number;
     examId: number;
+    examType: string;
     studentId: number;
+    studentName: string;
     marksObtained: number;
     remarks: string | null;
 }
@@ -26,6 +28,7 @@ export const getMarkById = async (
     const response = await api.get<Mark>(
         `/api/marks/${markId}`
     );
+
     return response.data;
 };
 
@@ -35,6 +38,7 @@ export const getMarksByExam = async (
     const response = await api.get<Mark[]>(
         `/api/marks/exam/${examId}`
     );
+
     return response.data;
 };
 
@@ -44,6 +48,7 @@ export const getMarksByStudent = async (
     const response = await api.get<Mark[]>(
         `/api/marks/student/${studentId}`
     );
+
     return response.data;
 };
 
@@ -54,6 +59,7 @@ export const createMark = async (
         "/api/marks",
         request
     );
+
     return response.data;
 };
 
@@ -65,6 +71,7 @@ export const updateMark = async (
         `/api/marks/${markId}`,
         request
     );
+
     return response.data;
 };
 
