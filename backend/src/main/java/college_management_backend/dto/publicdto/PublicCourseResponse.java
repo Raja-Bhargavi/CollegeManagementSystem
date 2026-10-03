@@ -1,30 +1,37 @@
-package college_management_backend.dto;
+package college_management_backend.dto.publicdto;
 
-import jakarta.validation.constraints.*;
+import college_management_backend.entity.Course;
 
-public class CourseRequest {
+public class PublicCourseResponse {
 
-    @NotBlank(message = "Course code is required")
-    @Size(max = 30, message = "Course code must not exceed 30 characters")
+    private Long courseId;
     private String courseCode;
-
-    @NotBlank(message = "Course name is required")
-    @Size(max = 150, message = "Course name must not exceed 150 characters")
     private String courseName;
-
-    @NotNull(message = "Credits are required")
-    @Min(value = 1, message = "Credits must be at least 1")
     private Integer credits;
-
-    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
-
     private Long departmentId;
-
-    @Size(max = 20, message = "Program level must not exceed 20 characters")
     private String programLevel;
 
-    public CourseRequest() {
+    public PublicCourseResponse() {
+    }
+
+    public PublicCourseResponse(Course course) {
+
+        this.courseId = course.getCourseId();
+        this.courseCode = course.getCourseCode();
+        this.courseName = course.getCourseName();
+        this.credits = course.getCredits();
+        this.description = course.getDescription();
+        this.departmentId = course.getDepartmentId();
+        this.programLevel = course.getProgramLevel();
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
     }
 
     public String getCourseCode() {

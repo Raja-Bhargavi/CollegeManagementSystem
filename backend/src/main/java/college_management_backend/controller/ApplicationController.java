@@ -177,12 +177,14 @@ public class ApplicationController {
     public ResponseEntity<ApplicationResponse>
     updateApplicationStatus(
             @PathVariable Long applicationId,
-            @Valid @RequestBody ApplicationStatusRequest request) {
+            @Valid @RequestBody ApplicationStatusRequest request,
+            Authentication authentication) {
 
         return ResponseEntity.ok(
                 applicationService.updateStatus(
                         applicationId,
-                        request
+                        request,
+                        authentication.getName()
                 )
         );
     }

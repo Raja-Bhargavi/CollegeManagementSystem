@@ -37,23 +37,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader =
-                request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
+
+        System.out.println(
+                "JWT FILTER -> "
+                        + request.getMethod()
+                        + " "
+                        + request.getRequestURI()
+        );
 
         if (authHeader == null ||
                 !authHeader.startsWith("Bearer ")) {
+
+            System.out.println(
+                    "JWT FILTER -> No Bearer token found"
+            );
 
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token =
-                authHeader.substring(7);
+        String token = authHeader.substring(7);
 
         try {
 
             String username =
                     jwtService.extractUsername(token);
+
+            System.out.println(
+                    "JWT FILTER -> Username: "
+                            + username
+            );
 
             if (username != null &&
                     SecurityContextHolder
@@ -64,9 +78,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetailsService
                                 .loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(
-                        token,
-                        userDetails)) {
+                System.out.println(
+                        "JWT FILTER -> Authorities: "
+                                + userDetails.getAuthorities()
+                );
+
+                boolean valid =
+                        jwtService.isTokenValid(
+                                token,
+                                userDetails
+                        );
+
+                System.out.println(
+                        "JWT FILTER -> Token valid: "
+                                + valid
+                );
+
+                if (valid) {
 
                     UsernamePasswordAuthenticationToken
                             authentication =
@@ -76,8 +104,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     userDetails.getAuthorities()
                             );
 
-                
-
                     authentication.setDetails(
                             new WebAuthenticationDetailsSource()
                                     .buildDetails(request)
@@ -85,17 +111,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder
                             .getContext()
-                            .setAuthentication(authentication);
+                            .setAuthentication(
+                                    authentication
+                            );
+
+                    System.out.println(
+                            "JWT FILTER -> Authentication set: "
+                                    + authentication
+                    );
                 }
             }
 
         } catch (Exception exception) {
 
-        exception.printStackTrace();
+            System.out.println(
+                    "JWT FILTER -> JWT ERROR: "
+                            + exception.getMessage()
+            );
 
-        // Invalid JWT or authentication error:
-        // continue without authentication.
-        // Spring Security will reject protected endpoints.
+            exception.printStackTrace();
         }
 
         filterChain.doFilter(request, response);

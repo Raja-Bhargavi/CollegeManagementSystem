@@ -35,7 +35,7 @@ public class CourseOfferingController {
 
     @GetMapping
     @PreAuthorize(
-            "hasAnyRole('ADMIN','STAFF','FACULTY')"
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
     )
     public List<CourseOfferingResponse> getAllOfferings() {
 
@@ -61,7 +61,7 @@ public class CourseOfferingController {
 
     @GetMapping("/{id}")
     @PreAuthorize(
-            "hasAnyRole('ADMIN','STAFF','FACULTY')"
+            "hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')"
     )
     public CourseOfferingResponse getOfferingById(
             @PathVariable Long id) {

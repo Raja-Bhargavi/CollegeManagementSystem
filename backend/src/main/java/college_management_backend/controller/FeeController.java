@@ -36,7 +36,7 @@ public class FeeController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<FeeResponse> getAllFees() {
         return feeService.getAllFees();
     }
@@ -55,7 +55,7 @@ public class FeeController {
     }
 
     @GetMapping("/{feeId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public FeeResponse getFeeById(
             @PathVariable Long feeId) {
 
@@ -63,7 +63,7 @@ public class FeeController {
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<FeeResponse> getFeesByStudent(
             @PathVariable Long studentId) {
 
@@ -71,7 +71,7 @@ public class FeeController {
     }
 
     @GetMapping("/semester/{semesterId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<FeeResponse> getFeesBySemester(
             @PathVariable Long semesterId) {
 
@@ -79,7 +79,7 @@ public class FeeController {
     }
 
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<FeeResponse> getFeesByStatus(
             @PathVariable String status) {
 

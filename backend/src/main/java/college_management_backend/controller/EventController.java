@@ -3,11 +3,16 @@ package college_management_backend.controller;
 import college_management_backend.dto.EventRequest;
 import college_management_backend.dto.EventResponse;
 import college_management_backend.service.EventService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +29,16 @@ public class EventController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<EventResponse>> getAllEvents() {
+
         return ResponseEntity.ok(
                 eventService.getAllEvents()
         );
     }
 
     @GetMapping("/ordered")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<EventResponse>>
     getAllEventsOrderedByDate() {
 
@@ -42,7 +48,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<EventResponse> getEventById(
             @PathVariable Long eventId) {
 
@@ -52,7 +58,7 @@ public class EventController {
     }
 
     @GetMapping("/created-by/{createdBy}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<EventResponse>>
     getEventsByCreatedBy(
             @PathVariable Long createdBy) {
@@ -63,7 +69,7 @@ public class EventController {
     }
 
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<EventResponse>>
     getEventsByStatus(
             @PathVariable String status) {
@@ -74,7 +80,7 @@ public class EventController {
     }
 
     @GetMapping("/status/{status}/ordered")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<EventResponse>>
     getEventsByStatusOrderedByDate(
             @PathVariable String status) {

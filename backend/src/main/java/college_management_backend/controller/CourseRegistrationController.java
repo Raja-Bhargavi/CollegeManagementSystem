@@ -49,7 +49,7 @@ public class CourseRegistrationController {
 
     @GetMapping
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
     )
     public List<CourseRegistrationResponse>
     getAllRegistrations() {
@@ -98,7 +98,7 @@ public class CourseRegistrationController {
 
     @GetMapping("/{id}")
     @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
     )
     public CourseRegistrationResponse
     getRegistrationById(

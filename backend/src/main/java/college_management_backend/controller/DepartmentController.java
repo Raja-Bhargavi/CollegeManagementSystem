@@ -24,7 +24,9 @@ public class DepartmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ResponseEntity<List<DepartmentResponse>> getAllDepartments() {
 
         return ResponseEntity.ok(
@@ -33,7 +35,9 @@ public class DepartmentController {
     }
 
     @GetMapping("/{departmentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ResponseEntity<DepartmentResponse> getDepartmentById(
             @PathVariable Long departmentId
     ) {
@@ -61,7 +65,10 @@ public class DepartmentController {
     ) {
 
         return ResponseEntity.ok(
-                departmentService.updateDepartment(departmentId, request)
+                departmentService.updateDepartment(
+                        departmentId,
+                        request
+                )
         );
     }
 

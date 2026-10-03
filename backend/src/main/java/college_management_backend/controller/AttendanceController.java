@@ -42,13 +42,11 @@ public class AttendanceController {
     }
 
     // =========================================================
-    // ADMIN / STAFF - VIEW ALL
+    // ADMIN / STAFF / MANAGEMENT - VIEW ALL
     // =========================================================
 
     @GetMapping
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public List<AttendanceResponse> getAllAttendance() {
 
         return attendanceService.getAllAttendance();
@@ -97,9 +95,7 @@ public class AttendanceController {
     // =========================================================
 
     @GetMapping("/{id}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public AttendanceResponse getAttendanceById(
             @PathVariable Long id) {
 
@@ -111,9 +107,7 @@ public class AttendanceController {
     // =========================================================
 
     @GetMapping("/registration/{registrationId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public List<AttendanceResponse> getAttendanceByRegistration(
             @PathVariable Long registrationId) {
 

@@ -2,12 +2,14 @@ package college_management_backend.service;
 
 import college_management_backend.entity.User;
 import college_management_backend.repository.UserRepository;
+import college_management_backend.repository.UserRoleRepository;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import org.springframework.stereotype.Service;
 
-import college_management_backend.repository.UserRoleRepository;
 import java.util.List;
 
 @Service
@@ -17,11 +19,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRoleRepository userRoleRepository;
 
     public CustomUserDetailsService(
-        UserRepository userRepository,
-        UserRoleRepository userRoleRepository) {
+            UserRepository userRepository,
+            UserRoleRepository userRoleRepository) {
 
-    this.userRepository = userRepository;
-    this.userRoleRepository = userRoleRepository;
+        this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
@@ -31,13 +33,35 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
-                                "User not found: " + username));
+                                "User not found: " + username
+                        )
+                );
 
         List<String> roleNames =
-                userRoleRepository.findRoleNamesByUserId(user.getUserId());
+                userRoleRepository.findRoleNamesByUserId(
+                        user.getUserId()
+                );
+
+        if (roleNames == null || roleNames.isEmpty()) {
+
+            throw new UsernameNotFoundException(
+                    "No role assigned to user: " + username
+            );
+        }
 
         String[] authorities = roleNames.stream()
-                .map(role -> "ROLE_" + role)
+                .filter(role -> role != null && !role.isBlank())
+                .map(role -> {
+
+                    String normalizedRole =
+                            role.trim().toUpperCase();
+
+                    if (normalizedRole.startsWith("ROLE_")) {
+                        return normalizedRole;
+                    }
+
+                    return "ROLE_" + normalizedRole;
+                })
                 .toArray(String[]::new);
 
         return org.springframework.security.core.userdetails.User
@@ -45,7 +69,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(user.getPasswordHash())
                 .authorities(authorities)
                 .accountLocked(false)
-                .disabled(!"ACTIVE".equalsIgnoreCase(user.getAccountStatus()))
+                .disabled(
+                        !"ACTIVE".equalsIgnoreCase(
+                                user.getAccountStatus()
+                        )
+                )
                 .build();
     }
 }

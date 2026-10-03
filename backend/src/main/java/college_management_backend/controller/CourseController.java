@@ -24,14 +24,18 @@ public class CourseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public List<CourseResponse> getAllCourses() {
 
         return courseService.getAllCourses();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public CourseResponse getCourseById(
             @PathVariable Long id) {
 

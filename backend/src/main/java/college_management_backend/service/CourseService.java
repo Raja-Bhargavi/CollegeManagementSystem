@@ -20,6 +20,7 @@ public class CourseService {
     }
 
     public List<CourseResponse> getAllCourses() {
+
         return courseRepository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -59,11 +60,25 @@ public class CourseService {
 
         course.setCourseCode(courseCode);
         course.setCourseName(courseName);
+
+        // Credits
         course.setCredits(request.getCredits());
+
+        // Description
         course.setDescription(
                 request.getDescription() == null
                         ? null
                         : request.getDescription().trim()
+        );
+
+        // Department
+        course.setDepartmentId(request.getDepartmentId());
+
+        // Program level
+        course.setProgramLevel(
+                request.getProgramLevel() == null
+                        ? null
+                        : request.getProgramLevel().trim().toUpperCase()
         );
 
         Course savedCourse = courseRepository.save(course);
@@ -103,11 +118,25 @@ public class CourseService {
 
         course.setCourseCode(courseCode);
         course.setCourseName(courseName);
+
+        // Credits
         course.setCredits(request.getCredits());
+
+        // Description
         course.setDescription(
                 request.getDescription() == null
                         ? null
                         : request.getDescription().trim()
+        );
+
+        // Department
+        course.setDepartmentId(request.getDepartmentId());
+
+        // Program level
+        course.setProgramLevel(
+                request.getProgramLevel() == null
+                        ? null
+                        : request.getProgramLevel().trim().toUpperCase()
         );
 
         Course updatedCourse = courseRepository.save(course);
@@ -134,7 +163,9 @@ public class CourseService {
                 course.getCourseCode(),
                 course.getCourseName(),
                 course.getCredits(),
-                course.getDescription()
+                course.getDescription(),
+                course.getDepartmentId(),
+                course.getProgramLevel()
         );
     }
 }

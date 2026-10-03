@@ -4,12 +4,17 @@ import college_management_backend.dto.ExaminationRequest;
 import college_management_backend.dto.ExaminationResponse;
 import college_management_backend.service.ExaminationService;
 import college_management_backend.service.FacultyService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,19 +35,23 @@ public class ExaminationController {
         this.facultyService = facultyService;
     }
 
+    // =========================================================
+    // GET ALL
+    // =========================================================
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public List<ExaminationResponse> getAllExaminations() {
 
         return examinationService.getAllExaminations();
     }
 
-    /*
-     * Faculty self-service endpoint.
-     *
-     * Returns only examinations belonging to
-     * course offerings assigned to the logged-in faculty.
-     */
+    // =========================================================
+    // FACULTY SELF-SERVICE
+    // =========================================================
+
     @GetMapping("/faculty/me")
     @PreAuthorize("hasRole('FACULTY')")
     public List<ExaminationResponse> getMyExaminations(
@@ -50,23 +59,37 @@ public class ExaminationController {
 
         Long facultyId =
                 facultyService
-                        .getFacultyByUsername(authentication.getName())
+                        .getFacultyByUsername(
+                                authentication.getName()
+                        )
                         .getFacultyId();
 
         return examinationService
                 .getExaminationsByFaculty(facultyId);
     }
 
+    // =========================================================
+    // GET BY ID
+    // =========================================================
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public ExaminationResponse getExaminationById(
             @PathVariable Long id) {
 
         return examinationService.getExaminationById(id);
     }
 
+    // =========================================================
+    // GET BY COURSE OFFERING
+    // =========================================================
+
     @GetMapping("/offering/{offeringId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')"
+    )
     public List<ExaminationResponse> getExaminationsByOffering(
             @PathVariable Long offeringId) {
 
@@ -74,8 +97,15 @@ public class ExaminationController {
                 .getExaminationsByOffering(offeringId);
     }
 
+    // =========================================================
+    // CREATE
+    // ADMIN / STAFF / FACULTY
+    // =========================================================
+
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public ResponseEntity<ExaminationResponse> createExamination(
             @Valid @RequestBody ExaminationRequest request) {
 
@@ -87,8 +117,15 @@ public class ExaminationController {
                 .body(response);
     }
 
+    // =========================================================
+    // UPDATE
+    // ADMIN / STAFF / FACULTY
+    // =========================================================
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY')")
+    @PreAuthorize(
+            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
+    )
     public ExaminationResponse updateExamination(
             @PathVariable Long id,
             @Valid @RequestBody ExaminationRequest request) {
@@ -98,6 +135,10 @@ public class ExaminationController {
                 request
         );
     }
+
+    // =========================================================
+    // DELETE
+    // =========================================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -27,8 +26,9 @@ public class NoticeController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<NoticeResponse>> getAllNotices() {
+
         return ResponseEntity.ok(
                 noticeService.getAllNotices()
         );
@@ -44,18 +44,18 @@ public class NoticeController {
         );
     }
 
-        @GetMapping("/faculty/me")
-        @PreAuthorize("hasRole('FACULTY')")
-        public ResponseEntity<List<NoticeResponse>>
-        getFacultyNotices() {
+    @GetMapping("/faculty/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<List<NoticeResponse>>
+    getFacultyNotices() {
 
         return ResponseEntity.ok(
                 noticeService.getFacultyNotices()
         );
-        }
+    }
 
     @GetMapping("/{noticeId}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<NoticeResponse> getNoticeById(
             @PathVariable Long noticeId) {
 
@@ -65,7 +65,7 @@ public class NoticeController {
     }
 
     @GetMapping("/created-by/{createdBy}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<NoticeResponse>> getNoticesByCreatedBy(
             @PathVariable Long createdBy) {
 
@@ -75,7 +75,7 @@ public class NoticeController {
     }
 
     @GetMapping("/visibility/{visibility}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<NoticeResponse>> getNoticesByVisibility(
             @PathVariable String visibility) {
 
@@ -85,7 +85,7 @@ public class NoticeController {
     }
 
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<NoticeResponse>> getNoticesByStatus(
             @PathVariable String status) {
 
@@ -95,7 +95,7 @@ public class NoticeController {
     }
 
     @GetMapping("/filter")
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','FACULTY','MANAGEMENT')")
     public ResponseEntity<List<NoticeResponse>>
     getNoticesByVisibilityAndStatus(
             @RequestParam String visibility,

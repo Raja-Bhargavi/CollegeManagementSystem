@@ -45,9 +45,7 @@ public class ResultController {
     // =========================================================
 
     @GetMapping
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<ResultResponse> getAllResults() {
 
         return resultService.getAllResults();
@@ -123,9 +121,7 @@ public class ResultController {
     // =========================================================
 
     @GetMapping("/{resultId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public ResultResponse getResultById(
             @PathVariable Long resultId) {
 
@@ -137,9 +133,7 @@ public class ResultController {
     // =========================================================
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<ResultResponse> getResultsByStudent(
             @PathVariable Long studentId) {
 
@@ -151,9 +145,7 @@ public class ResultController {
     // =========================================================
 
     @GetMapping("/semester/{semesterId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<ResultResponse> getResultsBySemester(
             @PathVariable Long semesterId) {
 

@@ -42,8 +42,9 @@ public class PaymentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public List<PaymentResponse> getAllPayments() {
+
         return paymentService.getAllPayments();
     }
 
@@ -75,7 +76,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{paymentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public PaymentResponse getPaymentById(
             @PathVariable Long paymentId) {
 
@@ -83,7 +84,7 @@ public class PaymentController {
     }
 
     @GetMapping("/fee/{feeId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public List<PaymentResponse> getPaymentsByFee(
             @PathVariable Long feeId) {
 
@@ -91,7 +92,7 @@ public class PaymentController {
     }
 
     @GetMapping("/status/{paymentStatus}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public List<PaymentResponse> getPaymentsByStatus(
             @PathVariable String paymentStatus) {
 

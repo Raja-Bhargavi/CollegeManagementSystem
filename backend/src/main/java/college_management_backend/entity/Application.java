@@ -15,20 +15,37 @@ public class Application {
     @Column(name = "applicant_user_id", nullable = false)
     private Long applicantUserId;
 
-    @Column(name = "application_type", nullable = false)
+    @Column(name = "application_type", nullable = false, length = 50)
     private String applicationType;
 
-    @Column(name = "subject", nullable = false)
+    @Column(name = "subject", nullable = false, length = 200)
     private String subject;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 30)
     private String status;
+
+    // Management workflow fields
+
+    @Column(name = "processed_by")
+    private Long processedBy;
+
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
+    @Column(name = "management_remarks", length = 1000)
+    private String managementRemarks;
+
+    @Column(name = "forwarded_to")
+    private Long forwardedTo;
+
+    public Application() {
+    }
 
     public Long getApplicationId() {
         return applicationId;
@@ -84,5 +101,37 @@ public class Application {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Long getProcessedBy() {
+        return processedBy;
+    }
+
+    public void setProcessedBy(Long processedBy) {
+        this.processedBy = processedBy;
+    }
+
+    public LocalDateTime getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(LocalDateTime processedAt) {
+        this.processedAt = processedAt;
+    }
+
+    public String getManagementRemarks() {
+        return managementRemarks;
+    }
+
+    public void setManagementRemarks(String managementRemarks) {
+        this.managementRemarks = managementRemarks;
+    }
+
+    public Long getForwardedTo() {
+        return forwardedTo;
+    }
+
+    public void setForwardedTo(Long forwardedTo) {
+        this.forwardedTo = forwardedTo;
     }
 }

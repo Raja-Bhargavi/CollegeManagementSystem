@@ -45,9 +45,7 @@ public class MarkController {
     // =========================================================
 
     @GetMapping
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<MarkResponse> getAllMarks() {
 
         return markService.getAllMarks();
@@ -96,9 +94,7 @@ public class MarkController {
     // =========================================================
 
     @GetMapping("/{id}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public MarkResponse getMarkById(
             @PathVariable Long id) {
 
@@ -110,9 +106,7 @@ public class MarkController {
     // =========================================================
 
     @GetMapping("/exam/{examId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<MarkResponse> getMarksByExam(
             @PathVariable Long examId) {
 
@@ -124,9 +118,7 @@ public class MarkController {
     // =========================================================
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize(
-            "hasAnyRole('ADMIN', 'STAFF', 'FACULTY')"
-    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FACULTY', 'MANAGEMENT')")
     public List<MarkResponse> getMarksByStudent(
             @PathVariable Long studentId) {
 
