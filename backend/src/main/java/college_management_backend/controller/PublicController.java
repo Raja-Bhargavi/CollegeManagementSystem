@@ -24,6 +24,10 @@ public class PublicController {
         this.publicService = publicService;
     }
 
+    // =========================================================
+    // DEPARTMENTS
+    // =========================================================
+
     @GetMapping("/departments")
     public ResponseEntity<List<PublicDepartmentResponse>>
     getPublicDepartments() {
@@ -32,6 +36,46 @@ public class PublicController {
                 publicService.getPublicDepartments()
         );
     }
+
+    @GetMapping("/departments/{departmentId}")
+    public ResponseEntity<PublicDepartmentResponse>
+    getPublicDepartmentById(
+            @PathVariable Long departmentId) {
+
+        return ResponseEntity.ok(
+                publicService.getPublicDepartmentById(
+                        departmentId
+                )
+        );
+    }
+
+    @GetMapping("/departments/{departmentId}/courses")
+    public ResponseEntity<List<PublicCourseResponse>>
+    getPublicDepartmentCourses(
+            @PathVariable Long departmentId) {
+
+        return ResponseEntity.ok(
+                publicService.getPublicDepartmentCourses(
+                        departmentId
+                )
+        );
+    }
+
+    @GetMapping("/departments/{departmentId}/faculty")
+    public ResponseEntity<List<PublicFacultyResponse>>
+    getPublicDepartmentFaculty(
+            @PathVariable Long departmentId) {
+
+        return ResponseEntity.ok(
+                publicService.getPublicDepartmentFaculty(
+                        departmentId
+                )
+        );
+    }
+
+    // =========================================================
+    // COURSES
+    // =========================================================
 
     @GetMapping("/courses")
     public ResponseEntity<List<PublicCourseResponse>>
@@ -52,6 +96,10 @@ public class PublicController {
         );
     }
 
+    // =========================================================
+    // FACULTY
+    // =========================================================
+
     @GetMapping("/faculty")
     public ResponseEntity<List<PublicFacultyResponse>>
     getPublicFaculty() {
@@ -61,6 +109,10 @@ public class PublicController {
         );
     }
 
+    // =========================================================
+    // NOTICES
+    // =========================================================
+
     @GetMapping("/notices")
     public ResponseEntity<List<PublicNoticeResponse>>
     getPublicNotices() {
@@ -69,6 +121,10 @@ public class PublicController {
                 publicService.getPublicNotices()
         );
     }
+
+    // =========================================================
+    // EVENTS
+    // =========================================================
 
     @GetMapping("/events")
     public ResponseEntity<List<PublicEventResponse>>

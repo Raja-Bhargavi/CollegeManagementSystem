@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +26,47 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
-    /*
-     * MANAGEMENT is allowed to VIEW faculty.
-     */
+    // =========================================================
+    // FACULTY - GET OWN PROFILE
+    // GET /api/faculty/me
+    // =========================================================
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<FacultyResponse> getMyProfile(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                facultyService.getFacultyByUsername(
+                        authentication.getName()
+                )
+        );
+    }
+
+    // =========================================================
+    // FACULTY - UPDATE OWN PROFILE
+    // PUT /api/faculty/me
+    // =========================================================
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<FacultyResponse> updateMyProfile(
+            @Valid @RequestBody FacultyRequest request,
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                facultyService.updateMyProfile(
+                        authentication.getName(),
+                        request
+                )
+        );
+    }
+
+    // =========================================================
+    // GET ALL FACULTY
+    // ADMIN / STAFF / MANAGEMENT
+    // =========================================================
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public ResponseEntity<List<FacultyResponse>> getAllFaculty() {
@@ -37,9 +76,11 @@ public class FacultyController {
         );
     }
 
-    /*
-     * MANAGEMENT is allowed to VIEW a particular faculty member.
-     */
+    // =========================================================
+    // GET FACULTY BY ID
+    // ADMIN / STAFF / MANAGEMENT
+    // =========================================================
+
     @GetMapping("/{facultyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'MANAGEMENT')")
     public ResponseEntity<FacultyResponse> getFacultyById(
@@ -50,9 +91,11 @@ public class FacultyController {
         );
     }
 
-    /*
-     * Creating faculty remains restricted.
-     */
+    // =========================================================
+    // CREATE FACULTY
+    // ADMIN / STAFF
+    // =========================================================
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<FacultyResponse> createFaculty(
@@ -60,12 +103,16 @@ public class FacultyController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(facultyService.createFaculty(request));
+                .body(
+                        facultyService.createFaculty(request)
+                );
     }
 
-    /*
-     * Updating faculty remains restricted.
-     */
+    // =========================================================
+    // UPDATE FACULTY BY ID
+    // ADMIN / STAFF
+    // =========================================================
+
     @PutMapping("/{facultyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<FacultyResponse> updateFaculty(
@@ -80,9 +127,11 @@ public class FacultyController {
         );
     }
 
-    /*
-     * Deleting faculty remains restricted.
-     */
+    // =========================================================
+    // DELETE FACULTY
+    // ADMIN / STAFF
+    // =========================================================
+
     @DeleteMapping("/{facultyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<Void> deleteFaculty(
