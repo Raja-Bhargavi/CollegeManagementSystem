@@ -1,452 +1,595 @@
 /* =========================================================
-   VISITOR HOME
-   ========================================================= */
+   VISITOR SITE
+========================================================= */
 
-.visitor-home {
-  min-height: 100vh;
-  background: #ffffff;
-  color: #222222;
+.visitor-site {
+    min-height: 100vh;
+    background: #ffffff;
+    color: #111827;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* INTRO */
-
-.visitor-home-intro {
-  border-bottom: 1px solid #d6d6d6;
-  background: #f5f5f5;
+.visitor-main {
+    width: 100%;
 }
 
-.visitor-home-intro-content {
-  padding-top: 90px;
-  padding-bottom: 90px;
-  max-width: 1050px;
-}
-
-.visitor-home-kicker {
-  margin: 0 0 14px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.8px;
-  color: #666666;
-}
-
-.visitor-home-intro h1 {
-  margin: 0;
-  max-width: 850px;
-  font-size: 48px;
-  line-height: 1.12;
-  font-weight: 600;
-  color: #202020;
-}
-
-.visitor-home-description {
-  max-width: 720px;
-  margin: 24px 0 0;
-  font-size: 17px;
-  line-height: 1.8;
-  color: #555555;
-}
-
-
-/* MAIN NAVIGATION */
-
-.visitor-home-navigation {
-  padding: 75px 0;
-  background: #ffffff;
-}
-
-.visitor-home-section-heading {
-  margin-bottom: 30px;
-}
-
-.visitor-home-section-heading p {
-  margin: 0 0 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  color: #777777;
-}
-
-.visitor-home-section-heading h2 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 600;
-  color: #222222;
-}
-
-.visitor-home-button-list {
-  border-top: 1px solid #cfcfcf;
-}
-
-.visitor-home-button {
-  width: 100%;
-  min-height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 0 20px;
-
-  background: #ffffff;
-  border: 0;
-  border-bottom: 1px solid #cfcfcf;
-
-  color: #222222;
-
-  font-size: 16px;
-  font-weight: 600;
-
-  cursor: pointer;
-  text-align: left;
-
-  transition:
-    background-color 0.2s ease,
-    padding 0.2s ease;
-}
-
-.visitor-home-button:hover {
-  background: #f3f3f3;
-  padding-left: 26px;
-}
-
-.visitor-home-button span:last-child {
-  font-size: 20px;
-  font-weight: 400;
-  color: #777777;
-}
-
-
-/* ACADEMICS */
-
-.visitor-home-academics {
-  padding: 70px 0;
-  background: #eeeeee;
-  border-top: 1px solid #d3d3d3;
-  border-bottom: 1px solid #d3d3d3;
-}
-
-.visitor-home-academics-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
-}
-
-.visitor-home-academics h2 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 600;
-  color: #222222;
-}
-
-.visitor-home-academics p:not(.visitor-home-kicker) {
-  max-width: 650px;
-  margin: 16px 0 0;
-  color: #555555;
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.visitor-home-primary-button,
-.visitor-home-login-button {
-  min-width: 210px;
-  min-height: 52px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-
-  padding: 0 20px;
-
-  background: #222222;
-  color: #ffffff;
-
-  border: 1px solid #222222;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.visitor-home-primary-button:hover,
-.visitor-home-login-button:hover {
-  background: #ffffff;
-  color: #222222;
-}
-
-
-/* LOGIN */
-
-.visitor-home-login {
-  padding: 70px 0;
-  background: #ffffff;
-}
-
-.visitor-home-login-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
-}
-
-.visitor-home-login h2 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 600;
-  color: #222222;
-}
-
-.visitor-home-login p:not(.visitor-home-kicker) {
-  margin: 14px 0 0;
-  color: #666666;
-  line-height: 1.7;
+.visitor-container {
+    width: min(1200px, calc(100% - 48px));
+    margin: 0 auto;
 }
 
 
 /* =========================================================
-   VISITOR HEADER
-   ========================================================= */
+   HEADER
+========================================================= */
 
 .visitor-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
-  background: #ffffff;
-  border-bottom: 1px solid #d5d5d5;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .visitor-header-inner {
-  width: min(1200px, calc(100% - 40px));
-  margin: 0 auto;
+    width: min(1200px, calc(100% - 48px));
+    min-height: 76px;
+    margin: 0 auto;
 
-  min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-}
-
-.visitor-brand {
-  padding: 0;
-  border: 0;
-  background: transparent;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  cursor: pointer;
-  text-align: left;
-}
-
-.visitor-brand-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #222222;
-}
-
-.visitor-brand-subtitle {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #777777;
-}
-
-.visitor-navigation {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.visitor-nav-button,
-.visitor-nav-login {
-  min-height: 40px;
-
-  padding: 0 13px;
-
-  border: 1px solid transparent;
-  background: transparent;
-
-  color: #333333;
-
-  font-size: 13px;
-  font-weight: 500;
-
-  cursor: pointer;
-}
-
-.visitor-nav-button:hover {
-  background: #f0f0f0;
-}
-
-.visitor-nav-button.active {
-  background: #eeeeee;
-  border-color: #d0d0d0;
-  font-weight: 700;
-}
-
-.visitor-nav-login {
-  margin-left: 8px;
-
-  background: #222222;
-  border-color: #222222;
-
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.visitor-nav-login:hover {
-  background: #ffffff;
-  color: #222222;
+    gap: 40px;
 }
 
 
 /* =========================================================
-   VISITOR FOOTER
-   ========================================================= */
+   BRAND
+========================================================= */
+
+.visitor-brand {
+    display: flex;
+    flex-direction: column;
+
+    text-decoration: none;
+    color: #111827;
+
+    min-width: 250px;
+}
+
+.visitor-brand-title {
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.visitor-brand-subtitle {
+    margin-top: 4px;
+
+    font-size: 11px;
+    color: #64748b;
+    letter-spacing: 0.04em;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.visitor-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 4px;
+
+    flex-wrap: nowrap;
+}
+
+.visitor-nav-link {
+    display: flex;
+    align-items: center;
+
+    min-height: 40px;
+
+    padding: 0 13px;
+
+    border-radius: 4px;
+
+    text-decoration: none;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.visitor-nav-link:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.visitor-nav-link-active {
+    background: #f3f4f6;
+    color: #111827;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.visitor-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    margin-left: 8px;
+
+    padding: 0 18px;
+
+    background: #111827;
+    color: #ffffff;
+
+    border-radius: 4px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: background-color 0.2s ease;
+}
+
+.visitor-login-button:hover {
+    background: #374151;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.visitor-hero {
+    width: 100%;
+
+    background: #f8fafc;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.visitor-hero-inner {
+    min-height: 460px;
+
+    display: flex;
+    align-items: center;
+}
+
+.visitor-hero-content {
+    width: 100%;
+    max-width: 780px;
+
+    padding: 70px 0;
+}
+
+.visitor-eyebrow {
+    margin: 0 0 18px;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+.visitor-hero h1 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 52px;
+    line-height: 1.12;
+    font-weight: 700;
+}
+
+.visitor-hero-description {
+    max-width: 700px;
+
+    margin: 24px 0 0;
+
+    color: #4b5563;
+
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   HERO BUTTONS
+========================================================= */
+
+.visitor-hero-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 32px;
+}
+
+.visitor-primary-button,
+.visitor-secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    border-radius: 4px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-sizing: border-box;
+}
+
+.visitor-primary-button {
+    background: #111827;
+    color: #ffffff;
+}
+
+.visitor-primary-button:hover {
+    background: #374151;
+}
+
+.visitor-secondary-button {
+    background: #ffffff;
+    color: #111827;
+
+    border: 1px solid #cbd5e1;
+}
+
+.visitor-secondary-button:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.visitor-section {
+    width: 100%;
+
+    padding: 80px 0;
+
+    background: #ffffff;
+}
+
+.visitor-section-light {
+    background: #f8fafc;
+
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.visitor-section-heading {
+    max-width: 850px;
+    margin-bottom: 38px;
+}
+
+.visitor-section-label {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+.visitor-section-heading h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 34px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.visitor-section-heading p {
+    margin: 16px 0 0;
+
+    color: #4b5563;
+
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   SECTION CONTENT
+========================================================= */
+
+.visitor-section-content {
+    max-width: 850px;
+}
+
+.visitor-section-content p {
+    margin: 0 0 16px;
+
+    color: #374151;
+
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.visitor-section-content p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   FEATURE ROW
+========================================================= */
+
+.visitor-feature-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 24px;
+
+    width: 100%;
+}
+
+.visitor-feature-row > div {
+    padding: 26px;
+
+    border: 1px solid #dbe1e8;
+    background: #ffffff;
+    border-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+.visitor-section-light .visitor-feature-row > div {
+    background: #ffffff;
+}
+
+.visitor-feature-row h3 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.visitor-feature-row p {
+    margin: 12px 0 0;
+
+    color: #4b5563;
+
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   FEATURE LINKS
+========================================================= */
+
+.visitor-feature-link a {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    color: #111827;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.visitor-feature-link a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   SECTION ACTION
+========================================================= */
+
+.visitor-section-action {
+    margin-top: 30px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
 
 .visitor-footer {
-  background: #f3f3f3;
-  border-top: 1px solid #d0d0d0;
+    background: #111827;
+    color: #ffffff;
 }
 
 .visitor-footer-inner {
-  width: min(1200px, calc(100% - 40px));
-  margin: 0 auto;
+    min-height: 180px;
 
-  padding: 35px 0;
+    padding-top: 45px;
+    padding-bottom: 45px;
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 50px;
 }
 
-.visitor-footer strong {
-  font-size: 15px;
-  color: #222222;
+.visitor-footer h3 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .visitor-footer p {
-  margin: 7px 0 0;
-  font-size: 12px;
-  color: #777777;
+    margin: 8px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
 }
 
-.visitor-footer-actions {
-  display: flex;
-  gap: 20px;
+.visitor-footer-links {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 18px 24px;
 }
 
-.visitor-footer-actions button {
-  padding: 0;
+.visitor-footer-links a {
+    color: #d1d5db;
 
-  border: 0;
-  background: transparent;
+    text-decoration: none;
 
-  color: #555555;
-
-  font-size: 12px;
-
-  cursor: pointer;
+    font-size: 14px;
 }
 
-.visitor-footer-actions button:hover {
-  color: #111111;
+.visitor-footer-links a:hover {
+    color: #ffffff;
+}
+
+.visitor-footer-bottom {
+    padding: 16px 24px;
+
+    border-top: 1px solid #374151;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 12px;
 }
 
 
 /* =========================================================
    RESPONSIVE
-   ========================================================= */
+========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
 
-  .visitor-header-inner {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 18px 0;
-  }
+    .visitor-header-inner {
+        align-items: flex-start;
+        flex-direction: column;
 
-  .visitor-brand {
-    align-items: center;
-    text-align: center;
-  }
+        padding: 18px 0;
+    }
 
-  .visitor-navigation {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+    .visitor-navigation {
+        width: 100%;
 
-  .visitor-home-intro-content {
-    padding-top: 65px;
-    padding-bottom: 65px;
-  }
+        justify-content: flex-start;
 
-  .visitor-home-intro h1 {
-    font-size: 38px;
-  }
+        flex-wrap: wrap;
+    }
 
-  .visitor-home-academics-content,
-  .visitor-home-login-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .visitor-login-button {
+        margin-left: 0;
+    }
 
-  .visitor-footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .visitor-hero h1 {
+        font-size: 44px;
+    }
 
+    .visitor-feature-row {
+        grid-template-columns: 1fr;
+    }
+
+    .visitor-footer-inner {
+        flex-direction: column;
+    }
 }
 
-@media (max-width: 600px) {
 
-  .visitor-header-inner {
-    width: min(100% - 24px, 1200px);
-  }
+@media (max-width: 650px) {
 
-  .visitor-navigation {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .visitor-container,
+    .visitor-header-inner {
+        width: min(100% - 32px, 1200px);
+    }
 
-  .visitor-nav-button,
-  .visitor-nav-login {
-    width: 100%;
-  }
+    .visitor-brand-title {
+        font-size: 19px;
+    }
 
-  .visitor-nav-login {
-    margin-left: 0;
-  }
+    .visitor-navigation {
+        gap: 2px;
+    }
 
-  .visitor-home-intro h1 {
-    font-size: 32px;
-  }
+    .visitor-nav-link {
+        padding: 0 9px;
+        font-size: 12px;
+    }
 
-  .visitor-home-description {
-    font-size: 15px;
-  }
+    .visitor-hero-inner {
+        min-height: auto;
+    }
 
-  .visitor-home-navigation,
-  .visitor-home-academics,
-  .visitor-home-login {
-    padding: 50px 0;
-  }
+    .visitor-hero-content {
+        padding: 55px 0;
+    }
 
-  .visitor-home-button {
-    min-height: 60px;
-  }
+    .visitor-hero h1 {
+        font-size: 36px;
+    }
 
-  .visitor-footer-actions {
-    flex-wrap: wrap;
-    gap: 14px;
-  }
+    .visitor-hero-description {
+        font-size: 15px;
+    }
 
+    .visitor-hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .visitor-primary-button,
+    .visitor-secondary-button {
+        width: 100%;
+    }
+
+    .visitor-section {
+        padding: 55px 0;
+    }
+
+    .visitor-section-heading h2 {
+        font-size: 29px;
+    }
+
+    .visitor-feature-row > div {
+        padding: 22px;
+    }
 }

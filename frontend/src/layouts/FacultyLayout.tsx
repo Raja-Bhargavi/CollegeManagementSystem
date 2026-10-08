@@ -5,17 +5,18 @@ export default function FacultyLayout() {
     return (
         <div
             style={{
-                display: "flex",
                 minHeight: "100vh",
+                backgroundColor: "#f9fafb",
             }}
         >
             <FacultySidebar />
 
             <main
                 style={{
-                    flex: 1,
-                    padding: "24px",
-                    backgroundColor: "#f5f6fa",
+                    marginLeft: "250px",
+                    minHeight: "100vh",
+                    padding: "30px",
+                    boxSizing: "border-box",
                 }}
             >
                 <Outlet />

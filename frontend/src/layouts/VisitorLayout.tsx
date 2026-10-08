@@ -1,186 +1,160 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
+import "../styles/Visitor.css";
 
-const VisitorLayout = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const navigationItems = [
+    {
+        label: "Home",
+        path: "/",
+    },
+    {
+        label: "About",
+        path: "/about",
+    },
+    {
+        label: "Academics",
+        path: "/academics",
+    },
+    {
+        label: "Admissions",
+        path: "/admissions",
+    },
+    {
+        label: "Events",
+        path: "/events",
+    },
+    {
+        label: "Notices",
+        path: "/notices",
+    },
+    {
+        label: "Contact",
+        path: "/contact",
+    },
+];
 
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/";
-    }
+export default function VisitorLayout() {
+    return (
+        <div className="visitor-site">
 
-    return location.pathname === path;
-  };
+            {/* =========================
+                HEADER
+            ========================= */}
 
-  return (
-    <div className="visitor-layout">
+            <header className="visitor-header">
 
-      {/* HEADER */}
-      <header className="visitor-header">
+                <div className="visitor-header-inner">
 
-        <div className="visitor-header-inner">
+                    {/* INSTITUTION NAME */}
 
-          <button
-            type="button"
-            className="visitor-brand"
-            onClick={() => navigate("/")}
-          >
-            <span className="visitor-brand-title">
-              College Management System
-            </span>
+                    <Link
+                        to="/"
+                        className="visitor-brand"
+                    >
+                        <span className="visitor-brand-title">
+                            College Management System
+                        </span>
 
-            <span className="visitor-brand-subtitle">
-              Institutional Information Portal
-            </span>
-          </button>
+                        <span className="visitor-brand-subtitle">
+                            Institutional Information Portal
+                        </span>
+                    </Link>
 
-          <nav className="visitor-navigation">
+                    {/* MAIN NAVIGATION */}
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/") ? "active" : ""
-              }`}
-              onClick={() => navigate("/")}
-            >
-              Home
-            </button>
+                    <nav className="visitor-navigation">
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/about") ? "active" : ""
-              }`}
-              onClick={() => navigate("/about")}
-            >
-              About
-            </button>
+                        {navigationItems.map((item) => (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                end={item.path === "/"}
+                                className={({ isActive }) =>
+                                    `visitor-nav-link ${
+                                        isActive
+                                            ? "visitor-nav-link-active"
+                                            : ""
+                                    }`
+                                }
+                            >
+                                {item.label}
+                            </NavLink>
+                        ))}
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                location.pathname.startsWith("/academics") ||
-                location.pathname.startsWith("/departments") ||
-                location.pathname.startsWith("/courses") ||
-                location.pathname.startsWith("/faculty-info")
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() => navigate("/academics")}
-            >
-              Academics
-            </button>
+                        <Link
+                            to="/login"
+                            className="visitor-login-button"
+                        >
+                            Login
+                        </Link>
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/admissions") ? "active" : ""
-              }`}
-              onClick={() => navigate("/admissions")}
-            >
-              Admissions
-            </button>
+                    </nav>
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/events") ? "active" : ""
-              }`}
-              onClick={() => navigate("/events")}
-            >
-              Events
-            </button>
+                </div>
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/notices") ? "active" : ""
-              }`}
-              onClick={() => navigate("/notices")}
-            >
-              Notices
-            </button>
+            </header>
 
-            <button
-              type="button"
-              className={`visitor-nav-button ${
-                isActive("/contact") ? "active" : ""
-              }`}
-              onClick={() => navigate("/contact")}
-            >
-              Contact
-            </button>
+            {/* =========================
+                PAGE CONTENT
+            ========================= */}
 
-            <button
-              type="button"
-              className="visitor-nav-login"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </button>
+            <main className="visitor-main">
+                <Outlet />
+            </main>
 
-          </nav>
+            {/* =========================
+                FOOTER
+            ========================= */}
 
-        </div>
+            <footer className="visitor-footer">
 
-      </header>
+                <div className="visitor-container visitor-footer-inner">
 
-      {/* PAGE CONTENT */}
-      <main className="visitor-main">
-        <Outlet />
-      </main>
+                    <div>
+                        <h3>
+                            College Management System
+                        </h3>
 
-      {/* FOOTER */}
-      <footer className="visitor-footer">
+                        <p>
+                            Institutional Information Portal
+                        </p>
+                    </div>
 
-        <div className="visitor-footer-inner">
+                    <div className="visitor-footer-links">
 
-          <div>
-            <strong>College Management System</strong>
-            <p>
-              Institutional Information Portal
-            </p>
-          </div>
+                        <Link to="/about">
+                            About
+                        </Link>
 
-          <div className="visitor-footer-actions">
+                        <Link to="/academics">
+                            Academics
+                        </Link>
 
-            <button
-              type="button"
-              onClick={() => navigate("/academics")}
-            >
-              Academics
-            </button>
+                        <Link to="/admissions">
+                            Admissions
+                        </Link>
 
-            <button
-              type="button"
-              onClick={() => navigate("/events")}
-            >
-              Events
-            </button>
+                        <Link to="/events">
+                            Events
+                        </Link>
 
-            <button
-              type="button"
-              onClick={() => navigate("/notices")}
-            >
-              Notices
-            </button>
+                        <Link to="/notices">
+                            Notices
+                        </Link>
 
-            <button
-              type="button"
-              onClick={() => navigate("/contact")}
-            >
-              Contact
-            </button>
+                        <Link to="/contact">
+                            Contact
+                        </Link>
 
-          </div>
+                    </div>
+
+                </div>
+
+                <div className="visitor-footer-bottom">
+                    © {new Date().getFullYear()} College Management System
+                </div>
+
+            </footer>
 
         </div>
-
-      </footer>
-
-    </div>
-  );
-};
-
-export default VisitorLayout;
+    );
+}

@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function StaffSidebar() {
-
     const navigate = useNavigate();
 
     const menuItems = [
@@ -13,77 +12,62 @@ export default function StaffSidebar() {
             label: "My Profile",
             path: "/staff/profile",
         },
-
         {
             label: "Students",
             path: "/staff/students",
         },
-
         {
             label: "Faculty",
             path: "/staff/faculty",
         },
-
         {
             label: "Applications",
             path: "/staff/applications",
         },
-
         {
             label: "Departments",
             path: "/staff/departments",
         },
-
         {
             label: "Courses",
             path: "/staff/courses",
         },
-
         {
             label: "Course Offerings",
             path: "/staff/course-offerings",
         },
-
         {
             label: "Course Registrations",
             path: "/staff/course-registrations",
         },
-
         {
             label: "Examinations",
             path: "/staff/examinations",
         },
-
         {
             label: "Attendance",
             path: "/staff/attendance",
         },
-
         {
             label: "Marks",
             path: "/staff/marks",
         },
-
         {
             label: "Results",
             path: "/staff/results",
         },
-
         {
             label: "Fees",
             path: "/staff/fees",
         },
-
         {
             label: "Payments",
             path: "/staff/payments",
         },
-
         {
             label: "Events",
             path: "/staff/events",
         },
-
         {
             label: "Notices",
             path: "/staff/notices",
@@ -91,7 +75,6 @@ export default function StaffSidebar() {
     ];
 
     const handleLogout = () => {
-
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
@@ -115,7 +98,6 @@ export default function StaffSidebar() {
                 overflowY: "auto",
             }}
         >
-
             <div
                 style={{
                     fontSize: "22px",
@@ -139,9 +121,7 @@ export default function StaffSidebar() {
             </div>
 
             <nav>
-
                 {menuItems.map((item) => (
-
                     <NavLink
                         key={item.path}
                         to={item.path}
@@ -165,9 +145,7 @@ export default function StaffSidebar() {
                     >
                         {item.label}
                     </NavLink>
-
                 ))}
-
             </nav>
 
             <button
@@ -178,15 +156,14 @@ export default function StaffSidebar() {
                     padding: "11px",
                     border: "none",
                     borderRadius: "6px",
-                    backgroundColor: "#dc2626",
-                    color: "white",
+                    backgroundColor: "#f3f4f6",
+                    color: "#111827",
                     cursor: "pointer",
                     fontWeight: "600",
                 }}
             >
                 Logout
             </button>
-
         </aside>
     );
 }

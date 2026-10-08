@@ -21,6 +21,7 @@ import VisitorDepartmentDetails from "./pages/visitor/VisitorDepartmentDetails";
 import VisitorCourses from "./pages/visitor/VisitorCourses";
 import VisitorCourseDetails from "./pages/visitor/VisitorCourseDetails";
 import VisitorFaculty from "./pages/visitor/VisitorFaculty";
+import VisitorFacultyDetails from "./pages/visitor/VisitorFacultyDetails";
 import VisitorEvents from "./pages/visitor/VisitorEvents";
 import VisitorNotices from "./pages/visitor/VisitorNotices";
 import VisitorAdmissions from "./pages/visitor/VisitorAdmissions";
@@ -248,6 +249,11 @@ function App() {
                     <Route
                         path="/faculty-info"
                         element={<VisitorFaculty />}
+                    />
+
+                    <Route
+                        path="/faculty-info/:facultyId"
+                        element={<VisitorFacultyDetails />}
                     />
 
 

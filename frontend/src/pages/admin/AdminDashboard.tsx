@@ -37,41 +37,30 @@ interface DashboardCounts {
 }
 
 function AdminDashboard() {
-
     const navigate = useNavigate();
 
-    const username =
-        localStorage.getItem("username");
+    const [counts, setCounts] = useState<DashboardCounts>({
+        students: 0,
+        faculty: 0,
+        staff: 0,
+        applications: 0,
+        courses: 0,
+        courseOfferings: 0,
+        departments: 0,
+        events: 0,
+        examinations: 0,
+        notices: 0,
+        payments: 0,
+        results: 0,
+        attendance: 0,
+    });
 
-    const [counts, setCounts] =
-        useState<DashboardCounts>({
-            students: 0,
-            faculty: 0,
-            staff: 0,
-            applications: 0,
-            courses: 0,
-            courseOfferings: 0,
-            departments: 0,
-            events: 0,
-            examinations: 0,
-            notices: 0,
-            payments: 0,
-            results: 0,
-            attendance: 0,
-        });
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [error, setError] =
-        useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-
         const loadDashboardData = async () => {
-
             try {
-
                 setLoading(true);
                 setError("");
 
@@ -120,9 +109,7 @@ function AdminDashboard() {
                     results: results.length,
                     attendance: attendance.length,
                 });
-
             } catch (error) {
-
                 console.error(
                     "Dashboard loading failed:",
                     error
@@ -131,147 +118,187 @@ function AdminDashboard() {
                 setError(
                     "Unable to load dashboard data."
                 );
-
             } finally {
-
                 setLoading(false);
             }
         };
 
         loadDashboardData();
-
     }, []);
 
-    const handleLogout = () => {
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("role");
-
-        navigate("/login");
-    };
+    const dashboardCards = [
+        {
+            title: "Students",
+            value: counts.students,
+        },
+        {
+            title: "Faculty",
+            value: counts.faculty,
+        },
+        {
+            title: "Staff",
+            value: counts.staff,
+        },
+        {
+            title: "Applications",
+            value: counts.applications,
+        },
+        {
+            title: "Courses",
+            value: counts.courses,
+        },
+        {
+            title: "Course Offerings",
+            value: counts.courseOfferings,
+            clickable: true,
+            onClick: () =>
+                navigate("/admin/course-offerings"),
+        },
+        {
+            title: "Departments",
+            value: counts.departments,
+        },
+        {
+            title: "Events",
+            value: counts.events,
+        },
+        {
+            title: "Examinations",
+            value: counts.examinations,
+        },
+        {
+            title: "Notices",
+            value: counts.notices,
+        },
+        {
+            title: "Payments",
+            value: counts.payments,
+        },
+        {
+            title: "Results",
+            value: counts.results,
+        },
+        {
+            title: "Attendance",
+            value: counts.attendance,
+        },
+    ];
 
     return (
-        <div>
-
-            <header>
-
-                <h1>
-                    College Management System
+        <div
+            style={{
+                width: "100%",
+                boxSizing: "border-box",
+            }}
+        >
+            <div
+                style={{
+                    marginBottom: "22px",
+                }}
+            >
+                <h1
+                    style={{
+                        margin: "0",
+                        fontSize: "30px",
+                        fontWeight: "700",
+                        color: "#111827",
+                    }}
+                >
+                    Admin Dashboard
                 </h1>
 
-                <div>
-                    <span>
-                        Welcome, {username}
-                    </span>
-
-                    <button
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
-                </div>
-
-            </header>
-
-            <main>
-
-                <h2>
-                    Admin Dashboard
-                </h2>
-
-                <p>
-                    Role: ADMIN
+                <p
+                    style={{
+                        margin: "10px 0 0",
+                        fontSize: "16px",
+                        color: "#64748b",
+                    }}
+                >
+                    College Management System
                 </p>
+            </div>
 
-                {loading && (
-                    <p>
-                        Loading dashboard data...
-                    </p>
-                )}
+            {loading && (
+                <div
+                    style={{
+                        padding: "20px",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "10px",
+                        color: "#334155",
+                    }}
+                >
+                    Loading dashboard data...
+                </div>
+            )}
 
-                {error && (
-                    <p>
-                        {error}
-                    </p>
-                )}
+            {error && (
+                <div
+                    style={{
+                        padding: "14px 18px",
+                        backgroundColor: "#fef2f2",
+                        border: "1px solid #fecaca",
+                        borderRadius: "8px",
+                        color: "#b91c1c",
+                    }}
+                >
+                    {error}
+                </div>
+            )}
 
-                {!loading && !error && (
-                    <div>
-
-                        <div>
-                            <h3>Students</h3>
-                            <p>{counts.students}</p>
-                        </div>
-
-                        <div>
-                            <h3>Faculty</h3>
-                            <p>{counts.faculty}</p>
-                        </div>
-
-                        <div>
-                            <h3>Staff</h3>
-                            <p>{counts.staff}</p>
-                        </div>
-
-                        <div>
-                            <h3>Applications</h3>
-                            <p>{counts.applications}</p>
-                        </div>
-
-                        <div>
-                            <h3>Courses</h3>
-                            <p>{counts.courses}</p>
-                        </div>
-
+            {!loading && !error && (
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                            "repeat(6, minmax(0, 1fr))",
+                        gap: "16px",
+                    }}
+                >
+                    {dashboardCards.map((card) => (
                         <div
-                            onClick={() => navigate("/admin/course-offerings")}
-                            style={{ cursor: "pointer" }}
+                            key={card.title}
+                            onClick={
+                                card.clickable
+                                    ? card.onClick
+                                    : undefined
+                            }
+                            style={{
+                                backgroundColor: "#ffffff",
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "10px",
+                                padding: "18px",
+                                minHeight: "100px",
+                                boxSizing: "border-box",
+                                cursor: card.clickable
+                                    ? "pointer"
+                                    : "default",
+                            }}
                         >
-                            <h3>Course Offerings</h3>
-                            <p>{counts.courseOfferings}</p>
+                            <div
+                                style={{
+                                    fontSize: "14px",
+                                    color: "#111827",
+                                    marginBottom: "10px",
+                                }}
+                            >
+                                {card.title}
+                            </div>
+
+                            <div
+                                style={{
+                                    fontSize: "28px",
+                                    fontWeight: "700",
+                                    lineHeight: "1",
+                                    color: "#111827",
+                                }}
+                            >
+                                {card.value}
+                            </div>
                         </div>
-
-                        <div>
-                            <h3>Departments</h3>
-                            <p>{counts.departments}</p>
-                        </div>
-
-                        <div>
-                            <h3>Events</h3>
-                            <p>{counts.events}</p>
-                        </div>
-
-                        <div>
-                            <h3>Examinations</h3>
-                            <p>{counts.examinations}</p>
-                        </div>
-
-                        <div>
-                            <h3>Notices</h3>
-                            <p>{counts.notices}</p>
-                        </div>
-
-                        <div>
-                            <h3>Payments</h3>
-                            <p>{counts.payments}</p>
-                        </div>
-
-                        <div>
-                            <h3>Results</h3>
-                            <p>{counts.results}</p>
-                        </div>
-
-                        <div>
-                            <h3>Attendance Records</h3>
-                            <p>{counts.attendance}</p>
-                        </div>
-
-                    </div>
-                )}
-
-            </main>
-
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

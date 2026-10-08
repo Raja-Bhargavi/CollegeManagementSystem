@@ -1,7 +1,4 @@
-import {
-    NavLink,
-    useNavigate,
-} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const menuItems = [
     {
@@ -39,11 +36,9 @@ const menuItems = [
 ];
 
 export default function FacultySidebar() {
-
     const navigate = useNavigate();
 
     const handleLogout = () => {
-
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
@@ -56,74 +51,86 @@ export default function FacultySidebar() {
     return (
         <aside
             style={{
-                width: "240px",
+                width: "250px",
                 minHeight: "100vh",
-                backgroundColor: "#1f2937",
-                padding: "20px",
+                backgroundColor: "#111827",
+                color: "white",
+                padding: "20px 12px",
                 boxSizing: "border-box",
+                position: "fixed",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                overflowY: "auto",
             }}
         >
-
-            <h2
+            <div
                 style={{
-                    color: "white",
-                    marginBottom: "30px",
+                    fontSize: "22px",
+                    fontWeight: "700",
+                    marginBottom: "6px",
+                    padding: "0 10px",
+                }}
+            >
+                College Management
+            </div>
+
+            <div
+                style={{
+                    fontSize: "14px",
+                    color: "#9ca3af",
+                    marginBottom: "25px",
+                    padding: "0 10px",
                 }}
             >
                 Faculty Portal
-            </h2>
+            </div>
 
-            <nav
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                }}
-            >
-
+            <nav>
                 {menuItems.map((item) => (
-
                     <NavLink
                         key={item.path}
                         to={item.path}
                         end={item.path === "/faculty"}
                         style={({ isActive }) => ({
-                            padding: "12px",
+                            display: "block",
+                            padding: "11px 12px",
+                            marginBottom: "4px",
                             borderRadius: "6px",
                             textDecoration: "none",
-                            color: "white",
-                            backgroundColor:
-                                isActive
-                                    ? "#374151"
-                                    : "transparent",
+                            color: isActive
+                                ? "#ffffff"
+                                : "#d1d5db",
+                            backgroundColor: isActive
+                                ? "#374151"
+                                : "transparent",
+                            fontWeight: isActive
+                                ? "600"
+                                : "400",
                         })}
                     >
                         {item.label}
                     </NavLink>
-
                 ))}
-
-                <button
-                    type="button"
-                    onClick={handleLogout}
-                    style={{
-                        marginTop: "25px",
-                        width: "100%",
-                        padding: "12px",
-                        border: "none",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        backgroundColor: "white",
-                        color: "#1f2937",
-                        fontSize: "15px",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Logout
-                </button>
-
             </nav>
 
+            <button
+                type="button"
+                onClick={handleLogout}
+                style={{
+                    width: "100%",
+                    marginTop: "25px",
+                    padding: "11px",
+                    border: "none",
+                    borderRadius: "6px",
+                    backgroundColor: "#f3f4f6",
+                    color: "#111827",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                }}
+            >
+                Logout
+            </button>
         </aside>
     );
 }

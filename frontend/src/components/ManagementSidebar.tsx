@@ -1,85 +1,91 @@
 import { NavLink, useNavigate } from "react-router-dom";
 
-export default function AdminSidebar() {
-    const navigate = useNavigate();
+const menuItems = [
+    {
+        label: "Dashboard",
+        path: "/management",
+    },
+    {
+        label: "My Profile",
+        path: "/management/profile",
+    },
+    {
+        label: "Students",
+        path: "/management/students",
+    },
+    {
+        label: "Faculty",
+        path: "/management/faculty",
+    },
+    {
+        label: "Staff",
+        path: "/management/staff",
+    },
+    {
+        label: "Departments",
+        path: "/management/departments",
+    },
+    {
+        label: "Courses",
+        path: "/management/courses",
+    },
+    {
+        label: "Course Offerings",
+        path: "/management/course-offerings",
+    },
+    {
+        label: "Course Registrations",
+        path: "/management/course-registrations",
+    },
+    {
+        label: "Examinations",
+        path: "/management/examinations",
+    },
+    {
+        label: "Attendance",
+        path: "/management/attendance",
+    },
+    {
+        label: "Marks",
+        path: "/management/marks",
+    },
+    {
+        label: "Results",
+        path: "/management/results",
+    },
+    {
+        label: "Applications",
+        path: "/management/applications",
+    },
+    {
+        label: "Fees",
+        path: "/management/fees",
+    },
+    {
+        label: "Payments",
+        path: "/management/payments",
+    },
+    {
+        label: "Events",
+        path: "/management/events",
+    },
+    {
+        label: "Notices",
+        path: "/management/notices",
+    },
+];
 
-    const menuItems = [
-        {
-            label: "Dashboard",
-            path: "/admin",
-        },
-        {
-            label: "Students",
-            path: "/admin/students",
-        },
-        {
-            label: "Faculty",
-            path: "/admin/faculty",
-        },
-        {
-            label: "Staff",
-            path: "/admin/staff",
-        },
-        {
-            label: "Applications",
-            path: "/admin/applications",
-        },
-        {
-            label: "Courses",
-            path: "/admin/courses",
-        },
-        {
-            label: "Course Offerings",
-            path: "/admin/course-offerings",
-        },
-        {
-            label: "Course Registrations",
-            path: "/admin/course-registrations",
-        },
-        {
-            label: "Departments",
-            path: "/admin/departments",
-        },
-        {
-            label: "Events",
-            path: "/admin/events",
-        },
-        {
-            label: "Examinations",
-            path: "/admin/examinations",
-        },
-        {
-            label: "Marks",
-            path: "/admin/marks",
-        },
-        {
-            label: "Notices",
-            path: "/admin/notices",
-        },
-        {
-            label: "Payments",
-            path: "/admin/payments",
-        },
-        {
-            label: "Fees",
-            path: "/admin/fees",
-        },
-        {
-            label: "Results",
-            path: "/admin/results",
-        },
-        {
-            label: "Attendance",
-            path: "/admin/attendance",
-        },
-    ];
+export default function ManagementSidebar() {
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
 
-        navigate("/login");
+        navigate("/login", {
+            replace: true,
+        });
     };
 
     return (
@@ -117,7 +123,7 @@ export default function AdminSidebar() {
                     padding: "0 10px",
                 }}
             >
-                Admin Portal
+                Management Portal
             </div>
 
             <nav>
@@ -125,7 +131,7 @@ export default function AdminSidebar() {
                     <NavLink
                         key={item.path}
                         to={item.path}
-                        end={item.path === "/admin"}
+                        end={item.path === "/management"}
                         style={({ isActive }) => ({
                             display: "block",
                             padding: "11px 12px",
@@ -149,6 +155,7 @@ export default function AdminSidebar() {
             </nav>
 
             <button
+                type="button"
                 onClick={handleLogout}
                 style={{
                     width: "100%",

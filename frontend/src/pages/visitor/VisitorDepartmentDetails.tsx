@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { NavLink, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 interface Department {
     departmentId: number;
@@ -29,7 +29,9 @@ interface Faculty {
 
 const VisitorDepartmentDetails = () => {
 
-    const { departmentId } = useParams();
+    const { departmentId } = useParams<{
+        departmentId: string;
+    }>();
 
     const [department, setDepartment] =
         useState<Department | null>(null);
@@ -58,21 +60,23 @@ const VisitorDepartmentDetails = () => {
 
             try {
 
-                const [
-                    departmentResponse,
-                    coursesResponse,
-                    facultyResponse
-                ] = await Promise.all([
-                    axios.get(
+                setLoading(true);
+                setError("");
+
+                const departmentResponse =
+                    await axios.get<Department>(
                         `http://localhost:8080/api/public/departments/${departmentId}`
-                    ),
-                    axios.get(
+                    );
+
+                const coursesResponse =
+                    await axios.get<Course[]>(
                         `http://localhost:8080/api/public/departments/${departmentId}/courses`
-                    ),
-                    axios.get(
+                    );
+
+                const facultyResponse =
+                    await axios.get<Faculty[]>(
                         `http://localhost:8080/api/public/departments/${departmentId}/faculty`
-                    )
-                ]);
+                    );
 
                 setDepartment(
                     departmentResponse.data
@@ -93,6 +97,10 @@ const VisitorDepartmentDetails = () => {
                     err
                 );
 
+                setDepartment(null);
+                setCourses([]);
+                setFaculty([]);
+
                 setError(
                     "Unable to load department information."
                 );
@@ -100,14 +108,16 @@ const VisitorDepartmentDetails = () => {
             } finally {
 
                 setLoading(false);
-
             }
-
         };
 
         loadDepartment();
 
     }, [departmentId]);
+
+    // =========================================================
+    // LOADING
+    // =========================================================
 
     if (loading) {
 
@@ -125,6 +135,10 @@ const VisitorDepartmentDetails = () => {
             </div>
         );
     }
+
+    // =========================================================
+    // ERROR
+    // =========================================================
 
     if (error || !department) {
 
@@ -144,39 +158,52 @@ const VisitorDepartmentDetails = () => {
         );
     }
 
+    // =========================================================
+    // GROUP FACULTY
+    // =========================================================
+
     const groupedFaculty = {
+
         professors: faculty.filter(
-            member =>
-                member.designation
-                    ?.toLowerCase()
-                    .includes("professor")
-                &&
-                !member.designation
-                    ?.toLowerCase()
-                    .includes("associate")
-                &&
-                !member.designation
-                    ?.toLowerCase()
-                    .includes("assistant")
+            (member) => {
+
+                const designation =
+                    member.designation?.toLowerCase() || "";
+
+                return (
+                    designation.includes("professor") &&
+                    !designation.includes("associate") &&
+                    !designation.includes("assistant")
+                );
+            }
         ),
 
         associateProfessors: faculty.filter(
-            member =>
+            (member) =>
                 member.designation
                     ?.toLowerCase()
                     .includes("associate professor")
         ),
 
         assistantProfessors: faculty.filter(
-            member =>
+            (member) =>
                 member.designation
                     ?.toLowerCase()
                     .includes("assistant professor")
-        )
+        ),
     };
 
+    // =========================================================
+    // PAGE
+    // =========================================================
+
     return (
+
         <div className="visitor-page">
+
+            {/* =================================================
+                DEPARTMENT HEADER
+            ================================================= */}
 
             <section className="visitor-department-hero">
 
@@ -199,8 +226,9 @@ const VisitorDepartmentDetails = () => {
 
             </section>
 
-
-            {/* DEPARTMENT ABOUT */}
+            {/* =================================================
+                ABOUT THE DEPARTMENT
+            ================================================= */}
 
             <section className="visitor-section">
 
@@ -227,8 +255,9 @@ const VisitorDepartmentDetails = () => {
 
             </section>
 
-
-            {/* PROGRAMS */}
+            {/* =================================================
+                PROGRAMS
+            ================================================= */}
 
             <section className="visitor-department-program-section">
 
@@ -248,11 +277,13 @@ const VisitorDepartmentDetails = () => {
 
                     <div className="visitor-program-links">
 
-                        <NavLink
-                            to={`/departments/${departmentId}/courses?program=BTECH`}
+                        <Link
+                            to={`/courses?departmentId=${departmentId}&program=BTECH`}
                             className="visitor-program-row"
                         >
+
                             <div>
+
                                 <strong>
                                     B.Tech
                                 </strong>
@@ -260,18 +291,22 @@ const VisitorDepartmentDetails = () => {
                                 <span>
                                     Undergraduate Programme
                                 </span>
+
                             </div>
 
                             <span>
                                 View Courses →
                             </span>
-                        </NavLink>
 
-                        <NavLink
-                            to={`/departments/${departmentId}/courses?program=MTECH`}
+                        </Link>
+
+                        <Link
+                            to={`/courses?departmentId=${departmentId}&program=MTECH`}
                             className="visitor-program-row"
                         >
+
                             <div>
+
                                 <strong>
                                     M.Tech
                                 </strong>
@@ -279,12 +314,14 @@ const VisitorDepartmentDetails = () => {
                                 <span>
                                     Postgraduate Programme
                                 </span>
+
                             </div>
 
                             <span>
                                 View Courses →
                             </span>
-                        </NavLink>
+
+                        </Link>
 
                     </div>
 
@@ -292,8 +329,9 @@ const VisitorDepartmentDetails = () => {
 
             </section>
 
-
-            {/* COURSES */}
+            {/* =================================================
+                COURSES
+            ================================================= */}
 
             <section className="visitor-section">
 
@@ -317,15 +355,17 @@ const VisitorDepartmentDetails = () => {
                 <div className="visitor-department-course-list">
 
                     {courses.length === 0 && (
+
                         <div className="visitor-state">
-                            No courses have been associated with this
-                            department yet.
+                            No courses have been associated with
+                            this department yet.
                         </div>
+
                     )}
 
                     {courses.map((course) => (
 
-                        <NavLink
+                        <Link
                             key={course.courseId}
                             to={`/courses/${course.courseId}`}
                             className="visitor-course-line"
@@ -348,7 +388,7 @@ const VisitorDepartmentDetails = () => {
                                 View →
                             </span>
 
-                        </NavLink>
+                        </Link>
 
                     ))}
 
@@ -356,8 +396,9 @@ const VisitorDepartmentDetails = () => {
 
             </section>
 
-
-            {/* FACULTY */}
+            {/* =================================================
+                FACULTY
+            ================================================= */}
 
             <section className="visitor-department-faculty-section">
 
@@ -380,23 +421,22 @@ const VisitorDepartmentDetails = () => {
 
                     </div>
 
-
                     {[
                         {
                             title: "Professors",
                             members:
-                                groupedFaculty.professors
+                                groupedFaculty.professors,
                         },
                         {
                             title: "Associate Professors",
                             members:
-                                groupedFaculty.associateProfessors
+                                groupedFaculty.associateProfessors,
                         },
                         {
                             title: "Assistant Professors",
                             members:
-                                groupedFaculty.assistantProfessors
-                        }
+                                groupedFaculty.assistantProfessors,
+                        },
                     ].map((group) => (
 
                         group.members.length > 0 && (
@@ -413,9 +453,9 @@ const VisitorDepartmentDetails = () => {
                                 <div className="visitor-faculty-line-list">
 
                                     {group.members.map(
-                                        member => (
+                                        (member) => (
 
-                                            <NavLink
+                                            <Link
                                                 key={
                                                     member.facultyId
                                                 }
@@ -447,7 +487,7 @@ const VisitorDepartmentDetails = () => {
                                                     View Profile →
                                                 </span>
 
-                                            </NavLink>
+                                            </Link>
 
                                         )
                                     )}
@@ -455,10 +495,17 @@ const VisitorDepartmentDetails = () => {
                                 </div>
 
                             </div>
-
                         )
-
                     ))}
+
+                    {faculty.length === 0 && (
+
+                        <div className="visitor-state">
+                            No faculty members are currently
+                            associated with this department.
+                        </div>
+
+                    )}
 
                 </div>
 

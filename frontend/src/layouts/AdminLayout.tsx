@@ -1,4 +1,3 @@
-
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "../components/AdminSidebar";
 
@@ -6,16 +5,18 @@ export default function AdminLayout() {
     return (
         <div
             style={{
-                display: "flex",
                 minHeight: "100vh",
+                backgroundColor: "#f9fafb",
             }}
         >
             <AdminSidebar />
 
             <main
                 style={{
-                    flex: 1,
+                    marginLeft: "250px",
+                    minHeight: "100vh",
                     padding: "30px",
+                    boxSizing: "border-box",
                 }}
             >
                 <Outlet />
@@ -23,4 +24,3 @@ export default function AdminLayout() {
         </div>
     );
 }
-
