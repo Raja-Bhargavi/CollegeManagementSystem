@@ -6,11 +6,9 @@ import college_management_backend.dto.publicdto.PublicEventResponse;
 import college_management_backend.dto.publicdto.PublicFacultyResponse;
 import college_management_backend.dto.publicdto.PublicNoticeResponse;
 import college_management_backend.service.PublicService;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,14 +47,38 @@ public class PublicController {
         );
     }
 
+    /*
+     * Department courses.
+     *
+     * Without program:
+     *
+     * /api/public/departments/1/courses
+     *
+     * With program:
+     *
+     * /api/public/departments/1/courses?program=BTECH
+     *
+     * /api/public/departments/1/courses?program=MTECH
+     */
     @GetMapping("/departments/{departmentId}/courses")
     public ResponseEntity<List<PublicCourseResponse>>
     getPublicDepartmentCourses(
-            @PathVariable Long departmentId) {
+            @PathVariable Long departmentId,
+            @RequestParam(required = false) String program) {
+
+        if (program == null || program.isBlank()) {
+
+            return ResponseEntity.ok(
+                    publicService.getPublicDepartmentCourses(
+                            departmentId
+                    )
+            );
+        }
 
         return ResponseEntity.ok(
-                publicService.getPublicDepartmentCourses(
-                        departmentId
+                publicService.getPublicDepartmentCoursesByProgram(
+                        departmentId,
+                        program
                 )
         );
     }

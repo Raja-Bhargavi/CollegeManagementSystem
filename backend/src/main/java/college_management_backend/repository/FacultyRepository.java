@@ -16,10 +16,10 @@ public interface FacultyRepository extends JpaRepository<Faculty, Long> {
 
     boolean existsByEmployeeNumber(String employeeNumber);
 
+    /*
+     * Public academic portal
+     *
+     * Returns faculty belonging to a department.
+     */
     List<Faculty> findByDepartmentId(Long departmentId);
-
-    List<Faculty> findByDepartmentIdAndFacultyStatus(
-            Long departmentId,
-            String facultyStatus
-    );
 }

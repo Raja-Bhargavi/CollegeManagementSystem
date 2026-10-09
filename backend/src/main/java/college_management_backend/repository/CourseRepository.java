@@ -16,9 +16,24 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     boolean existsByCourseName(String courseName);
 
+    /*
+     * Public academic portal
+     *
+     * Returns courses belonging to a particular department.
+     */
     List<Course> findByDepartmentId(Long departmentId);
 
-    List<Course> findByDepartmentIdAndProgramLevel(
+    /*
+     * Public academic portal
+     *
+     * Returns courses belonging to a department
+     * and a particular academic program.
+     *
+     * Example:
+     * BTECH
+     * MTECH
+     */
+    List<Course> findByDepartmentIdAndProgramLevelIgnoreCase(
             Long departmentId,
             String programLevel
     );
