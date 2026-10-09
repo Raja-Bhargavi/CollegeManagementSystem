@@ -1,12 +1,19 @@
+
 import {
     BrowserRouter,
     Routes,
     Route,
     Navigate,
+    useParams,
 } from "react-router-dom";
+
+// =========================
+// AUTHENTICATION
+// =========================
 
 import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // =========================
 // VISITOR / PUBLIC
@@ -26,12 +33,6 @@ import VisitorEvents from "./pages/visitor/VisitorEvents";
 import VisitorNotices from "./pages/visitor/VisitorNotices";
 import VisitorAdmissions from "./pages/visitor/VisitorAdmissions";
 import VisitorContact from "./pages/visitor/VisitorContact";
-
-// If this file already exists in your project,
-// keep this import.
-// If it does not exist yet, we will create it next.
-
-
 
 // =========================
 // ADMIN
@@ -55,7 +56,6 @@ import Fees from "./pages/admin/Fees";
 import Payments from "./pages/admin/Payments";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
 
-
 // =========================
 // STUDENT
 // =========================
@@ -71,7 +71,6 @@ import StudentPayments from "./pages/student/StudentPayments";
 import StudentApplications from "./pages/student/StudentApplications";
 import StudentNotices from "./pages/student/StudentNotices";
 
-
 // =========================
 // FACULTY
 // =========================
@@ -84,7 +83,6 @@ import FacultyExaminations from "./pages/faculty/FacultyExaminations";
 import FacultyMarks from "./pages/faculty/FacultyMarks";
 import FacultyResults from "./pages/faculty/FacultyResults";
 import FacultyNotices from "./pages/faculty/FacultyNotices";
-
 
 // =========================
 // STAFF
@@ -107,7 +105,6 @@ import StaffFees from "./pages/staff/StaffFees";
 import StaffPayments from "./pages/staff/StaffPayments";
 import StaffEvents from "./pages/staff/StaffEvents";
 import StaffNotices from "./pages/staff/StaffNotices";
-
 
 // =========================
 // MANAGEMENT
@@ -132,12 +129,9 @@ import ManagementEvents from "./pages/management/ManagementEvents";
 import ManagementNotices from "./pages/management/ManagementNotices";
 import ManagementApplications from "./pages/management/ManagementApplications";
 
-
 // =========================
-// COMPONENTS / LAYOUTS
+// AUTHENTICATED LAYOUTS
 // =========================
-
-import ProtectedRoute from "./components/ProtectedRoute";
 
 import AdminLayout from "./layouts/AdminLayout";
 import StudentLayout from "./layouts/StudentLayout";
@@ -145,159 +139,206 @@ import FacultyLayout from "./layouts/FacultyLayout";
 import StaffLayout from "./layouts/StaffLayout";
 import ManagementLayout from "./layouts/ManagementLayout";
 
+// =====================================================
+// LEGACY VISITOR URL REDIRECTS
+// =====================================================
+
+function LegacyDepartmentRedirect() {
+    const { departmentId } = useParams();
+
+    return (
+        <Navigate
+            to={`/academics/departments/${departmentId}`}
+            replace
+        />
+    );
+}
+
+function LegacyCourseRedirect() {
+    const { courseId } = useParams();
+
+    return (
+        <Navigate
+            to={`/academics/courses/${courseId}`}
+            replace
+        />
+    );
+}
+
+function LegacyFacultyRedirect() {
+    const { facultyId } = useParams();
+
+    return (
+        <Navigate
+            to={`/academics/faculty-info/${facultyId}`}
+            replace
+        />
+    );
+}
+
+// =====================================================
+// MAIN APP
+// =====================================================
 
 function App() {
     return (
         <BrowserRouter>
-
             <Routes>
 
                 {/* =====================================================
                     PUBLIC / VISITOR PORTAL
                     ===================================================== */}
 
-                <Route
-                    element={<VisitorLayout />}
-                >
+                <Route element={<VisitorLayout />}>
 
-                    {/* =========================
-                        HOME
-                    ========================= */}
+                    {/* HOME */}
 
                     <Route
                         path="/"
                         element={<VisitorHome />}
                     />
 
-
-                    {/* =========================
-                        ABOUT
-                    ========================= */}
+                    {/* ABOUT */}
 
                     <Route
                         path="/about"
                         element={<VisitorAbout />}
                     />
 
-
-                    {/* =================================================
-                        ACADEMICS
-
-                        Academics is the main public academic entry point.
-
-                        Home
-                          ↓
-                        Academics
-                          ↓
-                        Departments / Programs / Courses / Faculty /
-                        Academic Notices / Academic Events
-                        ================================================= */}
+                    {/* ACADEMICS LANDING PAGE */}
 
                     <Route
                         path="/academics"
                         element={<VisitorAcademics />}
                     />
 
-
-                    {/* =========================
-                        DEPARTMENTS
-                    ========================= */}
+                    {/* DEPARTMENTS */}
 
                     <Route
-                        path="/departments"
+                        path="/academics/departments"
                         element={<VisitorDepartments />}
                     />
 
+                    {/* Must appear before /academics/departments/:departmentId */}
+
                     <Route
-                        path="/departments/:departmentId"
+                        path="/academics/departments/courses"
+                        element={
+                            <Navigate
+                                to="/academics/courses"
+                                replace
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/academics/departments/:departmentId"
                         element={<VisitorDepartmentDetails />}
                     />
 
-
-                    {/* =========================
-                        COURSES
-
-                        Course listing can be reached
-                        from department/academic pages.
-
-                        Course detail remains:
-                        /courses/:courseId
-                    ========================= */}
+                    {/* COURSES */}
 
                     <Route
-                        path="/courses"
+                        path="/academics/courses"
                         element={<VisitorCourses />}
                     />
 
                     <Route
-                        path="/courses/:courseId"
+                        path="/academics/courses/:courseId"
                         element={<VisitorCourseDetails />}
                     />
 
-
-                    {/* =========================
-                        PUBLIC FACULTY
-
-                        IMPORTANT:
-                        /faculty is reserved for the
-                        authenticated Faculty portal.
-
-                        Therefore public faculty uses:
-                        /faculty-info
-                    ========================= */}
+                    {/* PUBLIC FACULTY
+                        /faculty remains reserved for authenticated faculty. */}
 
                     <Route
-                        path="/faculty-info"
+                        path="/academics/faculty-info"
                         element={<VisitorFaculty />}
                     />
 
                     <Route
-                        path="/faculty-info/:facultyId"
+                        path="/academics/faculty-info/:facultyId"
                         element={<VisitorFacultyDetails />}
                     />
 
-
-                    {/* =========================
-                        EVENTS
-                    ========================= */}
+                    {/* EVENTS */}
 
                     <Route
                         path="/events"
                         element={<VisitorEvents />}
                     />
 
-
-                    {/* =========================
-                        NOTICES
-                    ========================= */}
+                    {/* NOTICES */}
 
                     <Route
                         path="/notices"
                         element={<VisitorNotices />}
                     />
 
-
-                    {/* =========================
-                        ADMISSIONS
-                    ========================= */}
+                    {/* ADMISSIONS */}
 
                     <Route
                         path="/admissions"
                         element={<VisitorAdmissions />}
                     />
 
-
-                    {/* =========================
-                        CONTACT
-                    ========================= */}
+                    {/* CONTACT */}
 
                     <Route
                         path="/contact"
                         element={<VisitorContact />}
                     />
 
-                </Route>
+                    {/* =================================================
+                        LEGACY VISITOR URL COMPATIBILITY
+                        ================================================= */}
 
+                    <Route
+                        path="/departments"
+                        element={
+                            <Navigate
+                                to="/academics/departments"
+                                replace
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/departments/:departmentId"
+                        element={<LegacyDepartmentRedirect />}
+                    />
+
+                    <Route
+                        path="/courses"
+                        element={
+                            <Navigate
+                                to="/academics/courses"
+                                replace
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/courses/:courseId"
+                        element={<LegacyCourseRedirect />}
+                    />
+
+                    <Route
+                        path="/faculty-info"
+                        element={
+                            <Navigate
+                                to="/academics/faculty-info"
+                                replace
+                            />
+                        }
+                    />
+
+                    <Route
+                        path="/faculty-info/:facultyId"
+                        element={<LegacyFacultyRedirect />}
+                    />
+
+                </Route>
 
                 {/* =====================================================
                     LOGIN
@@ -308,7 +349,6 @@ function App() {
                     element={<Login />}
                 />
 
-
                 {/* =====================================================
                     ADMIN PORTAL
                     ===================================================== */}
@@ -316,103 +356,33 @@ function App() {
                 <Route
                     path="/admin"
                     element={
-                        <ProtectedRoute
-                            allowedRoles={[
-                                "ADMIN",
-                            ]}
-                        >
+                        <ProtectedRoute allowedRoles={["ADMIN"]}>
                             <AdminLayout />
                         </ProtectedRoute>
                     }
                 >
-
                     <Route
                         index
                         element={<AdminDashboard />}
                     />
 
-                    <Route
-                        path="students"
-                        element={<Students />}
-                    />
-
-                    <Route
-                        path="faculty"
-                        element={<FacultyPage />}
-                    />
-
-                    <Route
-                        path="staff"
-                        element={<StaffPage />}
-                    />
-
-                    <Route
-                        path="applications"
-                        element={<Applications />}
-                    />
-
-                    <Route
-                        path="courses"
-                        element={<CoursePage />}
-                    />
-
-                    <Route
-                        path="course-offerings"
-                        element={<CourseOfferingPage />}
-                    />
-
-                    <Route
-                        path="course-registrations"
-                        element={<CourseRegistrationPage />}
-                    />
-
-                    <Route
-                        path="departments"
-                        element={<DepartmentPage />}
-                    />
-
-                    <Route
-                        path="events"
-                        element={<EventsPage />}
-                    />
-
-                    <Route
-                        path="examinations"
-                        element={<ExaminationsPage />}
-                    />
-
-                    <Route
-                        path="marks"
-                        element={<MarksPage />}
-                    />
-
-                    <Route
-                        path="notices"
-                        element={<NoticesPage />}
-                    />
-
-                    <Route
-                        path="fees"
-                        element={<Fees />}
-                    />
-
-                    <Route
-                        path="payments"
-                        element={<Payments />}
-                    />
-
-                    <Route
-                        path="results"
-                        element={<ResultsPage />}
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={<AttendancePage />}
-                    />
-
+                    <Route path="students" element={<Students />} />
+                    <Route path="faculty" element={<FacultyPage />} />
+                    <Route path="staff" element={<StaffPage />} />
+                    <Route path="applications" element={<Applications />} />
+                    <Route path="courses" element={<CoursePage />} />
+                    <Route path="course-offerings" element={<CourseOfferingPage />} />
+                    <Route path="course-registrations" element={<CourseRegistrationPage />} />
+                    <Route path="departments" element={<DepartmentPage />} />
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="examinations" element={<ExaminationsPage />} />
+                    <Route path="marks" element={<MarksPage />} />
+                    <Route path="notices" element={<NoticesPage />} />
+                    <Route path="fees" element={<Fees />} />
+                    <Route path="payments" element={<Payments />} />
+                    <Route path="results" element={<ResultsPage />} />
+                    <Route path="attendance" element={<AttendancePage />} />
                 </Route>
-
 
                 {/* =====================================================
                     STUDENT PORTAL
@@ -421,131 +391,44 @@ function App() {
                 <Route
                     path="/student"
                     element={
-                        <ProtectedRoute
-                            allowedRoles={[
-                                "STUDENT",
-                            ]}
-                        >
+                        <ProtectedRoute allowedRoles={["STUDENT"]}>
                             <StudentLayout />
                         </ProtectedRoute>
                     }
                 >
-
-                    <Route
-                        index
-                        element={<StudentDashboard />}
-                    />
-
-                    <Route
-                        path="profile"
-                        element={<StudentProfile />}
-                    />
-
-                    <Route
-                        path="courses"
-                        element={<StudentCourses />}
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={<StudentAttendance />}
-                    />
-
-                    <Route
-                        path="marks"
-                        element={<StudentMarks />}
-                    />
-
-                    <Route
-                        path="results"
-                        element={<StudentResults />}
-                    />
-
-                    <Route
-                        path="fees"
-                        element={<StudentFees />}
-                    />
-
-                    <Route
-                        path="payments"
-                        element={<StudentPayments />}
-                    />
-
-                    <Route
-                        path="applications"
-                        element={<StudentApplications />}
-                    />
-
-                    <Route
-                        path="notices"
-                        element={<StudentNotices />}
-                    />
-
+                    <Route index element={<StudentDashboard />} />
+                    <Route path="profile" element={<StudentProfile />} />
+                    <Route path="courses" element={<StudentCourses />} />
+                    <Route path="attendance" element={<StudentAttendance />} />
+                    <Route path="marks" element={<StudentMarks />} />
+                    <Route path="results" element={<StudentResults />} />
+                    <Route path="fees" element={<StudentFees />} />
+                    <Route path="payments" element={<StudentPayments />} />
+                    <Route path="applications" element={<StudentApplications />} />
+                    <Route path="notices" element={<StudentNotices />} />
                 </Route>
-
 
                 {/* =====================================================
                     FACULTY PORTAL
-
-                    /faculty is PROTECTED.
-                    Do not use /faculty for public faculty information.
                     ===================================================== */}
 
                 <Route
                     path="/faculty"
                     element={
-                        <ProtectedRoute
-                            allowedRoles={[
-                                "FACULTY",
-                            ]}
-                        >
+                        <ProtectedRoute allowedRoles={["FACULTY"]}>
                             <FacultyLayout />
                         </ProtectedRoute>
                     }
                 >
-
-                    <Route
-                        index
-                        element={<FacultyDashboard />}
-                    />
-
-                    <Route
-                        path="profile"
-                        element={<FacultyProfile />}
-                    />
-
-                    <Route
-                        path="courses"
-                        element={<FacultyCourses />}
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={<FacultyAttendance />}
-                    />
-
-                    <Route
-                        path="examinations"
-                        element={<FacultyExaminations />}
-                    />
-
-                    <Route
-                        path="marks"
-                        element={<FacultyMarks />}
-                    />
-
-                    <Route
-                        path="results"
-                        element={<FacultyResults />}
-                    />
-
-                    <Route
-                        path="notices"
-                        element={<FacultyNotices />}
-                    />
-
+                    <Route index element={<FacultyDashboard />} />
+                    <Route path="profile" element={<FacultyProfile />} />
+                    <Route path="courses" element={<FacultyCourses />} />
+                    <Route path="attendance" element={<FacultyAttendance />} />
+                    <Route path="examinations" element={<FacultyExaminations />} />
+                    <Route path="marks" element={<FacultyMarks />} />
+                    <Route path="results" element={<FacultyResults />} />
+                    <Route path="notices" element={<FacultyNotices />} />
                 </Route>
-
 
                 {/* =====================================================
                     STAFF PORTAL
@@ -554,103 +437,29 @@ function App() {
                 <Route
                     path="/staff"
                     element={
-                        <ProtectedRoute
-                            allowedRoles={[
-                                "STAFF",
-                            ]}
-                        >
+                        <ProtectedRoute allowedRoles={["STAFF"]}>
                             <StaffLayout />
                         </ProtectedRoute>
                     }
                 >
-
-                    <Route
-                        index
-                        element={<StaffDashboard />}
-                    />
-
-                    <Route
-                        path="profile"
-                        element={<StaffProfile />}
-                    />
-
-                    <Route
-                        path="students"
-                        element={<StaffStudents />}
-                    />
-
-                    <Route
-                        path="faculty"
-                        element={<StaffFaculty />}
-                    />
-
-                    <Route
-                        path="applications"
-                        element={<StaffApplications />}
-                    />
-
-                    <Route
-                        path="departments"
-                        element={<StaffDepartments />}
-                    />
-
-                    <Route
-                        path="courses"
-                        element={<StaffCourses />}
-                    />
-
-                    <Route
-                        path="course-offerings"
-                        element={<StaffCourseOfferings />}
-                    />
-
-                    <Route
-                        path="course-registrations"
-                        element={<StaffCourseRegistrations />}
-                    />
-
-                    <Route
-                        path="examinations"
-                        element={<StaffExaminations />}
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={<StaffAttendance />}
-                    />
-
-                    <Route
-                        path="marks"
-                        element={<StaffMarks />}
-                    />
-
-                    <Route
-                        path="results"
-                        element={<StaffResults />}
-                    />
-
-                    <Route
-                        path="fees"
-                        element={<StaffFees />}
-                    />
-
-                    <Route
-                        path="payments"
-                        element={<StaffPayments />}
-                    />
-
-                    <Route
-                        path="events"
-                        element={<StaffEvents />}
-                    />
-
-                    <Route
-                        path="notices"
-                        element={<StaffNotices />}
-                    />
-
+                    <Route index element={<StaffDashboard />} />
+                    <Route path="profile" element={<StaffProfile />} />
+                    <Route path="students" element={<StaffStudents />} />
+                    <Route path="faculty" element={<StaffFaculty />} />
+                    <Route path="applications" element={<StaffApplications />} />
+                    <Route path="departments" element={<StaffDepartments />} />
+                    <Route path="courses" element={<StaffCourses />} />
+                    <Route path="course-offerings" element={<StaffCourseOfferings />} />
+                    <Route path="course-registrations" element={<StaffCourseRegistrations />} />
+                    <Route path="examinations" element={<StaffExaminations />} />
+                    <Route path="attendance" element={<StaffAttendance />} />
+                    <Route path="marks" element={<StaffMarks />} />
+                    <Route path="results" element={<StaffResults />} />
+                    <Route path="fees" element={<StaffFees />} />
+                    <Route path="payments" element={<StaffPayments />} />
+                    <Route path="events" element={<StaffEvents />} />
+                    <Route path="notices" element={<StaffNotices />} />
                 </Route>
-
 
                 {/* =====================================================
                     MANAGEMENT PORTAL
@@ -659,108 +468,30 @@ function App() {
                 <Route
                     path="/management"
                     element={
-                        <ProtectedRoute
-                            allowedRoles={[
-                                "MANAGEMENT",
-                            ]}
-                        >
+                        <ProtectedRoute allowedRoles={["MANAGEMENT"]}>
                             <ManagementLayout />
                         </ProtectedRoute>
                     }
                 >
-
-                    <Route
-                        index
-                        element={<ManagementDashboard />}
-                    />
-
-                    <Route
-                        path="profile"
-                        element={<ManagementProfile />}
-                    />
-
-                    <Route
-                        path="students"
-                        element={<ManagementStudents />}
-                    />
-
-                    <Route
-                        path="faculty"
-                        element={<ManagementFaculty />}
-                    />
-
-                    <Route
-                        path="staff"
-                        element={<ManagementStaff />}
-                    />
-
-                    <Route
-                        path="departments"
-                        element={<ManagementDepartments />}
-                    />
-
-                    <Route
-                        path="courses"
-                        element={<ManagementCourses />}
-                    />
-
-                    <Route
-                        path="course-offerings"
-                        element={<ManagementCourseOfferings />}
-                    />
-
-                    <Route
-                        path="course-registrations"
-                        element={<ManagementCourseRegistrations />}
-                    />
-
-                    <Route
-                        path="examinations"
-                        element={<ManagementExaminations />}
-                    />
-
-                    <Route
-                        path="attendance"
-                        element={<ManagementAttendance />}
-                    />
-
-                    <Route
-                        path="marks"
-                        element={<ManagementMarks />}
-                    />
-
-                    <Route
-                        path="results"
-                        element={<ManagementResults />}
-                    />
-
-                    <Route
-                        path="fees"
-                        element={<ManagementFees />}
-                    />
-
-                    <Route
-                        path="payments"
-                        element={<ManagementPayments />}
-                    />
-
-                    <Route
-                        path="events"
-                        element={<ManagementEvents />}
-                    />
-
-                    <Route
-                        path="notices"
-                        element={<ManagementNotices />}
-                    />
-
-                    <Route
-                        path="applications"
-                        element={<ManagementApplications />}
-                    />
-
+                    <Route index element={<ManagementDashboard />} />
+                    <Route path="profile" element={<ManagementProfile />} />
+                    <Route path="students" element={<ManagementStudents />} />
+                    <Route path="faculty" element={<ManagementFaculty />} />
+                    <Route path="staff" element={<ManagementStaff />} />
+                    <Route path="departments" element={<ManagementDepartments />} />
+                    <Route path="courses" element={<ManagementCourses />} />
+                    <Route path="course-offerings" element={<ManagementCourseOfferings />} />
+                    <Route path="course-registrations" element={<ManagementCourseRegistrations />} />
+                    <Route path="examinations" element={<ManagementExaminations />} />
+                    <Route path="attendance" element={<ManagementAttendance />} />
+                    <Route path="marks" element={<ManagementMarks />} />
+                    <Route path="results" element={<ManagementResults />} />
+                    <Route path="fees" element={<ManagementFees />} />
+                    <Route path="payments" element={<ManagementPayments />} />
+                    <Route path="events" element={<ManagementEvents />} />
+                    <Route path="notices" element={<ManagementNotices />} />
+                    <Route path="applications" element={<ManagementApplications />} />
                 </Route>
-
 
                 {/* =====================================================
                     UNAUTHORIZED
@@ -771,11 +502,8 @@ function App() {
                     element={<Unauthorized />}
                 />
 
-
                 {/* =====================================================
                     FALLBACK
-
-                    Unknown public URLs return to the visitor home.
                     ===================================================== */}
 
                 <Route
@@ -789,7 +517,6 @@ function App() {
                 />
 
             </Routes>
-
         </BrowserRouter>
     );
 }

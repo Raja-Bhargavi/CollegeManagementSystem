@@ -1,206 +1,253 @@
 /* =========================================================
-   VISITOR DEPARTMENTS
-   Institutional directory style
+   VISITOR DEPARTMENTS PAGE
+   Centered institutional layout
    ========================================================= */
 
 .visitor-departments-page {
+  width: 100%;
   min-height: calc(100vh - 140px);
-  background: #f7f7f7;
-  color: #111111;
   padding: 0;
+  background: #f7f8fa;
+  color: #111827;
+  box-sizing: border-box;
 }
 
+.visitor-departments-page *,
+.visitor-departments-page *::before,
+.visitor-departments-page *::after {
+  box-sizing: border-box;
+}
+
+/* Main content aligned like the Home page */
+
 .visitor-departments-container {
-  width: min(100%, 1100px);
+  width: min(1100px, calc(100% - 48px));
   margin: 0 auto;
   background: #ffffff;
   min-height: calc(100vh - 140px);
 }
 
-/* ---------------------------------------------------------
-   Page Header
-   --------------------------------------------------------- */
+/* Page heading */
 
 .visitor-departments-header {
-  border-top: 1px solid #d7d7d7;
-  border-bottom: 1px solid #dedede;
-  background: #fafafa;
-  padding: 22px 32px;
+  padding: 40px 36px 32px;
+  border-bottom: 1px solid #e0e5ec;
+  background: #ffffff;
 }
 
 .visitor-departments-header h1 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 400;
-  color: #111111;
-  letter-spacing: 0.1px;
+  margin: 12px 0 10px;
+  color: #111827;
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
-/* ---------------------------------------------------------
-   Department Sections
-   --------------------------------------------------------- */
+.visitor-departments-header p {
+  margin: 0;
+  color: #526176;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Department category sections */
 
 .visitor-department-section {
-  padding: 38px 32px 0;
+  padding: 32px 36px 0;
 }
 
 .visitor-department-section:last-of-type {
-  padding-bottom: 60px;
+  padding-bottom: 56px;
 }
 
 .visitor-department-section h2 {
-  margin: 0 0 15px;
-  font-size: 17px;
-  font-weight: 600;
-  color: #222222;
-  letter-spacing: 0;
+  margin: 0 0 18px;
+  color: #172033;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.4;
 }
 
-/* ---------------------------------------------------------
-   Department List
-   --------------------------------------------------------- */
+/* Full-width horizontal list */
 
 .visitor-department-list {
   width: 100%;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #dce2e9;
 }
 
-/* ---------------------------------------------------------
-   Individual Department
-   --------------------------------------------------------- */
+/* One department per row */
 
 .visitor-department-row {
-  width: 100%;
-  min-height: 54px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
 
-  padding: 0 14px 0 2px;
+  width: 100%;
+  min-height: 59px;
+  padding: 15px 12px 15px 2px;
 
-  border: none;
-  border-bottom: 1px solid #dddddd;
+  border: 0;
+  border-bottom: 1px solid #dce2e9;
+  border-radius: 0;
 
   background: #ffffff;
-  color: #111111;
-
+  color: #172033;
   text-align: left;
   font-family: inherit;
 
   cursor: pointer;
 
   transition:
-    background-color 0.15s ease,
-    padding-left 0.15s ease;
+    background-color 0.18s ease,
+    padding-left 0.18s ease;
 }
 
 .visitor-department-row:hover {
-  background: #f2f2f2;
-  padding-left: 8px;
+  padding-left: 10px;
+  background: #f7f9fc;
 }
 
 .visitor-department-row:focus-visible {
-  outline: 2px solid #555555;
+  outline: 2px solid #315d91;
   outline-offset: -2px;
 }
 
 .visitor-department-name {
-  font-size: 15px;
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #222222;
+  flex: 1;
+  min-width: 0;
+
+  color: #263449;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 450;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .visitor-department-arrow {
   flex-shrink: 0;
+  margin-left: 12px;
 
-  margin-left: 20px;
-
-  font-size: 18px;
-  font-style: normal;
-  color: #555555;
+  color: #526176;
+  font-size: 21px;
+  line-height: 1;
 
   transition:
-    transform 0.15s ease,
-    color 0.15s ease;
+    transform 0.18s ease,
+    color 0.18s ease;
 }
 
 .visitor-department-row:hover .visitor-department-arrow {
-  color: #111111;
-  transform: translateX(3px);
+  color: #172033;
+  transform: translateX(4px);
 }
 
-/* ---------------------------------------------------------
-   Messages
-   --------------------------------------------------------- */
+/* Loading, empty and error messages */
 
 .visitor-departments-message {
-  margin: 35px 32px;
+  margin: 32px 36px;
   padding: 18px 20px;
 
-  border: 1px solid #dddddd;
-  background: #fafafa;
+  border: 1px solid #dce2e9;
+  background: #f8fafc;
 
-  color: #444444;
-  font-size: 14px;
+  color: #526176;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .visitor-departments-error {
-  border-color: #cccccc;
-  color: #333333;
+  border-color: #e5bcbc;
+  background: #fffafa;
+  color: #9b3030;
 }
 
-/* ---------------------------------------------------------
-   Responsive
-   --------------------------------------------------------- */
+/* Tablet */
 
 @media (max-width: 768px) {
+  .visitor-departments-container {
+    width: min(100% - 32px, 1100px);
+  }
+
+  .visitor-departments-header {
+    padding: 32px 24px 26px;
+  }
+
+  .visitor-departments-header h1 {
+    font-size: 28px;
+  }
+
+  .visitor-department-section {
+    padding: 28px 24px 0;
+  }
+
+  .visitor-department-section h2 {
+    font-size: 20px;
+  }
+
+  .visitor-department-row {
+    min-height: 56px;
+  }
+
+  .visitor-departments-message {
+    margin: 26px 24px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
   .visitor-departments-container {
     width: 100%;
   }
 
   .visitor-departments-header {
-    padding: 20px;
+    padding: 28px 18px 24px;
   }
 
   .visitor-departments-header h1 {
-    font-size: 24px;
+    font-size: 25px;
+  }
+
+  .visitor-departments-header p {
+    font-size: 14px;
   }
 
   .visitor-department-section {
-    padding: 30px 20px 0;
+    padding: 24px 18px 0;
+  }
+
+  .visitor-department-section:last-of-type {
+    padding-bottom: 36px;
+  }
+
+  .visitor-department-section h2 {
+    margin-bottom: 14px;
+    font-size: 19px;
   }
 
   .visitor-department-row {
-    min-height: 52px;
-    padding-right: 8px;
+    min-height: 54px;
+    gap: 12px;
+    padding: 13px 5px 13px 2px;
+  }
+
+  .visitor-department-row:hover {
+    padding-left: 6px;
   }
 
   .visitor-department-name {
     font-size: 14px;
   }
-}
 
-@media (max-width: 480px) {
-  .visitor-departments-header {
-    padding: 18px 16px;
+  .visitor-department-arrow {
+    font-size: 19px;
   }
 
-  .visitor-department-section {
-    padding: 26px 16px 0;
-  }
-
-  .visitor-department-section h2 {
-    font-size: 16px;
-  }
-
-  .visitor-department-row {
-    min-height: 50px;
-  }
-
-  .visitor-department-name {
-    font-size: 13.5px;
+  .visitor-departments-message {
+    margin: 22px 18px;
+    padding: 15px;
   }
 }
