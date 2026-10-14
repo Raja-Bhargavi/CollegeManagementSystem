@@ -1,0 +1,161 @@
+
+.visitor-about-page {
+    width: 100%;
+    min-width: 0;
+    color: #111827;
+    background: #ffffff;
+}
+
+.visitor-about-container {
+    width: min(1184px, calc(100% - 48px));
+    margin-inline: auto;
+}
+
+/* Hero — match the Academics page sizing */
+.visitor-about-hero {
+    padding: 32px 0 36px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.visitor-about-eyebrow {
+    margin: 0 0 16px;
+    color: #526987;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.visitor-about-hero h1 {
+    margin: 0 0 18px;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0;
+}
+
+.visitor-about-hero-description {
+    max-width: 900px;
+    margin: 0;
+    color: #475569;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+/* Institution information */
+.visitor-about-section {
+    padding: 48px 0 64px;
+    background: #ffffff;
+}
+
+.visitor-about-section-heading {
+    margin-bottom: 24px;
+}
+
+.visitor-about-section-heading > span {
+    display: block;
+    margin-bottom: 12px;
+    color: #526987;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.visitor-about-section-heading h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.visitor-about-content {
+    max-width: 1000px;
+}
+
+.visitor-about-content p {
+    margin: 0 0 18px;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.visitor-about-focus {
+    max-width: 1000px;
+    margin-top: 30px;
+    padding: 24px 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.visitor-about-focus h3 {
+    margin: 0 0 16px;
+    color: #111827;
+    font-size: 20px;
+}
+
+.visitor-about-focus ul {
+    display: grid;
+    gap: 10px;
+    padding-left: 22px;
+    margin: 0;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.visitor-about-focus li {
+    padding-left: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .visitor-about-container {
+        width: calc(100% - 36px);
+    }
+
+    .visitor-about-hero {
+        padding: 28px 0 32px;
+    }
+
+    .visitor-about-hero h1 {
+        font-size: 32px;
+    }
+
+    .visitor-about-section {
+        padding: 36px 0 48px;
+    }
+
+    .visitor-about-section-heading h2 {
+        font-size: 25px;
+    }
+
+    .visitor-about-focus {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .visitor-about-container {
+        width: calc(100% - 32px);
+    }
+
+    .visitor-about-hero h1 {
+        font-size: 28px;
+    }
+
+    .visitor-about-hero-description {
+        font-size: 16px;
+    }
+
+    .visitor-about-section-heading h2 {
+        font-size: 23px;
+    }
+
+    .visitor-about-focus {
+        padding: 18px;
+    }
+}
