@@ -15,14 +15,20 @@ import college_management_backend.repository.EventRepository;
 import college_management_backend.repository.FacultyRepository;
 import college_management_backend.repository.NoticeRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PublicService {
+
+    private static final Set<String> PUBLIC_EVENT_STATUSES =
+            Set.of("PUBLISHED", "ACTIVE", "UPCOMING", "SCHEDULED");
 
     private final DepartmentRepository departmentRepository;
     private final CourseRepository courseRepository;
@@ -60,12 +66,10 @@ public class PublicService {
 
         return departmentRepository.findById(departmentId)
                 .map(PublicDepartmentResponse::new)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Department not found with ID: "
-                                        + departmentId
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Department not found with ID: " + departmentId
+                ));
     }
 
     // PUBLIC DEPARTMENT COURSES
@@ -120,16 +124,13 @@ public class PublicService {
     public PublicCourseResponse getPublicCourseById(Long courseId) {
         return courseRepository.findById(courseId)
                 .map(PublicCourseResponse::new)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Course not found with ID: " + courseId
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Course not found with ID: " + courseId
+                ));
     }
 
     // ALL PUBLIC COURSES
-    // Return all existing courses; do not hide records because their
-    // department or program assignment has not been configured yet.
 
     public List<PublicCourseResponse> getPublicCourses() {
         return courseRepository.findAll()
@@ -138,7 +139,7 @@ public class PublicService {
                 .toList();
     }
 
-    // PUBLIC FACULTY
+    // ALL ACTIVE PUBLIC FACULTY
 
     public List<PublicFacultyResponse> getPublicFaculty() {
         return facultyRepository.findAll()
@@ -152,6 +153,27 @@ public class PublicService {
                 )
                 .map(PublicFacultyResponse::new)
                 .toList();
+    }
+
+    // PUBLIC FACULTY BY ID
+
+    public PublicFacultyResponse getPublicFacultyById(
+            Long facultyId) {
+
+        return facultyRepository.findById(facultyId)
+                .filter(faculty ->
+                        faculty.getFacultyStatus() != null
+                                &&
+                        "ACTIVE".equalsIgnoreCase(
+                                faculty.getFacultyStatus()
+                        )
+                )
+                .map(PublicFacultyResponse::new)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Active faculty member not found with ID: "
+                                + facultyId
+                ));
     }
 
     // PUBLIC DEPARTMENT FACULTY
@@ -180,19 +202,14 @@ public class PublicService {
         return noticeRepository
                 .findByVisibilityAndStatus("ALL", "PUBLISHED")
                 .stream()
-                .filter(notice -> {
-                    if (notice.getPublishedAt() != null
-                            && notice.getPublishedAt().isAfter(now)) {
-                        return false;
-                    }
-
-                    if (notice.getExpiryDate() != null
-                            && notice.getExpiryDate().isBefore(now)) {
-                        return false;
-                    }
-
-                    return true;
-                })
+                .filter(notice ->
+                        notice.getPublishedAt() == null
+                                || !notice.getPublishedAt().isAfter(now)
+                )
+                .filter(notice ->
+                        notice.getExpiryDate() == null
+                                || !notice.getExpiryDate().isBefore(now)
+                )
                 .sorted(
                         Comparator.comparing(
                                 Notice::getPublishedAt,
@@ -218,16 +235,11 @@ public class PublicService {
                 )
                 .filter(event ->
                         event.getStatus() != null
-                                &&
-                        (
-                                "PUBLISHED".equalsIgnoreCase(
+                                && PUBLIC_EVENT_STATUSES.contains(
                                         event.getStatus()
+                                                .trim()
+                                                .toUpperCase()
                                 )
-                                ||
-                                "ACTIVE".equalsIgnoreCase(
-                                        event.getStatus()
-                                )
-                        )
                 )
                 .map(PublicEventResponse::new)
                 .toList();
