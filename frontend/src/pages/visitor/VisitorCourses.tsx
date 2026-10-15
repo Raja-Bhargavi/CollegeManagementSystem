@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import "../../styles/visitor-courses.css";
 
 interface Course {
@@ -14,18 +14,33 @@ interface Course {
 }
 
 const VisitorCourses = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const { departmentId: departmentIdParam, program: programParam } =
+        useParams<{
+            departmentId?: string;
+            program?: string;
+        }>();
 
-    const queryParams = new URLSearchParams(location.search);
-    const departmentIdParam = queryParams.get("departmentId");
-    const programParam = queryParams.get("program");
+    const location = useLocation();
 
     const departmentId = departmentIdParam
         ? Number(departmentIdParam)
         : null;
 
-    const program = programParam?.toUpperCase() || null;
+    // Support both explicit program routes and the existing URL suffixes.
+    const pathname = location.pathname.toLowerCase();
+
+    const programFromPath = pathname.endsWith("/btech-courses")
+        ? "BTECH"
+        : pathname.endsWith("/mtech-courses")
+            ? "MTECH"
+            : null;
+
+    const program = (
+        programParam || programFromPath || ""
+    ).trim().toUpperCase() || null;
+
+    const isDepartmentProgramPage =
+        departmentIdParam !== undefined;
 
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
@@ -38,13 +53,41 @@ const VisitorCourses = () => {
             try {
                 setLoading(true);
                 setError("");
+                setCourses([]);
 
-                const response = await axios.get<Course[]>(
-                    "http://localhost:8080/api/public/courses",
-                    { signal: controller.signal }
+                let url = "http://localhost:8080/api/public/courses";
+
+                if (isDepartmentProgramPage) {
+                    if (
+                        departmentId === null ||
+                        !Number.isInteger(departmentId) ||
+                        departmentId <= 0 ||
+                        !program ||
+                        !["BTECH", "MTECH"].includes(program)
+                    ) {
+                        setError(
+                            "Invalid department or academic program. Please return to the department page and select B.Tech or M.Tech again."
+                        );
+                        return;
+                    }
+
+                    url =
+                        `http://localhost:8080/api/public/departments/` +
+                        `${departmentId}/courses?program=${program}`;
+                } else if (program) {
+                    setError("Please select a department first.");
+                    return;
+                }
+
+                const response = await axios.get<Course[]>(url, {
+                    signal: controller.signal,
+                });
+
+                setCourses(
+                    Array.isArray(response.data)
+                        ? response.data
+                        : []
                 );
-
-                setCourses(response.data);
             } catch (err) {
                 if (
                     axios.isCancel(err) ||
@@ -55,7 +98,10 @@ const VisitorCourses = () => {
                 }
 
                 console.error("Failed to load courses:", err);
-                setError("Unable to load course information.");
+
+                setError(
+                    "Unable to load course information. Please check that the backend is running and try again."
+                );
             } finally {
                 if (!controller.signal.aborted) {
                     setLoading(false);
@@ -66,33 +112,24 @@ const VisitorCourses = () => {
         loadCourses();
 
         return () => controller.abort();
-    }, []);
+    }, [departmentId, isDepartmentProgramPage, program]);
 
-    const filteredCourses = useMemo(() => {
-        return courses.filter((course) => {
-            const matchesDepartment =
-                departmentId === null ||
-                course.departmentId === departmentId;
-
-            const matchesProgram =
-                program === null ||
-                course.programLevel?.toUpperCase() === program;
-
-            return matchesDepartment && matchesProgram;
-        });
-    }, [courses, departmentId, program]);
-
-    const pageTitle = program
-        ? program === "BTECH"
+    const pageTitle =
+        program === "BTECH"
             ? "B.Tech Courses"
             : program === "MTECH"
                 ? "M.Tech Courses"
-                : `${program} Courses`
-        : "Courses";
+                : "All Courses";
 
-    const openCourse = (courseId: number) => {
-        navigate(`/courses/${courseId}`);
-    };
+    const pageDescription =
+        program && departmentId !== null
+            ? `Explore the ${program === "BTECH" ? "B.Tech" : "M.Tech"} courses offered by Department ${departmentId}.`
+            : "Explore the courses and academic programs offered by the institution.";
+
+    const backUrl =
+        departmentId !== null
+            ? `/academics/departments/${departmentId}`
+            : "/academics";
 
     return (
         <main className="visitor-courses-page">
@@ -105,9 +142,17 @@ const VisitorCourses = () => {
                     <h1>{pageTitle}</h1>
 
                     <p className="visitor-courses-description">
-                        Explore the courses and academic programs
-                        offered by the institution.
+                        {pageDescription}
                     </p>
+
+                    <Link
+                        to={backUrl}
+                        className="visitor-course-back-link"
+                    >
+                        ← Back to {departmentId !== null
+                            ? "Department"
+                            : "Academics"}
+                    </Link>
                 </header>
 
                 <section className="visitor-courses-content">
@@ -126,43 +171,38 @@ const VisitorCourses = () => {
                         </p>
                     )}
 
-                    {!loading &&
-                        !error &&
-                        filteredCourses.length === 0 && (
-                            <p className="visitor-courses-message">
-                                {courses.length === 0
-                                    ? "No courses were returned by the public API. Please check the backend database connection and course records."
-                                    : "No courses are currently associated with this department and program."}
-                            </p>
-                        )}
+                    {!loading && !error && courses.length === 0 && (
+                        <p className="visitor-courses-message">
+                            No courses are currently assigned to this
+                            department and program. Check the course
+                            records in the database to confirm that
+                            the department and program assignments
+                            are correct.
+                        </p>
+                    )}
 
-                    {!loading &&
-                        !error &&
-                        filteredCourses.length > 0 && (
-                            <div className="visitor-courses-list">
-                                {filteredCourses.map((course) => (
-                                    <button
-                                        key={course.courseId}
-                                        type="button"
-                                        className="visitor-course-row"
-                                        onClick={() =>
-                                            openCourse(course.courseId)
-                                        }
+                    {!loading && !error && courses.length > 0 && (
+                        <div className="visitor-courses-list">
+                            {courses.map((course) => (
+                                <Link
+                                    key={course.courseId}
+                                    to={`/academics/courses/${course.courseId}`}
+                                    className="visitor-course-row"
+                                >
+                                    <span className="visitor-course-name">
+                                        {course.courseName}
+                                    </span>
+
+                                    <span
+                                        className="visitor-course-arrow"
+                                        aria-hidden="true"
                                     >
-                                        <span className="visitor-course-name">
-                                            {course.courseName}
-                                        </span>
-
-                                        <span
-                                            className="visitor-course-arrow"
-                                            aria-hidden="true"
-                                        >
-                                            →
-                                        </span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                                        →
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </section>
             </div>
         </main>

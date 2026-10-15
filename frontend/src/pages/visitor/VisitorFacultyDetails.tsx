@@ -1,537 +1,314 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+import "../../styles/visitor-faculty-details.css";
 
-interface Faculty {
+interface FacultyDetails {
     facultyId: number;
     firstName: string;
     lastName: string | null;
     designation: string;
     departmentId: number | null;
-    joiningDate: string | null;
-    profile: string | null;
-    researchAreas: string | null;
-    projects: string | null;
-    facultyStatus: string | null;
-}
-
-interface Department {
-    departmentId: number;
-    departmentCode: string;
-    departmentName: string;
+    departmentName?: string | null;
+    joiningDate?: string | null;
+    profile?: string | null;
+    briefBio?: string | null;
+    researchAreas?: string[] | string | null;
+    photoUrl?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    education?: {
+        degree: string;
+        year?: string | number | null;
+        specialization?: string | null;
+        university?: string | null;
+    }[];
 }
 
 const VisitorFacultyDetails = () => {
+    const { facultyId } = useParams<{ facultyId: string }>();
 
-    const { facultyId } = useParams<{
-        facultyId: string;
-    }>();
-
-    const [faculty, setFaculty] =
-        useState<Faculty | null>(null);
-
-    const [department, setDepartment] =
-        useState<Department | null>(null);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [error, setError] =
-        useState("");
+    const [faculty, setFaculty] = useState<FacultyDetails | null>(null);
+    const [departmentName, setDepartmentName] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        const controller = new AbortController();
 
-        const loadFaculty = async () => {
+        const loadProfile = async () => {
+            const id = Number(facultyId);
 
-            if (!facultyId) {
-                setError("Invalid faculty.");
+            if (!Number.isInteger(id) || id <= 0) {
+                setError("Invalid faculty ID.");
                 setLoading(false);
                 return;
             }
 
             try {
-
                 setLoading(true);
                 setError("");
 
-                /*
-                 * The public faculty endpoint currently returns
-                 * the list of active faculty members.
-                 *
-                 * We find the requested faculty member from
-                 * that public list.
-                 */
-                const facultyResponse =
-                    await axios.get<Faculty[]>(
-                        "http://localhost:8080/api/public/faculty"
-                    );
+                const response = await axios.get<FacultyDetails>(
+                    `http://localhost:8080/api/public/faculty/${id}`,
+                    { signal: controller.signal }
+                );
 
-                const selectedFaculty =
-                    facultyResponse.data.find(
-                        (member) =>
-                            member.facultyId ===
-                            Number(facultyId)
-                    );
+                const member = response.data;
+                setFaculty(member);
 
-                if (!selectedFaculty) {
-
-                    throw new Error(
-                        "Faculty member not found."
-                    );
-                }
-
-                setFaculty(selectedFaculty);
-
-                /*
-                 * Load department information separately
-                 * so the public profile can display the
-                 * department name rather than only its ID.
-                 */
-                if (selectedFaculty.departmentId) {
-
-                    const departmentResponse =
-                        await axios.get<Department>(
-                            `http://localhost:8080/api/public/departments/${selectedFaculty.departmentId}`
+                if (member.departmentName) {
+                    setDepartmentName(member.departmentName);
+                } else if (member.departmentId != null) {
+                    try {
+                        const departmentResponse = await axios.get(
+                            `http://localhost:8080/api/public/departments/${member.departmentId}`,
+                            { signal: controller.signal }
                         );
 
-                    setDepartment(
-                        departmentResponse.data
-                    );
+                        setDepartmentName(
+                            departmentResponse.data.departmentName ??
+                            departmentResponse.data.name ??
+                            `Department ID: ${member.departmentId}`
+                        );
+                    } catch {
+                        if (!controller.signal.aborted) {
+                            setDepartmentName(
+                                `Department ID: ${member.departmentId}`
+                            );
+                        }
+                    }
+                } else {
+                    setDepartmentName("Not available");
                 }
-
             } catch (err) {
+                if (controller.signal.aborted) return;
 
-                console.error(
-                    "Failed to load faculty profile:",
-                    err
-                );
-
-                setFaculty(null);
-                setDepartment(null);
+                console.error("Failed to load faculty profile:", err);
 
                 setError(
-                    "Unable to load faculty information."
+                    axios.isAxiosError(err) && err.response?.status === 404
+                        ? "Faculty profile not found."
+                        : "Unable to load faculty profile. Please check the backend API."
                 );
-
             } finally {
-
-                setLoading(false);
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
         };
 
-        loadFaculty();
+        loadProfile();
 
+        return () => controller.abort();
     }, [facultyId]);
 
-    // =========================================================
-    // YEARS OF EXPERIENCE
-    // =========================================================
-
-    const calculateExperience = (
-        joiningDate: string | null
-    ): string => {
-
-        if (!joiningDate) {
-            return "Not available";
-        }
-
-        const joining =
-            new Date(joiningDate);
-
-        if (Number.isNaN(joining.getTime())) {
-            return "Not available";
-        }
-
-        const today = new Date();
-
-        let years =
-            today.getFullYear() -
-            joining.getFullYear();
-
-        const monthDifference =
-            today.getMonth() -
-            joining.getMonth();
-
-        if (
-            monthDifference < 0 ||
-            (
-                monthDifference === 0 &&
-                today.getDate() <
-                joining.getDate()
-            )
-        ) {
-            years--;
-        }
-
-        if (years < 0) {
-            years = 0;
-        }
-
-        return `${years} ${
-            years === 1
-                ? "year"
-                : "years"
-        }`;
-    };
-
-    // =========================================================
-    // FORMAT DATE
-    // =========================================================
-
-    const formatJoiningDate = (
-        joiningDate: string | null
-    ): string => {
-
-        if (!joiningDate) {
-            return "Not available";
-        }
-
-        const date =
-            new Date(joiningDate);
-
-        if (Number.isNaN(date.getTime())) {
-            return joiningDate;
-        }
-
-        return date.toLocaleDateString(
-            "en-IN",
-            {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-            }
-        );
-    };
-
-    // =========================================================
-    // LOADING
-    // =========================================================
-
     if (loading) {
-
         return (
-
-            <main className="visitor-page">
-
-                <section className="visitor-section">
-
-                    <div className="visitor-container">
-
-                        <div className="visitor-state">
-                            Loading faculty profile...
-                        </div>
-
-                    </div>
-
-                </section>
-
+            <main className="faculty-profile-page">
+                <div className="faculty-profile-container faculty-profile-state">
+                    Loading faculty profile...
+                </div>
             </main>
         );
     }
-
-    // =========================================================
-    // ERROR
-    // =========================================================
 
     if (error || !faculty) {
-
         return (
+            <main className="faculty-profile-page">
+                <div className="faculty-profile-container faculty-profile-state">
+                    <p className="faculty-profile-error">
+                        {error || "Faculty profile not found."}
+                    </p>
 
-            <main className="visitor-page">
-
-                <section className="visitor-section">
-
-                    <div className="visitor-container">
-
-                        <div className="visitor-error">
-
-                            {error ||
-                                "Faculty information could not be found."}
-
-                        </div>
-
-                        <Link
-                            to="/faculty-info"
-                            className="visitor-button"
-                        >
-                            Back to Faculty
-                        </Link>
-
-                    </div>
-
-                </section>
-
+                    <Link
+                        className="faculty-profile-link"
+                        to="/academics/departments"
+                    >
+                        ← Back to Departments
+                    </Link>
+                </div>
             </main>
         );
     }
 
-    // =========================================================
-    // FACULTY NAME
-    // =========================================================
-
     const fullName =
-        `${faculty.firstName} ${
-            faculty.lastName || ""
-        }`.trim();
+        `${faculty.firstName} ${faculty.lastName ?? ""}`.trim();
 
-    // =========================================================
-    // PAGE
-    // =========================================================
+    const researchAreas = Array.isArray(faculty.researchAreas)
+        ? faculty.researchAreas
+        : typeof faculty.researchAreas === "string"
+          ? faculty.researchAreas
+                .split(/\r?\n|,/)
+                .map((item) => item.trim())
+                .filter(Boolean)
+          : [];
+
+    const education = faculty.education ?? [];
 
     return (
-
-        <main className="visitor-page">
-
-            {/* =================================================
-                FACULTY HEADER
-            ================================================= */}
-
-            <section className="visitor-department-hero">
-
-                <div>
-
-                    <span>
+        <main className="faculty-profile-page">
+            <div className="faculty-profile-container">
+                <header className="faculty-profile-header">
+                    <p className="faculty-profile-eyebrow">
                         FACULTY PROFILE
-                    </span>
+                    </p>
 
-                    <h1>
-                        {fullName}
-                    </h1>
+                    <h1>{fullName}</h1>
 
-                    <p>
+                    <p className="faculty-profile-designation">
                         {faculty.designation}
                     </p>
 
+                    <p className="faculty-profile-department">
+                        {departmentName}
+                    </p>
+                </header>
+
+                <div className="faculty-profile-grid">
+                    <div className="faculty-profile-main-column">
+                        {(faculty.briefBio || faculty.profile) && (
+                            <section className="faculty-profile-section">
+                                <h2>Brief Bio</h2>
+
+                                <div className="faculty-profile-panel">
+                                    <p>
+                                        {faculty.briefBio || faculty.profile}
+                                    </p>
+                                </div>
+                            </section>
+                        )}
+
+                        {education.length > 0 && (
+                            <section className="faculty-profile-section">
+                                <h2>Education</h2>
+
+                                <div className="faculty-profile-table-wrap">
+                                    <table className="faculty-profile-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sr. No.</th>
+                                                <th>Degree</th>
+                                                <th>Year</th>
+                                                <th>Specialization</th>
+                                                <th>University</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {education.map((item, index) => (
+                                                <tr key={`${item.degree}-${index}`}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{item.degree}</td>
+                                                    <td>{item.year || "—"}</td>
+                                                    <td>{item.specialization || "—"}</td>
+                                                    <td>{item.university || "—"}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        )}
+
+                        <section className="faculty-profile-section">
+                            <h2>Faculty Information</h2>
+
+                            <dl className="faculty-profile-details">
+                                <div>
+                                    <dt>Designation</dt>
+                                    <dd>
+                                        {faculty.designation || "Not available"}
+                                    </dd>
+                                </div>
+
+                                <div>
+                                    <dt>Department</dt>
+                                    <dd>{departmentName}</dd>
+                                </div>
+
+                                <div>
+                                    <dt>Joining Date</dt>
+                                    <dd>
+                                        {faculty.joiningDate || "Not available"}
+                                    </dd>
+                                </div>
+                            </dl>
+                        </section>
+
+                        {(faculty.phone || faculty.email || faculty.address) && (
+                            <section className="faculty-profile-section">
+                                <h2>Contact Details</h2>
+
+                                <div className="faculty-profile-table-wrap">
+                                    <table className="faculty-profile-table">
+                                        <thead>
+                                            <tr>
+                                                {faculty.phone && <th>Phone</th>}
+                                                {faculty.email && <th>Email</th>}
+                                                {faculty.address && <th>Address</th>}
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr>
+                                                {faculty.phone && (
+                                                    <td>{faculty.phone}</td>
+                                                )}
+                                                {faculty.email && (
+                                                    <td>{faculty.email}</td>
+                                                )}
+                                                {faculty.address && (
+                                                    <td>{faculty.address}</td>
+                                                )}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        )}
+                    </div>
+
+                    <aside className="faculty-profile-sidebar">
+                        {faculty.photoUrl && (
+                            <div className="faculty-profile-photo">
+                                <img
+                                    src={faculty.photoUrl}
+                                    alt={`Photo of ${fullName}`}
+                                />
+                            </div>
+                        )}
+
+                        {researchAreas.length > 0 && (
+                            <section className="faculty-profile-section">
+                                <h2>Research Interests</h2>
+
+                                <ul className="faculty-profile-research-list">
+                                    {researchAreas.map((area, index) => (
+                                        <li key={`${area}-${index}`}>
+                                            {area}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
+                    </aside>
                 </div>
 
-            </section>
-
-            {/* =================================================
-                PROFILE INFORMATION
-            ================================================= */}
-
-            <section className="visitor-section">
-
-                <div className="visitor-container">
-
-                    <div className="visitor-home-section-heading">
-
-                        <span>
-                            ACADEMIC PROFILE
-                        </span>
-
-                        <h2>
-                            Faculty Information
-                        </h2>
-
-                    </div>
-
-                    <div className="visitor-profile-information">
-
-                        {/* DESIGNATION */}
-
-                        <div className="visitor-profile-row">
-
-                            <span>
-                                Designation
-                            </span>
-
-                            <strong>
-                                {faculty.designation ||
-                                    "Not available"}
-                            </strong>
-
-                        </div>
-
-                        {/* DEPARTMENT */}
-
-                        <div className="visitor-profile-row">
-
-                            <span>
-                                Department
-                            </span>
-
-                            <strong>
-                                {department
-                                    ? department.departmentName
-                                    : "Not available"}
-                            </strong>
-
-                        </div>
-
-                        {/* JOINING DATE */}
-
-                        <div className="visitor-profile-row">
-
-                            <span>
-                                Joining Date
-                            </span>
-
-                            <strong>
-                                {formatJoiningDate(
-                                    faculty.joiningDate
-                                )}
-                            </strong>
-
-                        </div>
-
-                        {/* EXPERIENCE */}
-
-                        <div className="visitor-profile-row">
-
-                            <span>
-                                Years of Experience
-                            </span>
-
-                            <strong>
-                                {calculateExperience(
-                                    faculty.joiningDate
-                                )}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-            {/* =================================================
-                PROFILE
-            ================================================= */}
-
-            {faculty.profile && (
-
-                <section className="visitor-section">
-
-                    <div className="visitor-container">
-
-                        <div className="visitor-home-section-heading">
-
-                            <span>
-                                PROFILE
-                            </span>
-
-                            <h2>
-                                About the Faculty
-                            </h2>
-
-                        </div>
-
-                        <div className="visitor-detail-content">
-
-                            <p>
-                                {faculty.profile}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </section>
-            )}
-
-            {/* =================================================
-                RESEARCH AREAS
-            ================================================= */}
-
-            {faculty.researchAreas && (
-
-                <section className="visitor-section">
-
-                    <div className="visitor-container">
-
-                        <div className="visitor-home-section-heading">
-
-                            <span>
-                                RESEARCH
-                            </span>
-
-                            <h2>
-                                Research Areas
-                            </h2>
-
-                        </div>
-
-                        <div className="visitor-detail-content">
-
-                            <p>
-                                {faculty.researchAreas}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </section>
-            )}
-
-            {/* =================================================
-                PROJECTS
-            ================================================= */}
-
-            {faculty.projects && (
-
-                <section className="visitor-section">
-
-                    <div className="visitor-container">
-
-                        <div className="visitor-home-section-heading">
-
-                            <span>
-                                ACADEMIC WORK
-                            </span>
-
-                            <h2>
-                                Projects
-                            </h2>
-
-                        </div>
-
-                        <div className="visitor-detail-content">
-
-                            <p>
-                                {faculty.projects}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </section>
-            )}
-
-            {/* =================================================
-                BACK TO DEPARTMENT
-            ================================================= */}
-
-            <section className="visitor-section">
-
-                <div className="visitor-container">
-
-                    {department && (
-
-                        <Link
-                            to={`/departments/${department.departmentId}`}
-                            className="visitor-button"
-                        >
-                            ← Back to Department
-                        </Link>
-
-                    )}
-
+                <nav className="faculty-profile-navigation">
                     <Link
-                        to="/faculty-info"
-                        className="visitor-button visitor-button-secondary"
+                        to={
+                            faculty.departmentId != null
+                                ? `/academics/departments/${faculty.departmentId}#faculty`
+                                : "/academics/departments"
+                        }
+                        className="faculty-profile-link"
                     >
-                        View All Faculty
+                        ← Back to Department
                     </Link>
-
-                </div>
-
-            </section>
-
+                </nav>
+            </div>
         </main>
     );
 };

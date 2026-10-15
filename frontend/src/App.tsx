@@ -25,6 +25,7 @@ import VisitorAbout from "./pages/visitor/VisitorAbout";
 import VisitorAcademics from "./pages/visitor/VisitorAcademics";
 import VisitorDepartments from "./pages/visitor/VisitorDepartments";
 import VisitorDepartmentDetails from "./pages/visitor/VisitorDepartmentDetails";
+import VisitorDepartmentFaculty from "./pages/visitor/VisitorDepartmentFaculty";
 import VisitorCourses from "./pages/visitor/VisitorCourses";
 import VisitorCourseDetails from "./pages/visitor/VisitorCourseDetails";
 import VisitorFaculty from "./pages/visitor/VisitorFaculty";
@@ -185,50 +186,31 @@ function App() {
         <BrowserRouter>
             <Routes>
 
+                
                 {/* =====================================================
                     PUBLIC / VISITOR PORTAL
                     ===================================================== */}
 
                 <Route element={<VisitorLayout />}>
-
-                    {/* HOME */}
-
                     <Route
                         path="/"
                         element={<VisitorHome />}
                     />
-
-                    {/* ABOUT */}
 
                     <Route
                         path="/about"
                         element={<VisitorAbout />}
                     />
 
-                    {/* ACADEMICS LANDING PAGE */}
-
                     <Route
                         path="/academics"
                         element={<VisitorAcademics />}
                     />
 
-                    {/* DEPARTMENTS */}
-
+                    {/* Departments */}
                     <Route
                         path="/academics/departments"
                         element={<VisitorDepartments />}
-                    />
-
-                    {/* Must appear before /academics/departments/:departmentId */}
-
-                    <Route
-                        path="/academics/departments/courses"
-                        element={
-                            <Navigate
-                                to="/academics/courses"
-                                replace
-                            />
-                        }
                     />
 
                     <Route
@@ -236,8 +218,31 @@ function App() {
                         element={<VisitorDepartmentDetails />}
                     />
 
-                    {/* COURSES */}
+                    {/* Department-specific programs */}
+                    <Route
+                        path="/academics/departments/:departmentId/btech-courses"
+                        element={<VisitorCourses />}
+                        
+                    />
 
+                    <Route
+                        path="/academics/departments/:departmentId/mtech-courses"
+                        element={<VisitorCourses />}
+                        
+                    />
+
+                    {/* Individual course within a department */}
+                    <Route
+                        path="/academics/departments/:departmentId/courses/:courseId"
+                        element={<VisitorCourseDetails />}
+                    />
+
+                    <Route
+                        path="/academics/departments/:departmentId/faculty"
+                        element={<VisitorDepartmentFaculty />}
+                    />
+
+                    {/* General course catalogue and details */}
                     <Route
                         path="/academics/courses"
                         element={<VisitorCourses />}
@@ -248,9 +253,7 @@ function App() {
                         element={<VisitorCourseDetails />}
                     />
 
-                    {/* PUBLIC FACULTY
-                        /faculty remains reserved for authenticated faculty. */}
-
+                    {/* Public faculty */}
                     <Route
                         path="/academics/faculty-info"
                         element={<VisitorFaculty />}
@@ -261,38 +264,28 @@ function App() {
                         element={<VisitorFacultyDetails />}
                     />
 
-                    {/* EVENTS */}
-
+                    {/* Other public pages */}
                     <Route
                         path="/events"
                         element={<VisitorEvents />}
                     />
-
-                    {/* NOTICES */}
 
                     <Route
                         path="/notices"
                         element={<VisitorNotices />}
                     />
 
-                    {/* ADMISSIONS */}
-
                     <Route
                         path="/admissions"
                         element={<VisitorAdmissions />}
                     />
-
-                    {/* CONTACT */}
 
                     <Route
                         path="/contact"
                         element={<VisitorContact />}
                     />
 
-                    {/* =================================================
-                        LEGACY VISITOR URL COMPATIBILITY
-                        ================================================= */}
-
+                    {/* Legacy visitor URLs */}
                     <Route
                         path="/departments"
                         element={
@@ -337,8 +330,8 @@ function App() {
                         path="/faculty-info/:facultyId"
                         element={<LegacyFacultyRedirect />}
                     />
-
                 </Route>
+
 
                 {/* =====================================================
                     LOGIN

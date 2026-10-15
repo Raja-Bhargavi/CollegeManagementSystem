@@ -1,0 +1,235 @@
+
+.course-details-page {
+    width: 100%;
+    min-height: 60vh;
+    background: #ffffff;
+    color: #111827;
+}
+
+.course-details-container {
+    width: min(100% - 48px, 1100px);
+    margin: 0 auto;
+    padding: 28px 0 72px;
+}
+
+.course-details-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 30px;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.course-details-breadcrumb a {
+    color: #111827;
+    text-decoration: none;
+}
+
+.course-details-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.course-details-hero {
+    padding: 8px 0 38px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-details-eyebrow {
+    margin: 0 0 12px;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.course-details-hero h1 {
+    margin: 0;
+    color: #111827;
+    font-size: clamp(30px, 4vw, 40px);
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.course-details-subtitle {
+    margin: 16px 0 0;
+    color: #4b5563;
+    font-size: 16px;
+}
+
+.course-details-section {
+    margin-top: 42px;
+}
+
+.course-details-heading {
+    margin-bottom: 22px;
+}
+
+.course-details-heading h2 {
+    margin: 0 0 12px;
+    color: #111827;
+    font-size: 27px;
+    line-height: 1.3;
+}
+
+.course-details-heading > p:last-child {
+    color: #4b5563;
+    line-height: 1.7;
+}
+
+.course-details-card,
+.course-syllabus-card {
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.course-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+}
+
+.course-details-grid > div {
+    min-width: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-details-grid dt {
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.course-details-grid dd {
+    margin: 0;
+    color: #111827;
+    font-size: 16px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.course-details-description {
+    margin-top: 28px;
+}
+
+.course-details-description h3,
+.course-syllabus-information h3 {
+    margin: 0 0 12px;
+    color: #111827;
+    font-size: 19px;
+}
+
+.course-details-description p,
+.course-syllabus-information p {
+    margin: 0 0 12px;
+    color: #374151;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.course-syllabus-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.course-syllabus-information {
+    min-width: 0;
+}
+
+.course-details-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    padding: 12px 18px;
+    border: 1px solid #111827;
+    border-radius: 6px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.course-details-button:hover {
+    background: #ffffff;
+    color: #111827;
+}
+
+.course-syllabus-unavailable {
+    max-width: 330px;
+    margin: 0;
+    color: #374151;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.course-details-footer-action {
+    margin-top: 32px;
+}
+
+.course-details-button-secondary {
+    background: #ffffff;
+    color: #111827;
+}
+
+.course-details-button-secondary:hover {
+    background: #111827;
+    color: #ffffff;
+}
+
+.course-details-state,
+.course-details-message {
+    padding: 36px 0;
+    color: #374151;
+    line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+    .course-details-container {
+        width: min(100% - 32px, 1100px);
+        padding-top: 22px;
+        padding-bottom: 48px;
+    }
+
+    .course-details-hero {
+        padding-bottom: 28px;
+    }
+
+    .course-details-section {
+        margin-top: 30px;
+    }
+
+    .course-details-card,
+    .course-syllabus-card {
+        padding: 20px;
+    }
+
+    .course-details-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .course-syllabus-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .course-details-button {
+        width: 100%;
+        white-space: normal;
+    }
+}

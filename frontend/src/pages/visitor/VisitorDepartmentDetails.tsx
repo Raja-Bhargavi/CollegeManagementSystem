@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-
 import "../../styles/visitor-department-details.css";
 
 interface Department {
@@ -33,624 +32,260 @@ interface Faculty {
     facultyStatus: string | null;
 }
 
-const VisitorDepartmentDetails = () => {
+const API_BASE_URL = "http://localhost:8080/api/public";
 
-    const { departmentId } = useParams<{
+const VisitorDepartmentDetails = () => {
+    const { departmentId: departmentIdParam } = useParams<{
         departmentId: string;
     }>();
 
-    const [department, setDepartment] =
-        useState<Department | null>(null);
+    const departmentId = Number(departmentIdParam);
 
-    const [courses, setCourses] =
-        useState<Course[]>([]);
-
-    const [faculty, setFaculty] =
-        useState<Faculty[]>([]);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [error, setError] =
-        useState("");
-
-    // =========================================================
-    // LOAD DEPARTMENT DATA
-    // =========================================================
+    const [department, setDepartment] = useState<Department | null>(null);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [faculty, setFaculty] = useState<Faculty[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        const controller = new AbortController();
 
         const loadDepartment = async () => {
-
-            if (!departmentId) {
-                setError("Invalid department.");
+            if (
+                !departmentIdParam ||
+                !Number.isInteger(departmentId) ||
+                departmentId <= 0
+            ) {
+                setError("Invalid department ID.");
                 setLoading(false);
                 return;
             }
 
             try {
-
                 setLoading(true);
                 setError("");
 
-                const id =
-                    Number(departmentId);
+                const options = { signal: controller.signal };
 
-                /*
-                 * Load department.
-                 */
-                const departmentResponse =
-                    await axios.get<Department>(
-                        `http://localhost:8080/api/public/departments/${id}`
-                    );
+                const [
+                    departmentResponse,
+                    coursesResponse,
+                    facultyResponse,
+                ] = await Promise.all([
+                    axios.get<Department>(
+                        `${API_BASE_URL}/departments/${departmentId}`,
+                        options
+                    ),
+                    axios.get<Course[]>(
+                        `${API_BASE_URL}/departments/${departmentId}/courses`,
+                        options
+                    ),
+                    axios.get<Faculty[]>(
+                        `${API_BASE_URL}/departments/${departmentId}/faculty`,
+                        options
+                    ),
+                ]);
 
-                /*
-                 * Load department courses.
-                 *
-                 * Backend already filters these to BTECH
-                 * and MTECH courses.
-                 */
-                const coursesResponse =
-                    await axios.get<Course[]>(
-                        `http://localhost:8080/api/public/departments/${id}/courses`
-                    );
-
-                /*
-                 * Load department faculty.
-                 */
-                const facultyResponse =
-                    await axios.get<Faculty[]>(
-                        `http://localhost:8080/api/public/departments/${id}/faculty`
-                    );
-
-                setDepartment(
-                    departmentResponse.data
-                );
-
-                setCourses(
-                    coursesResponse.data
-                );
-
-                setFaculty(
-                    facultyResponse.data
-                );
-
+                setDepartment(departmentResponse.data);
+                setCourses(coursesResponse.data);
+                setFaculty(facultyResponse.data);
             } catch (err) {
+                if (
+                    axios.isCancel(err) ||
+                    (axios.isAxiosError(err) &&
+                        err.code === "ERR_CANCELED")
+                ) {
+                    return;
+                }
 
                 console.error(
-                    "Failed to load department:",
+                    "Failed to load department information:",
                     err
                 );
 
                 setDepartment(null);
                 setCourses([]);
                 setFaculty([]);
-
                 setError(
-                    "Unable to load department information."
+                    "Unable to load department information. Please try again later."
                 );
-
             } finally {
-
-                setLoading(false);
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
         };
 
         loadDepartment();
 
-    }, [departmentId]);
+        return () => controller.abort();
+    }, [departmentId, departmentIdParam]);
 
-    // =========================================================
-    // GROUP COURSES
-    // =========================================================
-
-    const btechCourses = useMemo(
+    const hasRecognizedPrograms = useMemo(
         () =>
-            courses.filter(
-                (course) =>
-                    course.programLevel
-                        ?.toUpperCase() === "BTECH"
-            ),
+            courses.some((course) => {
+                const level = course.programLevel?.trim().toUpperCase();
+                return level === "BTECH" || level === "MTECH";
+            }),
         [courses]
     );
-
-    const mtechCourses = useMemo(
-        () =>
-            courses.filter(
-                (course) =>
-                    course.programLevel
-                        ?.toUpperCase() === "MTECH"
-            ),
-        [courses]
-    );
-
-    /*
-     * Show the Courses section ONLY when there is at least
-     * one BTECH or MTECH course.
-     */
-    const hasCourses =
-        btechCourses.length > 0 ||
-        mtechCourses.length > 0;
-
-    // =========================================================
-    // GROUP FACULTY
-    // =========================================================
-
-    const professors = useMemo(
-        () =>
-            faculty.filter((member) =>
-                member.designation
-                    ?.toLowerCase()
-                    .includes("professor")
-                &&
-                !member.designation
-                    ?.toLowerCase()
-                    .includes("associate")
-                &&
-                !member.designation
-                    ?.toLowerCase()
-                    .includes("assistant")
-            ),
-        [faculty]
-    );
-
-    const associateProfessors = useMemo(
-        () =>
-            faculty.filter((member) =>
-                member.designation
-                    ?.toLowerCase()
-                    .includes("associate professor")
-            ),
-        [faculty]
-    );
-
-    const assistantProfessors = useMemo(
-        () =>
-            faculty.filter((member) =>
-                member.designation
-                    ?.toLowerCase()
-                    .includes("assistant professor")
-            ),
-        [faculty]
-    );
-
-    // =========================================================
-    // LOADING
-    // =========================================================
 
     if (loading) {
-
         return (
-
             <main className="visitor-department-page">
-
                 <div className="visitor-department-container">
-
-                    <div className="visitor-department-state">
+                    <p className="visitor-department-state" role="status">
                         Loading department information...
-                    </div>
-
+                    </p>
                 </div>
-
             </main>
         );
     }
 
-    // =========================================================
-    // ERROR
-    // =========================================================
-
     if (error || !department) {
-
         return (
-
             <main className="visitor-department-page">
-
                 <div className="visitor-department-container">
-
-                    <div className="visitor-department-state visitor-department-error">
-
-                        {error ||
-                            "Department information could not be found."}
-
+                    <div
+                        className="visitor-department-state visitor-department-error"
+                        role="alert"
+                    >
+                        {error || "Department information could not be found."}
                     </div>
 
                     <Link
-                        to="/departments"
+                        to="/academics/departments"
                         className="visitor-department-back-link"
                     >
                         ← Back to Departments
                     </Link>
-
                 </div>
-
             </main>
         );
     }
 
-    // =========================================================
-    // FACULTY ROW
-    // =========================================================
-
-    const renderFacultyRows = (
-        members: Faculty[]
-    ) => {
-
-        return (
-
-            <div className="visitor-department-list">
-
-                {members.map((member) => {
-
-                    const name =
-                        `${member.firstName} ${
-                            member.lastName || ""
-                        }`.trim();
-
-                    return (
-
-                        <Link
-                            key={member.facultyId}
-                            to={`/faculty-info/${member.facultyId}`}
-                            className="visitor-department-row"
-                        >
-
-                            <span>
-                                {name}
-                            </span>
-
-                            <span
-                                aria-hidden="true"
-                                className="visitor-department-arrow"
-                            >
-                                →
-                            </span>
-
-                        </Link>
-                    );
-                })}
-
-            </div>
-        );
-    };
-
-    // =========================================================
-    // COURSE ROW
-    // =========================================================
-
-    const renderCourseRows = (
-        courseList: Course[]
-    ) => {
-
-        return (
-
-            <div className="visitor-department-list">
-
-                {courseList.map((course) => (
-
-                    <Link
-                        key={course.courseId}
-                        to={`/courses/${course.courseId}`}
-                        className="visitor-department-row"
-                    >
-
-                        <span>
-                            {course.courseName}
-                        </span>
-
-                        <span
-                            aria-hidden="true"
-                            className="visitor-department-arrow"
-                        >
-                            →
-                        </span>
-
-                    </Link>
-
-                ))}
-
-            </div>
-        );
-    };
-
-    // =========================================================
-    // PAGE
-    // =========================================================
-
     return (
-
         <main className="visitor-department-page">
-
             <div className="visitor-department-container">
-
-                {/* =================================================
-                    PAGE HEADER
-                ================================================= */}
-
                 <header className="visitor-department-header">
-
                     <span className="visitor-department-eyebrow">
                         {department.departmentCode}
                     </span>
 
-                    <h1>
-                        {department.departmentName}
-                    </h1>
+                    <h1>{department.departmentName}</h1>
 
-                    <p>
-                        Department of{" "}
-                        {department.departmentName}
-                    </p>
-
+                    <p>Department of {department.departmentName}</p>
                 </header>
 
-                {/* =================================================
-                    DEPARTMENT OVERVIEW
-                ================================================= */}
-
                 <section className="visitor-department-section">
-
                     <div className="visitor-department-section-heading">
-
-                        <span>
-                            ABOUT THE DEPARTMENT
-                        </span>
-
-                        <h2>
-                            Department Overview
-                        </h2>
-
+                        <span>ABOUT THE DEPARTMENT</span>
+                        <h2>Department Overview</h2>
                     </div>
 
                     <div className="visitor-department-overview">
-
                         <p>
                             The Department of{" "}
-                            <strong>
-                                {department.departmentName}
-                            </strong>{" "}
-                            is one of the academic departments
-                            of the institution.
+                            <strong>{department.departmentName}</strong> is
+                            one of the academic departments of the institution.
                         </p>
 
                         <p>
-                            Explore the academic programs,
-                            courses and faculty associated
-                            with this department below.
+                            Explore the academic programs and faculty
+                            associated with this department.
                         </p>
-
                     </div>
-
                 </section>
 
-                {/* =================================================
-                    PROGRAMS
-                ================================================= */}
-
+                {/* Programs remain unchanged */}
                 <section className="visitor-department-section">
-
                     <div className="visitor-department-section-heading">
-
-                        <span>
-                            ACADEMIC PROGRAMS
-                        </span>
-
-                        <h2>
-                            Programs Offered
-                        </h2>
-
+                        <span>ACADEMIC PROGRAMS</span>
+                        <h2>Programs Offered</h2>
+                        <p>Select a program to view its courses.</p>
                     </div>
 
                     <div className="visitor-program-list">
-
                         <Link
-                            to={`/courses?departmentId=${department.departmentId}&program=BTECH`}
+                            to={`/academics/departments/${department.departmentId}/btech-courses`}
                             className="visitor-program-row"
                         >
-
                             <div>
-
-                                <strong>
-                                    B.Tech
-                                </strong>
-
-                                <span>
-                                    Undergraduate Programme
-                                </span>
-
+                                <strong>B.Tech</strong>
+                                <span>Undergraduate Programme</span>
                             </div>
-
-                            <span>
-                                →
-                            </span>
-
+                            <span aria-hidden="true">→</span>
                         </Link>
 
                         <Link
-                            to={`/courses?departmentId=${department.departmentId}&program=MTECH`}
+                            to={`/academics/departments/${department.departmentId}/mtech-courses`}
                             className="visitor-program-row"
                         >
-
                             <div>
-
-                                <strong>
-                                    M.Tech
-                                </strong>
-
-                                <span>
-                                    Postgraduate Programme
-                                </span>
-
+                                <strong>M.Tech</strong>
+                                <span>Postgraduate Programme</span>
                             </div>
-
-                            <span>
-                                →
-                            </span>
-
+                            <span aria-hidden="true">→</span>
                         </Link>
-
                     </div>
 
+                    {courses.length > 0 && !hasRecognizedPrograms && (
+                        <p className="visitor-department-note">
+                            No courses have a recognized B.Tech or M.Tech
+                            program assignment. Please check the course
+                            assignments in the database.
+                        </p>
+                    )}
                 </section>
 
-                {/* =================================================
-                    COURSES
-                ================================================= */}
+                {/* Faculty now has one row, matching the program rows */}
+                <section
+                    id="faculty"
+                    className="visitor-department-section"
+                >
+                    <div className="visitor-department-section-heading">
+                        <span>FACULTY</span>
+                        <h2>Faculty</h2>
+                        <p>
+                            View the faculty members belonging to this
+                            department and explore their individual profiles.
+                        </p>
+                    </div>
 
-                {hasCourses && (
-
-                    <section className="visitor-department-section">
-
-                        <div className="visitor-department-section-heading">
-
-                            <span>
-                                COURSES
-                            </span>
-
-                            <h2>
-                                Department Courses
-                            </h2>
-
-                            <p>
-                                Select a course to view its
-                                academic information and syllabus.
-                            </p>
-
-                        </div>
-
-                        {/* BTECH */}
-
-                        {btechCourses.length > 0 && (
-
-                            <div className="visitor-program-group">
-
-                                <h3>
-                                    B.Tech
-                                </h3>
-
-                                {renderCourseRows(
-                                    btechCourses
-                                )}
-
-                            </div>
-                        )}
-
-                        {/* MTECH */}
-
-                        {mtechCourses.length > 0 && (
-
-                            <div className="visitor-program-group">
-
-                                <h3>
-                                    M.Tech
-                                </h3>
-
-                                {renderCourseRows(
-                                    mtechCourses
-                                )}
-
-                            </div>
-                        )}
-
-                    </section>
-                )}
-
-                {/* =================================================
-                    FACULTY
-                ================================================= */}
-
-                {faculty.length > 0 && (
-
-                    <section className="visitor-department-section">
-
-                        <div className="visitor-department-section-heading">
-
-                            <span>
-                                FACULTY
-                            </span>
-
-                            <h2>
-                                Department Faculty
-                            </h2>
-
-                            <p>
-                                Faculty members grouped
-                                according to academic designation.
-                            </p>
-
-                        </div>
-
-                        {/* PROFESSORS */}
-
-                        {professors.length > 0 && (
-
-                            <div className="visitor-faculty-group">
-
-                                <h3>
-                                    Professors
-                                </h3>
-
-                                {renderFacultyRows(
-                                    professors
-                                )}
-
-                            </div>
-                        )}
-
-                        {/* ASSOCIATE PROFESSORS */}
-
-                        {associateProfessors.length > 0 && (
-
-                            <div className="visitor-faculty-group">
-
-                                <h3>
-                                    Associate Professors
-                                </h3>
-
-                                {renderFacultyRows(
-                                    associateProfessors
-                                )}
-
-                            </div>
-                        )}
-
-                        {/* ASSISTANT PROFESSORS */}
-
-                        {assistantProfessors.length > 0 && (
-
-                            <div className="visitor-faculty-group">
-
-                                <h3>
+                    <div className="visitor-program-list">
+                        <Link
+                            to={`/academics/departments/${department.departmentId}/faculty`}
+                            className="visitor-program-row"
+                        >
+                            <div>
+                                <strong>View Faculty</strong>
+                                <span>
+                                    Professors, Associate Professors and
                                     Assistant Professors
-                                </h3>
-
-                                {renderFacultyRows(
-                                    assistantProfessors
-                                )}
-
+                                </span>
                             </div>
-                        )}
 
-                    </section>
-                )}
+                            <span aria-hidden="true">→</span>
+                        </Link>
+                    </div>
 
-                {/* =================================================
-                    BACK
-                ================================================= */}
+                    {faculty.length === 0 && (
+                        <p className="visitor-department-note">
+                            There are currently no active faculty members
+                            listed for this department.
+                        </p>
+                    )}
+                </section>
 
                 <div className="visitor-department-footer-link">
-
                     <Link
-                        to="/departments"
+                        to="/academics/departments"
                         className="visitor-department-back-link"
                     >
                         ← Back to Departments
                     </Link>
-
                 </div>
-
             </div>
-
         </main>
     );
 };

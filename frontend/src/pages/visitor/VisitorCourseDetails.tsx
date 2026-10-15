@@ -1,6 +1,8 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import "../../styles/visitor-course-details.css";
 
 interface Course {
     courseId: number;
@@ -8,229 +10,236 @@ interface Course {
     courseName: string;
     credits: number | null;
     description: string | null;
+    departmentId: number | null;
+    programLevel: string | null;
+    syllabusUrl?: string | null;
 }
 
-const VisitorCourseDetails = () => {
+const API_BASE_URL = "http://localhost:8080";
 
+export default function VisitorCourseDetails() {
     const { courseId } = useParams();
-    const navigate = useNavigate();
 
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
+        const controller = new AbortController();
 
-        const loadCourse = async () => {
-
-            if (!courseId) {
-                setError("Invalid course.");
+        async function loadCourse() {
+            if (!courseId || !/^\d+$/.test(courseId)) {
+                setError("The requested course ID is invalid.");
                 setLoading(false);
                 return;
             }
 
             try {
+                setLoading(true);
+                setError("");
 
-                const response = await axios.get(
-                    `http://localhost:8080/api/public/courses/${courseId}`
+                const response = await axios.get<Course>(
+                    `${API_BASE_URL}/api/public/courses/${courseId}`,
+                    { signal: controller.signal }
                 );
 
                 setCourse(response.data);
-
             } catch (err) {
+                if (axios.isCancel(err)) return;
 
-                console.error(
-                    "Failed to load course:",
-                    err
-                );
-
+                console.error("Failed to load course:", err);
                 setError(
-                    "Unable to load course information."
+                    "Unable to load course information. Please try again later."
                 );
-
             } finally {
-
-                setLoading(false);
-
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
-
-        };
+        }
 
         loadCourse();
 
+        return () => controller.abort();
     }, [courseId]);
 
     if (loading) {
         return (
-            <div className="visitor-page">
-
-                <section className="visitor-section">
-
-                    <div className="visitor-state">
+            <main className="course-details-page">
+                <div className="course-details-container">
+                    <p className="course-details-state">
                         Loading course information...
-                    </div>
-
-                </section>
-
-            </div>
+                    </p>
+                </div>
+            </main>
         );
     }
 
     if (error || !course) {
         return (
-            <div className="visitor-page">
+            <main className="course-details-page">
+                <div className="course-details-container">
+                    <p className="course-details-breadcrumb">
+                        <Link to="/academics">Academics</Link>
+                        {" / "}
+                        <Link to="/academics/courses">Courses</Link>
+                    </p>
 
-                <section className="visitor-section">
-
-                    <div className="visitor-error">
-                        {error ||
-                            "Course information could not be found."}
-                    </div>
-
-                    <button
-                        type="button"
-                        className="visitor-course-back-button"
-                        onClick={() => navigate("/courses")}
-                    >
-                        ← Back to Courses
-                    </button>
-
-                </section>
-
-            </div>
+                    <section className="course-details-message">
+                        <h1>Course Information</h1>
+                        <p role="alert">
+                            {error || "Course information was not found."}
+                        </p>
+                        <Link
+                            className="course-details-button"
+                            to="/academics/courses"
+                        >
+                            Back to Courses
+                        </Link>
+                    </section>
+                </div>
+            </main>
         );
     }
 
+    const programName =
+        course.programLevel?.toUpperCase() === "BTECH"
+            ? "B.Tech"
+            : course.programLevel?.toUpperCase() === "MTECH"
+                ? "M.Tech"
+                : "Not specified";
+
+    const syllabusUrl = course.syllabusUrl
+        ? course.syllabusUrl.startsWith("http")
+            ? course.syllabusUrl
+            : `${API_BASE_URL}${course.syllabusUrl.startsWith("/") ? "" : "/"}${course.syllabusUrl}`
+        : null;
+
     return (
-        <div className="visitor-page">
+        <main className="course-details-page">
+            <div className="course-details-container">
+                <nav className="course-details-breadcrumb" aria-label="Breadcrumb">
+                    <Link to="/">Home</Link>
+                    <span>/</span>
+                    <Link to="/academics">Academics</Link>
+                    <span>/</span>
+                    <Link to="/academics/courses">Courses</Link>
+                    <span>/</span>
+                    <span>{course.courseCode}</span>
+                </nav>
 
-            <section className="visitor-page-banner">
+                <header className="course-details-hero">
+                    <p className="course-details-eyebrow">
+                        COURSE INFORMATION
+                    </p>
 
-                <span>
-                    COURSE INFORMATION
-                </span>
+                    <h1>{course.courseName}</h1>
 
-                <h1>
-                    {course.courseName}
-                </h1>
+                    <p className="course-details-subtitle">
+                        Course code: {course.courseCode}
+                    </p>
+                </header>
 
-                <p>
-                    {course.courseCode}
-                </p>
-
-            </section>
-
-            <section className="visitor-section">
-
-                <button
-                    type="button"
-                    className="visitor-course-back-button"
-                    onClick={() => navigate("/courses")}
-                >
-                    ← Back to Courses
-                </button>
-
-                <div className="visitor-course-details-card">
-
-                    <div className="visitor-course-details-header">
-
-                        <div>
-                            <span className="visitor-course-code">
-                                {course.courseCode}
-                            </span>
-
-                            <h2>
-                                {course.courseName}
-                            </h2>
-                        </div>
-
-                        <div className="visitor-course-credit-box">
-                            <span>
-                                Credits
-                            </span>
-
-                            <strong>
-                                {course.credits !== null
-                                    ? course.credits
-                                    : "N/A"}
-                            </strong>
-                        </div>
-
+                <section className="course-details-section">
+                    <div className="course-details-heading">
+                        <p className="course-details-eyebrow">
+                            COURSE OVERVIEW
+                        </p>
+                        <h2>Course Details</h2>
                     </div>
 
-                    <div className="visitor-course-description">
-
-                        <h3>
-                            Course Description
-                        </h3>
-
-                        <p>
-                            {course.description ||
-                                "Course description is currently unavailable."}
-                        </p>
-
-                    </div>
-
-                    <div className="visitor-syllabus-section">
-
-                        <span>
-                            SYLLABUS
-                        </span>
-
-                        <h2>
-                            Course Syllabus
-                        </h2>
-
-                        <p>
-                            The syllabus for this course will be
-                            displayed here once the official syllabus
-                            information is added to the college
-                            management system.
-                        </p>
-
-                        <div className="visitor-syllabus-placeholder">
-
-                            <h3>
-                                Official Syllabus
-                            </h3>
-
-                            <p>
-                                This section is reserved for the
-                                semester-wise syllabus, subjects,
-                                units, credits and other academic
-                                curriculum information.
-                            </p>
-
-                            <div className="visitor-syllabus-semesters">
-
-                                <div>
-                                    Semester 1
-                                </div>
-
-                                <div>
-                                    Semester 2
-                                </div>
-
-                                <div>
-                                    Semester 3
-                                </div>
-
-                                <div>
-                                    Semester 4
-                                </div>
-
+                    <div className="course-details-card">
+                        <dl className="course-details-grid">
+                            <div>
+                                <dt>Course Name</dt>
+                                <dd>{course.courseName}</dd>
                             </div>
 
-                        </div>
+                            <div>
+                                <dt>Course Code</dt>
+                                <dd>{course.courseCode}</dd>
+                            </div>
 
+                            <div>
+                                <dt>Program</dt>
+                                <dd>{programName}</dd>
+                            </div>
+
+                            <div>
+                                <dt>Credits</dt>
+                                <dd>
+                                    {course.credits ?? "Not specified"}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>Department ID</dt>
+                                <dd>
+                                    {course.departmentId ?? "Not assigned"}
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <div className="course-details-description">
+                            <h3>Course Description</h3>
+                            <p>
+                                {course.description?.trim() ||
+                                    "The course description has not yet been provided."}
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="course-details-section">
+                    <div className="course-details-heading">
+                        <p className="course-details-eyebrow">
+                            ACADEMIC DOCUMENTS
+                        </p>
+                        <h2>Course Syllabus</h2>
+                        <p>
+                            Access the official syllabus for this course
+                            in PDF format.
+                        </p>
                     </div>
 
+                    <div className="course-syllabus-card">
+                        <div className="course-syllabus-information">
+                            <h3>{course.courseName} — Syllabus</h3>
+                            <p>
+                                Program: {programName}
+                            </p>
+                            <p>
+                                Course code: {course.courseCode}
+                            </p>
+                        </div>
+
+                        {syllabusUrl ? (
+                            <a
+                                className="course-details-button"
+                                href={syllabusUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                View / Download Syllabus PDF
+                            </a>
+                        ) : (
+                            <p className="course-syllabus-unavailable">
+                                The official syllabus PDF is not available
+                                for this course yet.
+                            </p>
+                        )}
+                    </div>
+                </section>
+
+                <div className="course-details-footer-action">
+                    <Link
+                        to="/academics/courses"
+                        className="course-details-button course-details-button-secondary"
+                    >
+                        ← Back to Courses
+                    </Link>
                 </div>
-
-            </section>
-
-        </div>
+            </div>
+        </main>
     );
-};
-
-export default VisitorCourseDetails;
+}

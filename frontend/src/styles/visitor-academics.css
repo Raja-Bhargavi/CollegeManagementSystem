@@ -1,0 +1,221 @@
+/* =========================================================
+   ACADEMICS PAGE
+   Match the About page's content alignment and spacing
+   ========================================================= */
+
+.visitor-academics-page {
+    width: 100%;
+    color: #111827;
+    background: #ffffff;
+}
+
+/* Same centered content alignment as the About page */
+.visitor-academics-container {
+    width: min(1184px, calc(100% - 48px));
+    margin: 0 auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.visitor-academics-hero {
+    padding: 32px 0 36px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.visitor-academics-main {
+    padding: 48px 0 64px;
+    background: #ffffff;
+}
+
+
+.visitor-academics-eyebrow,
+.visitor-academics-section-heading > span {
+    display: block;
+    margin: 0 0 12px;
+    color: #526987;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    line-height: 1.5;
+}
+
+.visitor-academics-hero h1 {
+    margin: 0 0 20px;
+    color: #111827;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.visitor-academics-intro {
+    max-width: 900px;
+    margin: 0;
+    color: #526174;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.visitor-academics-main {
+    padding: 44px 0 48px;
+    background: #ffffff;
+}
+
+.visitor-academics-section-heading {
+    margin-bottom: 24px;
+}
+
+.visitor-academics-section-heading > span {
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+}
+
+.visitor-academics-section-heading h2 {
+    margin: 0 0 14px;
+    color: #111827;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.visitor-academics-section-heading p {
+    max-width: 900px;
+    margin: 0;
+    color: #526174;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* =========================================================
+   ACADEMIC SECTION LIST
+   ========================================================= */
+
+.visitor-academics-list {
+    width: 100%;
+    border-top: 1px solid #dce2e9;
+}
+
+.visitor-academics-row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 12px;
+    border-bottom: 1px solid #dce2e9;
+    color: inherit;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        padding 0.2s ease;
+}
+
+.visitor-academics-row:hover {
+    padding-right: 16px;
+    padding-left: 16px;
+    background: #f8fafc;
+}
+
+.visitor-academics-row:focus-visible {
+    outline: 2px solid #64748b;
+    outline-offset: -2px;
+}
+
+.visitor-academics-number {
+    align-self: start;
+    padding-top: 2px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.visitor-academics-row-content {
+    min-width: 0;
+}
+
+.visitor-academics-row-content h3 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.visitor-academics-row-content p {
+    margin: 0;
+    color: #526174;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.visitor-academics-arrow {
+    justify-self: end;
+    color: #526987;
+    font-size: 20px;
+    transition: transform 0.2s ease;
+}
+
+.visitor-academics-row:hover .visitor-academics-arrow {
+    transform: translateX(4px);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .visitor-academics-container {
+        width: calc(100% - 36px);
+    }
+}
+
+@media (max-width: 480px) {
+    .visitor-academics-container {
+        width: calc(100% - 32px);
+    }
+
+
+
+    .visitor-academics-hero {
+        padding: 26px 0 28px;
+    }
+
+    .visitor-academics-hero h1 {
+        font-size: 30px;
+    }
+
+    .visitor-academics-intro {
+        font-size: 15px;
+    }
+
+    .visitor-academics-main {
+        padding: 32px 0 36px;
+    }
+
+    .visitor-academics-section-heading h2 {
+        font-size: 23px;
+    }
+
+    .visitor-academics-row {
+        grid-template-columns: 30px minmax(0, 1fr) 18px;
+        gap: 12px;
+        padding: 18px 4px;
+    }
+
+    .visitor-academics-row-content h3 {
+        font-size: 16px;
+    }
+
+    .visitor-academics-row-content p {
+        font-size: 13px;
+    }
+}
