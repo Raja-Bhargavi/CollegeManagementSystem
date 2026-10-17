@@ -1,3 +1,4 @@
+
 package college_management_backend.dto.publicdto;
 
 import college_management_backend.entity.Notice;
@@ -11,6 +12,8 @@ public class PublicNoticeResponse {
     private String content;
     private LocalDateTime publishedAt;
     private LocalDateTime expiryDate;
+    private String category;
+    private Long departmentId;
 
     public PublicNoticeResponse() {
     }
@@ -21,6 +24,8 @@ public class PublicNoticeResponse {
         this.content = notice.getContent();
         this.publishedAt = notice.getPublishedAt();
         this.expiryDate = notice.getExpiryDate();
+        this.category = notice.getCategory();
+        this.departmentId = notice.getDepartmentId();
     }
 
     public Long getNoticeId() {
@@ -61,5 +66,21 @@ public class PublicNoticeResponse {
 
     public void setExpiryDate(LocalDateTime expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

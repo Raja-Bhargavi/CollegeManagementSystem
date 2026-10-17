@@ -1,3 +1,4 @@
+
 package college_management_backend.entity;
 
 import jakarta.persistence.*;
@@ -32,6 +33,12 @@ public class Notice {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
+
+    @Column(name = "category", nullable = false, length = 30)
+    private String category = "GENERAL";
+
+    @Column(name = "department_id")
+    private Long departmentId;
 
     public Notice() {
     }
@@ -98,5 +105,21 @@ public class Notice {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

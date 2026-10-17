@@ -1,3 +1,4 @@
+
 package college_management_backend.dto.publicdto;
 
 import college_management_backend.entity.Event;
@@ -11,6 +12,8 @@ public class PublicEventResponse {
     private String description;
     private LocalDateTime eventDate;
     private String location;
+    private String category;
+    private Long departmentId;
 
     public PublicEventResponse() {
     }
@@ -21,6 +24,8 @@ public class PublicEventResponse {
         this.description = event.getDescription();
         this.eventDate = event.getEventDate();
         this.location = event.getLocation();
+        this.category = event.getCategory();
+        this.departmentId = event.getDepartmentId();
     }
 
     public Long getEventId() {
@@ -61,5 +66,21 @@ public class PublicEventResponse {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }
