@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
+
 
 function Login() {
 
@@ -239,6 +240,7 @@ function Login() {
 
                     </div>
 
+
                     {error && (
                         <p className="error-message">
                             {error}
@@ -255,6 +257,18 @@ function Login() {
                     </button>
 
                 </form>
+
+                
+                <div className="login-recovery-links">
+                    <Link to="/forgot-username">
+                        Forgot Username?
+                    </Link>
+
+                    <Link to="/forgot-password">
+                        Forgot Password?
+                    </Link>
+                </div>
+
 
             </div>
 

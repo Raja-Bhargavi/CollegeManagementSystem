@@ -1,4 +1,8 @@
+
 import api from "./axios";
+
+export type ProgramLevel = "ALL" | "BTECH" | "MTECH";
+export type DepartmentScope = "ALL" | "SELECTED";
 
 export interface Notice {
   noticeId: number;
@@ -9,6 +13,11 @@ export interface Notice {
   expiryDate?: string | null;
   visibility: string;
   status: string;
+  category?: string;
+  programLevel?: ProgramLevel;
+  departmentScope?: DepartmentScope;
+  targetDepartmentIds?: number[];
+  departmentId?: number | null;
 }
 
 export interface NoticeRequest {
@@ -19,86 +28,47 @@ export interface NoticeRequest {
   expiryDate?: string | null;
   visibility: string;
   status: string;
+  category: string;
+  programLevel: ProgramLevel;
+  departmentScope: DepartmentScope;
+  targetDepartmentIds: number[];
+}
+
+export interface DepartmentOption {
+  departmentId: number;
+  departmentCode: string;
+  departmentName: string;
 }
 
 export const getNotices = async (): Promise<Notice[]> => {
-  try {
-    console.log("GET /api/notices");
-
-    const response = await api.get("/api/notices");
-
-    console.log("GET /api/notices response:", response);
-
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "GET /api/notices failed:",
-      error?.response?.status,
-      error?.response?.data,
-      error
-    );
-
-    throw error;
-  }
+  const response = await api.get("/api/notices");
+  return response.data;
 };
 
 export const getNoticeById = async (
   noticeId: number
 ): Promise<Notice> => {
-  const response = await api.get(
-    `/api/notices/${noticeId}`
-  );
-
+  const response = await api.get(`/api/notices/${noticeId}`);
   return response.data;
 };
 
 export const createNotice = async (
   data: NoticeRequest
 ): Promise<Notice> => {
-  try {
-    console.log("POST /api/notices payload:", data);
-
-    const response = await api.post(
-      "/api/notices",
-      data
-    );
-
-    console.log(
-      "POST /api/notices response:",
-      response
-    );
-
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "POST /api/notices failed:",
-      error?.response?.status,
-      error?.response?.data,
-      error
-    );
-
-    throw error;
-  }
+  const response = await api.post("/api/notices", data);
+  return response.data;
 };
 
 export const updateNotice = async (
   noticeId: number,
   data: NoticeRequest
 ): Promise<Notice> => {
-  const response = await api.put(
-    `/api/notices/${noticeId}`,
-    data
-  );
-
+  const response = await api.put(`/api/notices/${noticeId}`, data);
   return response.data;
 };
 
-export const deleteNotice = async (
-  noticeId: number
-): Promise<void> => {
-  await api.delete(
-    `/api/notices/${noticeId}`
-  );
+export const deleteNotice = async (noticeId: number): Promise<void> => {
+  await api.delete(`/api/notices/${noticeId}`);
 };
 
 export const getNoticesByVisibility = async (
@@ -107,16 +77,17 @@ export const getNoticesByVisibility = async (
   const response = await api.get(
     `/api/notices/visibility/${visibility}`
   );
-
   return response.data;
 };
 
 export const getNoticesByStatus = async (
   status: string
 ): Promise<Notice[]> => {
-  const response = await api.get(
-    `/api/notices/status/${status}`
-  );
+  const response = await api.get(`/api/notices/status/${status}`);
+  return response.data;
+};
 
+export const getPublicDepartments = async (): Promise<DepartmentOption[]> => {
+  const response = await api.get("/api/public/departments");
   return response.data;
 };

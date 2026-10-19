@@ -240,3 +240,35 @@
         padding: 20px;
     }
 }
+
+
+.notice-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.notice-meta-item {
+    display: inline-block;
+    margin: 0;
+}
+
+.visitor-information-card h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.visitor-information-card > p {
+    margin-top: 0;
+    margin-bottom: 18px;
+    line-height: 1.7;
+}
+
+.notice-expiry {
+    margin-top: 12px;
+    line-height: 1.6;
+}
+

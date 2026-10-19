@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 import {
@@ -5,45 +6,54 @@ import {
   createNotice,
   updateNotice,
   deleteNotice,
+  getPublicDepartments,
 } from "../../api/noticeApi";
 
-import type{
+import type {
   Notice,
   NoticeRequest,
+  DepartmentOption,
+  ProgramLevel,
+  DepartmentScope,
 } from "../../api/noticeApi";
+
+const emptyForm = {
+  title: "",
+  content: "",
+  createdBy: "",
+  publishedAt: "",
+  expiryDate: "",
+  visibility: "ALL",
+  status: "DRAFT",
+  category: "ACADEMIC",
+  programLevel: "ALL" as ProgramLevel,
+  departmentScope: "ALL" as DepartmentScope,
+  targetDepartmentIds: [] as number[],
+};
 
 export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [createdBy, setCreatedBy] = useState("");
-  const [publishedAt, setPublishedAt] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [visibility, setVisibility] =
-    useState("ALL");
-  const [status, setStatus] = useState("DRAFT");
-
-  const [editingId, setEditingId] =
-    useState<number | null>(null);
-
-  const loadNotices = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-
-      const data = await getNotices();
-      setNotices(data);
+      const [noticeData, departmentData] = await Promise.all([
+        getNotices(),
+        getPublicDepartments(),
+      ]);
+      setNotices(noticeData);
+      setDepartments(departmentData);
     } catch (error: any) {
-      console.error(
-        "Failed to load notices:",
-        error
-      );
-
+      console.error("Failed to load notices/departments:", error);
       setMessage(
         error?.response?.data?.message ||
-          "Failed to load notices."
+          "Failed to load notices or departments."
       );
     } finally {
       setLoading(false);
@@ -51,140 +61,157 @@ export default function NoticesPage() {
   };
 
   useEffect(() => {
-    loadNotices();
+    void loadData();
   }, []);
 
+  const setField = <K extends keyof typeof emptyForm>(
+    key: K,
+    value: (typeof emptyForm)[K]
+  ) => {
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+
   const resetForm = () => {
-    setTitle("");
-    setContent("");
-    setCreatedBy("");
-    setPublishedAt("");
-    setExpiryDate("");
-    setVisibility("ALL");
-    setStatus("DRAFT");
+    setForm(emptyForm);
     setEditingId(null);
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+  const handleDepartmentToggle = (departmentId: number) => {
+    setForm((current) => {
+      const exists = current.targetDepartmentIds.includes(departmentId);
+      return {
+        ...current,
+        targetDepartmentIds: exists
+          ? current.targetDepartmentIds.filter((id) => id !== departmentId)
+          : [...current.targetDepartmentIds, departmentId],
+      };
+    });
+  };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setMessage("");
 
-    if (
-      !title ||
-      !content ||
-      !createdBy ||
-      !visibility ||
-      !status
-    ) {
-      setMessage(
-        "Please fill all required fields."
-      );
+    if (!form.title.trim() || !form.content.trim() || !form.createdBy) {
+      setMessage("Title, content, and creator user ID are required.");
       return;
     }
 
-    const data: NoticeRequest = {
-      title,
-      content,
-      createdBy: Number(createdBy),
-      publishedAt: publishedAt
-        ? publishedAt
-        : null,
-      expiryDate: expiryDate
-        ? expiryDate
-        : null,
-      visibility,
-      status,
+    if (
+      form.expiryDate &&
+      form.publishedAt &&
+      new Date(form.expiryDate) < new Date(form.publishedAt)
+    ) {
+      setMessage("Expiry date cannot be before the publication date.");
+      return;
+    }
+
+    if (
+      form.departmentScope === "SELECTED" &&
+      form.targetDepartmentIds.length === 0
+    ) {
+      setMessage("Select at least one department, or choose All departments.");
+      return;
+    }
+
+    const payload: NoticeRequest = {
+      title: form.title.trim(),
+      content: form.content.trim(),
+      createdBy: Number(form.createdBy),
+      publishedAt: form.publishedAt || null,
+      expiryDate: form.expiryDate || null,
+      visibility: form.visibility,
+      status: form.status,
+      category: form.category,
+      programLevel: form.programLevel,
+      departmentScope: form.departmentScope,
+      targetDepartmentIds:
+        form.departmentScope === "ALL" ? [] : form.targetDepartmentIds,
     };
 
     try {
+      setSaving(true);
+
       if (editingId !== null) {
-        await updateNotice(editingId, data);
-
-        setMessage(
-          "Notice updated successfully."
-        );
+        await updateNotice(editingId, payload);
+        setMessage("Notice updated successfully.");
       } else {
-        await createNotice(data);
-
-        setMessage(
-          "Notice created successfully."
-        );
+        await createNotice(payload);
+        setMessage("Notice created successfully.");
       }
 
       resetForm();
-      await loadNotices();
+      await loadData();
     } catch (error: any) {
-      console.error(
-        "Notice operation failed:",
-        error
-      );
-
+      console.error("Notice operation failed:", error);
       setMessage(
         error?.response?.data?.message ||
-          error?.response?.data ||
-          "Notice operation failed."
+          (typeof error?.response?.data === "string"
+            ? error.response.data
+            : "Notice operation failed.")
       );
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleEdit = (notice: Notice) => {
     setEditingId(notice.noticeId);
 
-    setTitle(notice.title);
-    setContent(notice.content);
-    setCreatedBy(String(notice.createdBy));
+    const legacyScope: DepartmentScope =
+      notice.departmentScope ??
+      (notice.departmentId == null ? "ALL" : "SELECTED");
 
-    setPublishedAt(
-      notice.publishedAt
-        ? notice.publishedAt.substring(0, 16)
-        : ""
-    );
-
-    setExpiryDate(
-      notice.expiryDate
-        ? notice.expiryDate.substring(0, 16)
-        : ""
-    );
-
-    setVisibility(notice.visibility);
-    setStatus(notice.status);
+    setForm({
+      title: notice.title,
+      content: notice.content,
+      createdBy: String(notice.createdBy),
+      publishedAt: notice.publishedAt?.substring(0, 16) ?? "",
+      expiryDate: notice.expiryDate?.substring(0, 16) ?? "",
+      visibility: notice.visibility,
+      status: notice.status,
+      category: notice.category ?? "GENERAL",
+      programLevel: notice.programLevel ?? "ALL",
+      departmentScope: legacyScope,
+      targetDepartmentIds:
+        notice.targetDepartmentIds ??
+        (notice.departmentId == null ? [] : [notice.departmentId]),
+    });
 
     setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = async (
-    noticeId: number
-  ) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this notice?"
-    );
-
-    if (!confirmed) {
+  const handleDelete = async (noticeId: number) => {
+    if (!window.confirm("Are you sure you want to delete this notice?")) {
       return;
     }
 
     try {
       await deleteNotice(noticeId);
-
-      setMessage(
-        "Notice deleted successfully."
-      );
-
-      await loadNotices();
+      setMessage("Notice deleted successfully.");
+      await loadData();
     } catch (error: any) {
-      console.error(
-        "Failed to delete notice:",
-        error
-      );
-
       setMessage(
-        error?.response?.data?.message ||
-          "Failed to delete notice."
+        error?.response?.data?.message || "Failed to delete notice."
       );
     }
+  };
+
+  const departmentLabel = (notice: Notice) => {
+    if (notice.departmentScope === "ALL" || notice.departmentId == null) {
+      return "All departments";
+    }
+
+    const ids =
+      notice.targetDepartmentIds ??
+      (notice.departmentId ? [notice.departmentId] : []);
+
+    const names = ids
+      .map((id) => departments.find((d) => d.departmentId === id)?.departmentCode)
+      .filter(Boolean);
+
+    return names.length ? names.join(", ") : "Selected departments";
   };
 
   if (loading) {
@@ -197,309 +224,307 @@ export default function NoticesPage() {
 
       {message && (
         <div
+          role="status"
           style={{
-            marginBottom: "20px",
-            padding: "10px",
+            marginBottom: 20,
+            padding: 10,
             border: "1px solid #ccc",
-            borderRadius: "6px",
+            borderRadius: 6,
           }}
         >
           {message}
         </div>
       )}
 
-      {/* FORM */}
-
       <form
         onSubmit={handleSubmit}
         style={{
-          marginBottom: "30px",
-          padding: "20px",
+          marginBottom: 30,
+          padding: 20,
           border: "1px solid #ddd",
-          borderRadius: "8px",
+          borderRadius: 8,
         }}
       >
-        <h2>
-          {editingId !== null
-            ? "Update Notice"
-            : "Create Notice"}
-        </h2>
+        <h2>{editingId !== null ? "Update Notice" : "Create Notice"}</h2>
 
         <div style={fieldStyle}>
-          <label>Title</label>
-
+          <label htmlFor="notice-title">Title</label>
           <input
-            type="text"
-            value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
-            placeholder="Notice title"
+            id="notice-title"
+            required
+            value={form.title}
+            onChange={(e) => setField("title", e.target.value)}
+            placeholder="Mid Semester Examination Schedule"
             style={inputStyle}
           />
         </div>
 
         <div style={fieldStyle}>
-          <label>Content</label>
-
+          <label htmlFor="notice-content">Content</label>
           <textarea
-            value={content}
-            onChange={(e) =>
-              setContent(e.target.value)
-            }
-            placeholder="Notice content"
+            id="notice-content"
+            required
             rows={5}
+            value={form.content}
+            onChange={(e) => setField("content", e.target.value)}
+            placeholder="Enter notice details"
             style={inputStyle}
           />
         </div>
 
         <div style={fieldStyle}>
-          <label>Created By (User ID)</label>
-
+          <label htmlFor="notice-creator">Created By (User ID)</label>
           <input
+            id="notice-creator"
             type="number"
-            value={createdBy}
-            onChange={(e) =>
-              setCreatedBy(e.target.value)
-            }
-            placeholder="Enter user ID"
+            required
             min="1"
+            value={form.createdBy}
+            onChange={(e) => setField("createdBy", e.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div style={fieldStyle}>
-          <label>Published At</label>
-
-          <input
-            type="datetime-local"
-            value={publishedAt}
-            onChange={(e) =>
-              setPublishedAt(e.target.value)
-            }
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={fieldStyle}>
-          <label>Expiry Date</label>
-
-          <input
-            type="datetime-local"
-            value={expiryDate}
-            onChange={(e) =>
-              setExpiryDate(e.target.value)
-            }
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={fieldStyle}>
-          <label>Visibility</label>
-
+          <label htmlFor="notice-category">Category</label>
           <select
-            value={visibility}
-            onChange={(e) =>
-              setVisibility(e.target.value)
-            }
+            id="notice-category"
+            value={form.category}
+            onChange={(e) => setField("category", e.target.value)}
             style={inputStyle}
           >
-            <option value="ALL">
-              ALL
-            </option>
-
-            <option value="STUDENT">
-              STUDENT
-            </option>
-
-            <option value="FACULTY">
-              FACULTY
-            </option>
-
-            <option value="STAFF">
-              STAFF
-            </option>
-
-            <option value="MANAGEMENT">
-              MANAGEMENT
-            </option>
+            <option value="ACADEMIC">Academic</option>
+            <option value="EXAMINATION">Examination</option>
+            <option value="ADMISSION">Admission</option>
+            <option value="GENERAL">General</option>
+            <option value="ADMINISTRATIVE">Administrative</option>
           </select>
         </div>
 
         <div style={fieldStyle}>
-          <label>Status</label>
-
+          <label htmlFor="notice-program">Applicable programme</label>
           <select
-            value={status}
+            id="notice-program"
+            value={form.programLevel}
             onChange={(e) =>
-              setStatus(e.target.value)
+              setField("programLevel", e.target.value as ProgramLevel)
             }
             style={inputStyle}
           >
-            <option value="DRAFT">
-              DRAFT
-            </option>
-
-            <option value="PUBLISHED">
-              PUBLISHED
-            </option>
-
-            <option value="EXPIRED">
-              EXPIRED
-            </option>
+            <option value="ALL">All programmes (B.Tech and M.Tech)</option>
+            <option value="BTECH">B.Tech only</option>
+            <option value="MTECH">M.Tech only</option>
           </select>
         </div>
 
-        <button type="submit">
-          {editingId !== null
-            ? "Update Notice"
-            : "Create Notice"}
+        <div style={fieldStyle}>
+          <label htmlFor="notice-department-scope">Applicable departments</label>
+          <select
+            id="notice-department-scope"
+            value={form.departmentScope}
+            onChange={(e) => {
+              const scope = e.target.value as DepartmentScope;
+              setForm((current) => ({
+                ...current,
+                departmentScope: scope,
+                targetDepartmentIds:
+                  scope === "ALL" ? [] : current.targetDepartmentIds,
+              }));
+            }}
+            style={inputStyle}
+          >
+            <option value="ALL">All departments</option>
+            <option value="SELECTED">Select specific departments</option>
+          </select>
+        </div>
+
+        {form.departmentScope === "SELECTED" && (
+          <fieldset style={fieldStyle}>
+            <legend>Select applicable departments</legend>
+            {departments.length === 0 ? (
+              <p>No departments were loaded. Check the public departments API.</p>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: 10,
+                }}
+              >
+                {departments.map((department) => (
+                  <label
+                    key={department.departmentId}
+                    style={{ display: "flex", gap: 8, alignItems: "center" }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={form.targetDepartmentIds.includes(
+                        department.departmentId
+                      )}
+                      onChange={() =>
+                        handleDepartmentToggle(department.departmentId)
+                      }
+                    />
+                    {department.departmentCode} — {department.departmentName}
+                  </label>
+                ))}
+              </div>
+            )}
+            <p>
+              Selected: {form.targetDepartmentIds.length} department(s)
+            </p>
+          </fieldset>
+        )}
+
+        <div style={fieldStyle}>
+          <label htmlFor="notice-published">Published at</label>
+          <input
+            id="notice-published"
+            type="datetime-local"
+            value={form.publishedAt}
+            onChange={(e) => setField("publishedAt", e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={fieldStyle}>
+          <label htmlFor="notice-expiry">Available until</label>
+          <input
+            id="notice-expiry"
+            type="datetime-local"
+            value={form.expiryDate}
+            onChange={(e) => setField("expiryDate", e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={fieldStyle}>
+          <label htmlFor="notice-visibility">Visibility</label>
+          <select
+            id="notice-visibility"
+            value={form.visibility}
+            onChange={(e) => setField("visibility", e.target.value)}
+            style={inputStyle}
+          >
+            <option value="ALL">ALL</option>
+            <option value="STUDENT">STUDENT</option>
+            <option value="FACULTY">FACULTY</option>
+            <option value="STAFF">STAFF</option>
+            <option value="MANAGEMENT">MANAGEMENT</option>
+          </select>
+        </div>
+
+        <div style={fieldStyle}>
+          <label htmlFor="notice-status">Status</label>
+          <select
+            id="notice-status"
+            value={form.status}
+            onChange={(e) => setField("status", e.target.value)}
+            style={inputStyle}
+          >
+            <option value="DRAFT">DRAFT</option>
+            <option value="PUBLISHED">PUBLISHED</option>
+            <option value="EXPIRED">EXPIRED</option>
+          </select>
+        </div>
+
+        <button type="submit" disabled={saving}>
+          {saving
+            ? "Saving..."
+            : editingId !== null
+              ? "Update Notice"
+              : "Create Notice"}
         </button>
 
         {editingId !== null && (
           <button
             type="button"
             onClick={resetForm}
-            style={{
-              marginLeft: "10px",
-            }}
+            style={{ marginLeft: 10 }}
           >
             Cancel
           </button>
         )}
       </form>
 
-      {/* TABLE */}
-
       <h2>Notice Records</h2>
 
       {notices.length === 0 ? (
         <p>No notices found.</p>
       ) : (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={cellStyle}>
-                ID
-              </th>
-
-              <th style={cellStyle}>
-                Title
-              </th>
-
-              <th style={cellStyle}>
-                Content
-              </th>
-
-              <th style={cellStyle}>
-                Created By
-              </th>
-
-              <th style={cellStyle}>
-                Published At
-              </th>
-
-              <th style={cellStyle}>
-                Expiry Date
-              </th>
-
-              <th style={cellStyle}>
-                Visibility
-              </th>
-
-              <th style={cellStyle}>
-                Status
-              </th>
-
-              <th style={cellStyle}>
-                Actions
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {notices.map((notice) => (
-              <tr key={notice.noticeId}>
-                <td style={cellStyle}>
-                  {notice.noticeId}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.title}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.content}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.createdBy}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.publishedAt || "-"}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.expiryDate || "-"}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.visibility}
-                </td>
-
-                <td style={cellStyle}>
-                  {notice.status}
-                </td>
-
-                <td style={cellStyle}>
-                  <button
-                    onClick={() =>
-                      handleEdit(notice)
-                    }
-                    style={{
-                      marginRight: "8px",
-                    }}
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      handleDelete(
-                        notice.noticeId
-                      )
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                {[
+                  "ID",
+                  "Title",
+                  "Category",
+                  "Programme",
+                  "Departments",
+                  "Published",
+                  "Expires",
+                  "Visibility",
+                  "Status",
+                  "Actions",
+                ].map((heading) => (
+                  <th key={heading} style={cellStyle}>{heading}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {notices.map((notice) => (
+                <tr key={notice.noticeId}>
+                  <td style={cellStyle}>{notice.noticeId}</td>
+                  <td style={cellStyle}>{notice.title}</td>
+                  <td style={cellStyle}>{notice.category ?? "GENERAL"}</td>
+                  <td style={cellStyle}>
+                    {notice.programLevel === "BTECH"
+                      ? "B.Tech"
+                      : notice.programLevel === "MTECH"
+                        ? "M.Tech"
+                        : "All programmes"}
+                  </td>
+                  <td style={cellStyle}>{departmentLabel(notice)}</td>
+                  <td style={cellStyle}>{notice.publishedAt || "-"}</td>
+                  <td style={cellStyle}>{notice.expiryDate || "-"}</td>
+                  <td style={cellStyle}>{notice.visibility}</td>
+                  <td style={cellStyle}>{notice.status}</td>
+                  <td style={cellStyle}>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(notice)}
+                      style={{ marginRight: 8 }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(notice.noticeId)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 }
 
-const fieldStyle = {
-  marginBottom: "15px",
-};
-
+const fieldStyle = { marginBottom: 15 };
 const inputStyle = {
   width: "100%",
-  padding: "8px",
-  marginTop: "5px",
+  padding: 8,
+  marginTop: 5,
   boxSizing: "border-box" as const,
 };
-
 const cellStyle = {
   border: "1px solid #ddd",
-  padding: "10px",
+  padding: 10,
+  textAlign: "left" as const,
+  verticalAlign: "top" as const,
 };

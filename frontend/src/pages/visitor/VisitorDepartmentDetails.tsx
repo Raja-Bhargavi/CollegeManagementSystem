@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
@@ -164,6 +165,9 @@ const VisitorDepartmentDetails = () => {
         );
     }
 
+    const departmentBase =
+        `/academics/departments/${department.departmentId}`;
+
     return (
         <main className="visitor-department-page">
             <div className="visitor-department-container">
@@ -191,13 +195,12 @@ const VisitorDepartmentDetails = () => {
                         </p>
 
                         <p>
-                            Explore the academic programs and faculty
-                            associated with this department.
+                            Explore the academic programs, faculty, notices
+                            and events associated with this department.
                         </p>
                     </div>
                 </section>
 
-                {/* Programs remain unchanged */}
                 <section className="visitor-department-section">
                     <div className="visitor-department-section-heading">
                         <span>ACADEMIC PROGRAMS</span>
@@ -207,7 +210,7 @@ const VisitorDepartmentDetails = () => {
 
                     <div className="visitor-program-list">
                         <Link
-                            to={`/academics/departments/${department.departmentId}/btech-courses`}
+                            to={`${departmentBase}/btech-courses`}
                             className="visitor-program-row"
                         >
                             <div>
@@ -218,7 +221,7 @@ const VisitorDepartmentDetails = () => {
                         </Link>
 
                         <Link
-                            to={`/academics/departments/${department.departmentId}/mtech-courses`}
+                            to={`${departmentBase}/mtech-courses`}
                             className="visitor-program-row"
                         >
                             <div>
@@ -238,23 +241,18 @@ const VisitorDepartmentDetails = () => {
                     )}
                 </section>
 
-                {/* Faculty now has one row, matching the program rows */}
-                <section
-                    id="faculty"
-                    className="visitor-department-section"
-                >
+                <section className="visitor-department-section">
                     <div className="visitor-department-section-heading">
                         <span>FACULTY</span>
                         <h2>Faculty</h2>
                         <p>
-                            View the faculty members belonging to this
-                            department and explore their individual profiles.
+                            Explore faculty members belonging to this department.
                         </p>
                     </div>
 
                     <div className="visitor-program-list">
                         <Link
-                            to={`/academics/departments/${department.departmentId}/faculty`}
+                            to={`${departmentBase}/faculty`}
                             className="visitor-program-row"
                         >
                             <div>
@@ -264,7 +262,6 @@ const VisitorDepartmentDetails = () => {
                                     Assistant Professors
                                 </span>
                             </div>
-
                             <span aria-hidden="true">→</span>
                         </Link>
                     </div>
@@ -275,6 +272,59 @@ const VisitorDepartmentDetails = () => {
                             listed for this department.
                         </p>
                     )}
+                </section>
+
+                <section className="visitor-department-section">
+                    <div className="visitor-department-section-heading">
+                        <span>DEPARTMENT UPDATES</span>
+                        <h2>Department Notices</h2>
+                        <p>
+                            Read public announcements and academic updates
+                            specific to {department.departmentName}.
+                        </p>
+                    </div>
+
+                    <div className="visitor-program-list">
+                        <Link
+                            to={`${departmentBase}/notices`}
+                            className="visitor-program-row"
+                        >
+                            <div>
+                                <strong>View Department Notices</strong>
+                                <span>
+                                    Examination announcements, deadlines and
+                                    department updates
+                                </span>
+                            </div>
+                            <span aria-hidden="true">→</span>
+                        </Link>
+                    </div>
+                </section>
+
+                <section className="visitor-department-section">
+                    <div className="visitor-department-section-heading">
+                        <span>DEPARTMENT ACTIVITIES</span>
+                        <h2>Department Events</h2>
+                        <p>
+                            Discover workshops, seminars, technical activities
+                            and other events assigned to this department.
+                        </p>
+                    </div>
+
+                    <div className="visitor-program-list">
+                        <Link
+                            to={`${departmentBase}/events`}
+                            className="visitor-program-row"
+                        >
+                            <div>
+                                <strong>View Department Events</strong>
+                                <span>
+                                    Workshops, seminars and department activities
+                                </span>
+                            </div>
+                            <span aria-hidden="true">→</span>
+                        </Link>
+                    </div>
                 </section>
 
                 <div className="visitor-department-footer-link">

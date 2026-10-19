@@ -13,6 +13,7 @@ import {
 
 import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
+import AccountRecovery from "./pages/AccountRecovery";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // =========================
@@ -34,6 +35,9 @@ import VisitorEvents from "./pages/visitor/VisitorEvents";
 import VisitorNotices from "./pages/visitor/VisitorNotices";
 import VisitorAdmissions from "./pages/visitor/VisitorAdmissions";
 import VisitorContact from "./pages/visitor/VisitorContact";
+import VisitorDepartmentNotices from "./pages/visitor/VisitorDepartmentNotices";
+import VisitorDepartmentEvents from "./pages/visitor/VisitorDepartmentEvents";
+
 
 // =========================
 // ADMIN
@@ -242,6 +246,16 @@ function App() {
                         element={<VisitorDepartmentFaculty />}
                     />
 
+                    <Route
+                        path="/academics/departments/:departmentId/notices"
+                        element={<VisitorDepartmentNotices />}
+                    />
+
+                    <Route
+                        path="/academics/departments/:departmentId/events"
+                        element={<VisitorDepartmentEvents />}
+                    />
+
                     {/* General course catalogue and details */}
                     <Route
                         path="/academics/courses"
@@ -341,6 +355,23 @@ function App() {
                     path="/login"
                     element={<Login />}
                 />
+
+                
+                <Route
+                    path="/forgot-username"
+                    element={<AccountRecovery />}
+                />
+
+                <Route
+                    path="/forgot-password"
+                    element={<AccountRecovery />}
+                />
+
+                <Route
+                    path="/reset-password"
+                    element={<AccountRecovery />}
+                />
+
 
                 {/* =====================================================
                     ADMIN PORTAL

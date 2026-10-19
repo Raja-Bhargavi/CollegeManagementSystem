@@ -75,3 +75,27 @@ input {
     font-weight: 600;
 }
 
+
+.login-recovery-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.login-recovery-links a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login-recovery-links a:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    color: #166534;
+    margin: 12px 0;
+}
