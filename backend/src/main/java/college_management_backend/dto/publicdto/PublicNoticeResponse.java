@@ -14,6 +14,9 @@ public class PublicNoticeResponse {
     private LocalDateTime expiryDate;
     private String category;
     private Long departmentId;
+    private String programLevel;
+    private String departmentScope;
+    private java.util.Set<Long> targetDepartmentIds;
 
     public PublicNoticeResponse() {
     }
@@ -26,6 +29,11 @@ public class PublicNoticeResponse {
         this.expiryDate = notice.getExpiryDate();
         this.category = notice.getCategory();
         this.departmentId = notice.getDepartmentId();
+        this.programLevel = notice.getProgramLevel();
+        this.departmentScope = notice.getDepartmentScope();
+        this.targetDepartmentIds = new java.util.HashSet<>(
+                notice.getTargetDepartmentIds()
+        );
     }
 
     public Long getNoticeId() {
@@ -83,4 +91,17 @@ public class PublicNoticeResponse {
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
     }
+
+    public String getProgramLevel() {
+    return programLevel;
+    }
+
+    public String getDepartmentScope() {
+        return departmentScope;
+    }
+
+    public java.util.Set<Long> getTargetDepartmentIds() {
+        return targetDepartmentIds;
+    }
 }
+

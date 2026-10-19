@@ -110,4 +110,64 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserAccountOption> findAvailableStaffAccounts(
             @Param("includeUserId") Long includeUserId
     );
+
+            
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM user_roles ur
+            JOIN roles r ON r.role_id = ur.role_id
+            WHERE ur.user_id = :userId
+            AND r.role_name = :roleName
+            """, nativeQuery = true)
+        boolean hasRole(
+                @Param("userId") Long userId,
+                @Param("roleName") String roleName
+        );
+
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM users u
+            WHERE u.user_id = :userId
+            AND u.account_status = 'ACTIVE'
+            """, nativeQuery = true)
+        boolean isActiveUser(
+                @Param("userId") Long userId
+        );
+
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM students s
+            WHERE s.user_id = :userId
+            """, nativeQuery = true)
+        boolean hasStudentProfile(
+                @Param("userId") Long userId
+        );
+
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM faculty f
+            WHERE f.user_id = :userId
+            """, nativeQuery = true)
+        boolean hasFacultyProfile(
+                @Param("userId") Long userId
+        );
+
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM staff s
+            WHERE s.user_id = :userId
+            """, nativeQuery = true)
+        boolean hasStaffProfile(
+                @Param("userId") Long userId
+        );
+
+        @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM management m
+            WHERE m.user_id = :userId
+            """, nativeQuery = true)
+        boolean hasManagementProfile(
+                @Param("userId") Long userId
+        );
+
 }

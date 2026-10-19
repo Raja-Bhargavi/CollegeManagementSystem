@@ -1,8 +1,10 @@
+
 package college_management_backend.dto;
 
 import college_management_backend.entity.Notice;
 
 import java.time.LocalDateTime;
+
 
 public class NoticeResponse {
 
@@ -14,6 +16,11 @@ public class NoticeResponse {
     private LocalDateTime expiryDate;
     private String visibility;
     private String status;
+    private String category;
+    private Long departmentId;
+    private String programLevel;
+    private String departmentScope;
+    private java.util.Set<Long> targetDepartmentIds;
 
     public NoticeResponse(Notice notice) {
         this.noticeId = notice.getNoticeId();
@@ -24,6 +31,13 @@ public class NoticeResponse {
         this.expiryDate = notice.getExpiryDate();
         this.visibility = notice.getVisibility();
         this.status = notice.getStatus();
+        this.category = notice.getCategory();
+        this.departmentId = notice.getDepartmentId();
+        this.programLevel = notice.getProgramLevel();
+        this.departmentScope = notice.getDepartmentScope();
+        this.targetDepartmentIds = new java.util.HashSet<>(
+                notice.getTargetDepartmentIds()
+        );
     }
 
     public Long getNoticeId() {
@@ -57,4 +71,25 @@ public class NoticeResponse {
     public String getStatus() {
         return status;
     }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public String getProgramLevel() {
+        return programLevel;
+    }
+
+    public String getDepartmentScope() {
+    return departmentScope;
+    }
+
+    public java.util.Set<Long> getTargetDepartmentIds() {
+        return targetDepartmentIds;
+    }
+
 }

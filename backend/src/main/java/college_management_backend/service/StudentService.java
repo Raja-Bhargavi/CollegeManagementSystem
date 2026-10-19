@@ -118,6 +118,9 @@ public class StudentService {
         return toResponse(student);
     }
 
+    
+
+
     // =====================================================
     // CREATE STUDENT
     // =====================================================
@@ -125,6 +128,8 @@ public class StudentService {
     @Transactional
     public StudentResponse createStudent(
             StudentRequest request) {
+
+        validateStudentAccount(request.getUserId());
 
         if (studentRepository.existsByRollNumber(
                 request.getRollNumber())) {
@@ -192,10 +197,15 @@ public class StudentService {
                 request.getStudentStatus()
         );
 
+
+        
+
         Student savedStudent =
                 studentRepository.save(student);
 
         return toResponse(savedStudent);
+
+
     }
 
     // =====================================================
@@ -347,4 +357,32 @@ public class StudentService {
                 student.getStudentStatus()
         );
     }
+
+    
+        private void validateStudentAccount(Long userId) {
+        if (userId == null) {
+                throw new IllegalArgumentException("User ID is required");
+        }
+
+        if (!userRepository.isActiveUser(userId)) {
+                throw new IllegalArgumentException(
+                        "User account does not exist or is inactive: " + userId
+                );
+        }
+
+        if (!userRepository.hasRole(userId, "STUDENT")) {
+                throw new IllegalArgumentException(
+                        "Selected account must have the STUDENT role"
+                );
+        }
+
+        if (userRepository.hasFacultyProfile(userId)
+                || userRepository.hasStaffProfile(userId)
+                || userRepository.hasManagementProfile(userId)) {
+                throw new IllegalArgumentException(
+                        "This account is already linked to another profile type"
+                );
+        }
+        }
+
 }

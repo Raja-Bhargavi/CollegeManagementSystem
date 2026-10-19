@@ -4,6 +4,9 @@ package college_management_backend.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "notices")
 public class Notice {
@@ -37,8 +40,42 @@ public class Notice {
     @Column(name = "category", nullable = false, length = 30)
     private String category = "GENERAL";
 
+    // NULL means the notice is not restricted to one department.
     @Column(name = "department_id")
     private Long departmentId;
+
+    // ALL applies to B.Tech and M.Tech.
+    @Column(name = "program_level", nullable = false, length = 20)
+    private String programLevel = "ALL";
+
+    @Column(name = "department_scope", nullable = false, length = 20)
+    private String departmentScope = "ALL";
+
+    @ElementCollection
+    @CollectionTable(
+        name = "notice_target_departments",
+        joinColumns = @JoinColumn(name = "notice_id")
+    )
+    @Column(name = "department_id", nullable = false)
+    private Set<Long> targetDepartmentIds = new HashSet<>();
+
+    public String getDepartmentScope() {
+        return departmentScope;
+    }
+
+    public void setDepartmentScope(String departmentScope) {
+        this.departmentScope = departmentScope;
+    }
+
+    public Set<Long> getTargetDepartmentIds() {
+        return targetDepartmentIds;
+    }
+
+    public void setTargetDepartmentIds(Set<Long> targetDepartmentIds) {
+        this.targetDepartmentIds = targetDepartmentIds == null
+                ? new HashSet<>()
+                : new HashSet<>(targetDepartmentIds);
+    }
 
     public Notice() {
     }
@@ -121,5 +158,13 @@ public class Notice {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getProgramLevel() {
+        return programLevel;
+    }
+
+    public void setProgramLevel(String programLevel) {
+        this.programLevel = programLevel;
     }
 }

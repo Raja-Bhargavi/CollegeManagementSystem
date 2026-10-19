@@ -1,3 +1,4 @@
+
 package college_management_backend.repository;
 
 import college_management_backend.entity.Event;
@@ -14,4 +15,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStatusOrderByEventDateAsc(String status);
 
     List<Event> findAllByOrderByEventDateAsc();
+
+    List<Event> findByDepartmentIdOrderByEventDateAsc(
+            Long departmentId
+    );
 }

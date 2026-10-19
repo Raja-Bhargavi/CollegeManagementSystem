@@ -23,20 +23,15 @@ public class PublicController {
         this.publicService = publicService;
     }
 
-    // DEPARTMENTS
-
     @GetMapping("/departments")
     public ResponseEntity<List<PublicDepartmentResponse>>
     getPublicDepartments() {
-        return ResponseEntity.ok(
-                publicService.getPublicDepartments()
-        );
+        return ResponseEntity.ok(publicService.getPublicDepartments());
     }
 
     @GetMapping("/departments/{departmentId}")
     public ResponseEntity<PublicDepartmentResponse>
-    getPublicDepartmentById(
-            @PathVariable Long departmentId) {
+    getPublicDepartmentById(@PathVariable Long departmentId) {
         return ResponseEntity.ok(
                 publicService.getPublicDepartmentById(departmentId)
         );
@@ -50,9 +45,7 @@ public class PublicController {
 
         if (program == null || program.isBlank()) {
             return ResponseEntity.ok(
-                    publicService.getPublicDepartmentCourses(
-                            departmentId
-                    )
+                    publicService.getPublicDepartmentCourses(departmentId)
             );
         }
 
@@ -65,23 +58,32 @@ public class PublicController {
 
     @GetMapping("/departments/{departmentId}/faculty")
     public ResponseEntity<List<PublicFacultyResponse>>
-    getPublicDepartmentFaculty(
-            @PathVariable Long departmentId) {
+    getPublicDepartmentFaculty(@PathVariable Long departmentId) {
         return ResponseEntity.ok(
-                publicService.getPublicDepartmentFaculty(
-                        departmentId
-                )
+                publicService.getPublicDepartmentFaculty(departmentId)
         );
     }
 
-    // COURSES
+    @GetMapping("/departments/{departmentId}/notices")
+    public ResponseEntity<List<PublicNoticeResponse>>
+    getPublicDepartmentNotices(@PathVariable Long departmentId) {
+        return ResponseEntity.ok(
+                publicService.getPublicDepartmentNotices(departmentId)
+        );
+    }
+
+    @GetMapping("/departments/{departmentId}/events")
+    public ResponseEntity<List<PublicEventResponse>>
+    getPublicDepartmentEvents(@PathVariable Long departmentId) {
+        return ResponseEntity.ok(
+                publicService.getPublicDepartmentEvents(departmentId)
+        );
+    }
 
     @GetMapping("/courses")
     public ResponseEntity<List<PublicCourseResponse>>
     getPublicCourses() {
-        return ResponseEntity.ok(
-                publicService.getPublicCourses()
-        );
+        return ResponseEntity.ok(publicService.getPublicCourses());
     }
 
     @GetMapping("/courses/{courseId}")
@@ -92,14 +94,10 @@ public class PublicController {
         );
     }
 
-    // FACULTY
-
     @GetMapping("/faculty")
     public ResponseEntity<List<PublicFacultyResponse>>
     getPublicFaculty() {
-        return ResponseEntity.ok(
-                publicService.getPublicFaculty()
-        );
+        return ResponseEntity.ok(publicService.getPublicFaculty());
     }
 
     @GetMapping("/faculty/{facultyId}")
@@ -110,23 +108,15 @@ public class PublicController {
         );
     }
 
-    // NOTICES
-
     @GetMapping("/notices")
     public ResponseEntity<List<PublicNoticeResponse>>
     getPublicNotices() {
-        return ResponseEntity.ok(
-                publicService.getPublicNotices()
-        );
+        return ResponseEntity.ok(publicService.getPublicNotices());
     }
-
-    // EVENTS
 
     @GetMapping("/events")
     public ResponseEntity<List<PublicEventResponse>>
     getPublicEvents() {
-        return ResponseEntity.ok(
-                publicService.getPublicEvents()
-        );
+        return ResponseEntity.ok(publicService.getPublicEvents());
     }
 }

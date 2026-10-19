@@ -1,3 +1,4 @@
+
 package college_management_backend.service;
 
 import college_management_backend.dto.VisitorInquiryRequest;
@@ -5,6 +6,9 @@ import college_management_backend.entity.VisitorInquiry;
 import college_management_backend.repository.VisitorInquiryRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class VisitorInquiryService {
@@ -13,13 +17,11 @@ public class VisitorInquiryService {
 
     public VisitorInquiryService(
             VisitorInquiryRepository visitorInquiryRepository) {
-
         this.visitorInquiryRepository = visitorInquiryRepository;
     }
 
-    public VisitorInquiry createInquiry(
-            VisitorInquiryRequest request) {
-
+    @Transactional
+    public VisitorInquiry createInquiry(VisitorInquiryRequest request) {
         VisitorInquiry inquiry = new VisitorInquiry();
 
         inquiry.setName(request.getName().trim());
@@ -34,5 +36,10 @@ public class VisitorInquiryService {
         inquiry.setStatus("NEW");
 
         return visitorInquiryRepository.save(inquiry);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VisitorInquiry> getAllInquiries() {
+        return visitorInquiryRepository.findAllByOrderByCreatedAtDesc();
     }
 }

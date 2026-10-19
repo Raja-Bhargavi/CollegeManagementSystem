@@ -1,8 +1,10 @@
+
 package college_management_backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +24,9 @@ public class NoticeRequest {
 
     private LocalDateTime expiryDate;
 
+    private String departmentScope = "ALL";
+    private List<Long> targetDepartmentIds = List.of();
+
     @NotBlank(message = "Visibility is required")
     @Size(max = 30, message = "Visibility cannot exceed 30 characters")
     private String visibility;
@@ -29,6 +34,16 @@ public class NoticeRequest {
     @NotBlank(message = "Status is required")
     @Size(max = 20, message = "Status cannot exceed 20 characters")
     private String status;
+
+    @NotBlank(message = "Category is required")
+    @Size(max = 30, message = "Category cannot exceed 30 characters")
+    private String category = "GENERAL";
+
+    private Long departmentId;
+
+    @NotBlank(message = "Programme level is required")
+    @Size(max = 20, message = "Programme level cannot exceed 20 characters")
+    private String programLevel = "ALL";
 
     public String getTitle() {
         return title;
@@ -84,5 +99,45 @@ public class NoticeRequest {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getProgramLevel() {
+        return programLevel;
+    }
+
+    public void setProgramLevel(String programLevel) {
+        this.programLevel = programLevel;
+    }
+
+    public String getDepartmentScope() {
+    return departmentScope;
+    }
+
+    public void setDepartmentScope(String departmentScope) {
+        this.departmentScope = departmentScope;
+    }
+
+    public List<Long> getTargetDepartmentIds() {
+        return targetDepartmentIds;
+    }
+
+    public void setTargetDepartmentIds(List<Long> targetDepartmentIds) {
+        this.targetDepartmentIds = targetDepartmentIds;
     }
 }

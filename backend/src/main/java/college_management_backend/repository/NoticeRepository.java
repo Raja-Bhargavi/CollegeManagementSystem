@@ -1,3 +1,4 @@
+
 package college_management_backend.repository;
 
 import college_management_backend.entity.Notice;
@@ -13,5 +14,16 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     List<Notice> findByStatus(String status);
 
-    List<Notice> findByVisibilityAndStatus(String visibility, String status);
+    List<Notice> findByVisibilityAndStatus(
+            String visibility,
+            String status
+    );
+
+    List<Notice> findByDepartmentId(Long departmentId);
+
+    List<Notice> findByDepartmentIdAndVisibilityAndStatus(
+            Long departmentId,
+            String visibility,
+            String status
+    );
 }
