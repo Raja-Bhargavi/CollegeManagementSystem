@@ -170,4 +170,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 @Param("userId") Long userId
         );
 
+        
+        @Query(value = """
+            SELECT COUNT(*) 
+            FROM faculty f
+            JOIN users u ON u.user_id = f.user_id
+            WHERE LOWER(u.email) = LOWER(:email)
+            """, nativeQuery = true)
+        long countFacultyProfilesByEmail(@Param("email") String email);
+
+
+        @Query(value = """
+            SELECT COUNT(*) 
+            FROM staff s
+            JOIN users u ON u.user_id = s.user_id
+            WHERE LOWER(u.email) = LOWER(:email)
+            """, nativeQuery = true)
+        long countStaffProfilesByEmail(@Param("email") String email);
+
+        @Query(value = """
+            SELECT COUNT(*) 
+            FROM management m
+            JOIN users u ON u.user_id = m.user_id
+            WHERE LOWER(u.email) = LOWER(:email)
+            """, nativeQuery = true)
+        long countManagementProfilesByEmail(@Param("email") String email);
+
+
 }
