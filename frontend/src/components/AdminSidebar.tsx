@@ -25,6 +25,10 @@ export default function AdminSidebar() {
             path: "/admin/applications",
         },
         {
+            label: "Admission Reviews",
+            path: "/admin/admission-reviews",
+        },
+        {
             label: "Courses",
             path: "/admin/courses",
         },
@@ -145,6 +149,8 @@ export default function AdminSidebar() {
                     >
                         {item.label}
                     </NavLink>
+
+                    
                 ))}
             </nav>
 

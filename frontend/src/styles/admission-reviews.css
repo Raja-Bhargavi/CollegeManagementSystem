@@ -1,0 +1,200 @@
+
+.admission-reviews-page {
+    padding: 24px;
+    color: #222;
+}
+
+.admission-reviews-header,
+.admission-review-detail-header,
+.admission-review-toolbar,
+.admission-review-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.admission-reviews-header {
+    margin-bottom: 24px;
+}
+
+.admission-reviews-header h1,
+.admission-review-detail h2 {
+    margin: 0 0 8px;
+}
+
+.admission-reviews-header p,
+.admission-review-detail-header p {
+    margin: 0;
+    color: #666;
+}
+
+.admission-review-toolbar {
+    margin-bottom: 16px;
+}
+
+.admission-review-toolbar label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admission-review-toolbar select,
+.admission-review-remarks textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+}
+
+.admission-review-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.admission-review-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 14px;
+}
+
+.admission-review-table th,
+.admission-review-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #e7e7e7;
+    text-align: left;
+    vertical-align: top;
+}
+
+.admission-review-table th {
+    background: #f7f7f7;
+    font-weight: 600;
+}
+
+.admission-review-table td small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    overflow-wrap: anywhere;
+}
+
+.admission-review-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admission-review-secondary,
+.admission-review-actions button {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    font: inherit;
+}
+
+.admission-review-actions button:first-child {
+    border-color: #333;
+    background: #333;
+    color: #fff;
+}
+
+.admission-review-secondary:disabled,
+.admission-review-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.admission-review-message {
+    margin: 16px 0;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow-wrap: anywhere;
+}
+
+.admission-review-error {
+    color: #8b1e1e;
+}
+
+.admission-review-detail {
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.admission-review-detail-header {
+    margin-bottom: 24px;
+}
+
+.admission-review-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 0 0 24px;
+}
+
+.admission-review-detail-grid div {
+    min-width: 0;
+}
+
+.admission-review-detail-grid dt {
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 13px;
+}
+
+.admission-review-detail-grid dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.admission-review-remarks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.admission-review-remarks textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    font-weight: 400;
+    resize: vertical;
+}
+
+.admission-review-actions {
+    justify-content: flex-start;
+    margin-top: 18px;
+}
+
+@media (max-width: 640px) {
+    .admission-reviews-page {
+        padding: 16px;
+    }
+
+    .admission-reviews-header,
+    .admission-review-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admission-review-detail {
+        padding: 16px;
+    }
+
+    .admission-review-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admission-review-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

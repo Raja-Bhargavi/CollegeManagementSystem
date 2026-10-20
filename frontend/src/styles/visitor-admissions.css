@@ -258,3 +258,131 @@
         font-size: 16px;
     }
 }
+
+.admission-registration-form {
+    max-width: 900px;
+    margin: 36px auto 0;
+    padding: 30px;
+    border: 1px solid #dedede;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.admission-registration-form h3 {
+    margin: 28px 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e5e5;
+    color: #111111;
+    font-size: 20px;
+}
+
+.admission-registration-form h3:first-child {
+    margin-top: 0;
+}
+
+.admission-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.admission-form-grid label {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+    color: #222222;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admission-registration-form input,
+.admission-registration-form select,
+.admission-registration-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #111111;
+    font: inherit;
+    font-weight: 400;
+}
+
+.admission-registration-form textarea {
+    resize: vertical;
+}
+
+.admission-registration-form input:focus,
+.admission-registration-form select:focus,
+.admission-registration-form textarea:focus {
+    outline: 2px solid #777777;
+    outline-offset: 2px;
+}
+
+.admission-form-full {
+    grid-column: 1 / -1;
+}
+
+.admission-program-summary {
+    padding: 16px;
+    border: 1px solid #dedede;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #222222;
+}
+
+.admission-program-summary p {
+    margin: 8px 0 0;
+    color: #444444;
+    font-size: 14px;
+}
+
+.admission-field-help,
+.admission-form-note {
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.admission-form-note {
+    margin: 24px 0 16px;
+}
+
+.admission-form-message {
+    margin-top: 22px;
+    padding: 14px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.admission-form-error {
+    color: #8b1e1e;
+}
+
+.admission-form-success {
+    color: #215b32;
+}
+
+.admission-registration-form button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+@media (max-width: 640px) {
+    .admission-registration-form {
+        padding: 20px;
+    }
+
+    .admission-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admission-form-full {
+        grid-column: auto;
+    }
+}

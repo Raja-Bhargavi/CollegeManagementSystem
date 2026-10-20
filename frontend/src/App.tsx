@@ -37,7 +37,7 @@ import VisitorAdmissions from "./pages/visitor/VisitorAdmissions";
 import VisitorContact from "./pages/visitor/VisitorContact";
 import VisitorDepartmentNotices from "./pages/visitor/VisitorDepartmentNotices";
 import VisitorDepartmentEvents from "./pages/visitor/VisitorDepartmentEvents";
-
+import ActivateStudent from "./pages/visitor/ActivateStudent";
 
 // =========================
 // ADMIN
@@ -60,6 +60,7 @@ import NoticesPage from "./pages/admin/Notices";
 import Fees from "./pages/admin/Fees";
 import Payments from "./pages/admin/Payments";
 import CourseRegistrationPage from "./pages/admin/CourseRegistration";
+import AdmissionReviews from "./pages/admin/AdmissionReviews";
 
 // =========================
 // STUDENT
@@ -277,6 +278,10 @@ function App() {
                         path="/academics/faculty-info/:facultyId"
                         element={<VisitorFacultyDetails />}
                     />
+                    <Route
+                        path="/activate-student"
+                        element={<ActivateStudent />}
+                    />
 
                     {/* Other public pages */}
                     <Route
@@ -394,6 +399,7 @@ function App() {
                     <Route path="faculty" element={<FacultyPage />} />
                     <Route path="staff" element={<StaffPage />} />
                     <Route path="applications" element={<Applications />} />
+                    <Route path="admission-reviews" element={<AdmissionReviews />}/>
                     <Route path="courses" element={<CoursePage />} />
                     <Route path="course-offerings" element={<CourseOfferingPage />} />
                     <Route path="course-registrations" element={<CourseRegistrationPage />} />
@@ -405,7 +411,8 @@ function App() {
                     <Route path="fees" element={<Fees />} />
                     <Route path="payments" element={<Payments />} />
                     <Route path="results" element={<ResultsPage />} />
-                    <Route path="attendance" element={<AttendancePage />} />
+                    <Route path="attendance" element={<AttendancePage />}/>
+                    
                 </Route>
 
                 {/* =====================================================
