@@ -14,6 +14,12 @@ import type {
 } from "../../api/admissionApi";
 
 const currentYear = new Date().getFullYear();
+const earliestAdmissionYear = 2018;
+
+const admissionYears = Array.from(
+    { length: currentYear - earliestAdmissionYear + 1 },
+    (_, index) => currentYear - index
+);
 
 const initialForm: AdmissionSubmission = {
     firstName: "",
@@ -369,17 +375,22 @@ export default function VisitorAdmissions() {
                             )}
 
                             <label>
-                                Admission year *
-                                <input
-                                    type="number"
-                                    name="admissionYear"
-                                    value={form.admissionYear}
-                                    onChange={handleChange}
-                                    min={currentYear}
-                                    max={currentYear + 2}
-                                    required
-                                />
-                            </label>
+                            Admission year *
+                            <select
+                                name="admissionYear"
+                                value={form.admissionYear}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select admission year</option>
+
+                                {admissionYears.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
 
                             <label>
                                 Previous qualification

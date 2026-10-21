@@ -5,9 +5,9 @@ import api from "../../api/axios";
 
 export default function ActivateStudent() {
     const [searchParams] = useSearchParams();
+    const token = searchParams.get("token") ?? "";
     const navigate = useNavigate();
 
-    const token = searchParams.get("token") ?? "";
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,10 +50,14 @@ export default function ActivateStudent() {
 
             setTimeout(() => navigate("/login"), 1500);
         } catch (error: any) {
-            setMessage(
-                error.response?.data?.message ??
-                "Activation failed. The link may have expired or already been used."
-            );
+            const data = error.response?.data;
+
+                setMessage(
+                    data?.detail ??
+                    data?.message ??
+                    data?.error ??
+                    "Activation failed. Please check the backend logs for the exact cause."
+                );
         } finally {
             setLoading(false);
         }
