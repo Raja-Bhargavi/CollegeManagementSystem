@@ -113,63 +113,52 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
             
         @Query(value = """
-            SELECT COUNT(*) > 0
-            FROM user_roles ur
-            JOIN roles r ON r.role_id = ur.role_id
-            WHERE ur.user_id = :userId
-            AND r.role_name = :roleName
-            """, nativeQuery = true)
-        boolean hasRole(
-                @Param("userId") Long userId,
-                @Param("roleName") String roleName
-        );
+                SELECT COUNT(*)
+                FROM user_roles ur
+                JOIN roles r ON r.role_id = ur.role_id
+                WHERE ur.user_id = :userId
+                AND r.role_name = :roleName
+                """, nativeQuery = true)
+            long hasRole(
+                    @Param("userId") Long userId,
+                    @Param("roleName") String roleName
+            );
 
         @Query(value = """
-            SELECT COUNT(*) > 0
+            SELECT COUNT(*)
             FROM users u
             WHERE u.user_id = :userId
             AND u.account_status = 'ACTIVE'
             """, nativeQuery = true)
-        boolean isActiveUser(
-                @Param("userId") Long userId
-        );
+        long isActiveUser(@Param("userId") Long userId);
 
         @Query(value = """
-            SELECT COUNT(*) > 0
+            SELECT COUNT(*)
             FROM students s
             WHERE s.user_id = :userId
             """, nativeQuery = true)
-        boolean hasStudentProfile(
-                @Param("userId") Long userId
-        );
+        long hasStudentProfile(@Param("userId") Long userId);
 
         @Query(value = """
-            SELECT COUNT(*) > 0
+            SELECT COUNT(*)
             FROM faculty f
             WHERE f.user_id = :userId
             """, nativeQuery = true)
-        boolean hasFacultyProfile(
-                @Param("userId") Long userId
-        );
+        long hasFacultyProfile(@Param("userId") Long userId);
 
         @Query(value = """
-            SELECT COUNT(*) > 0
+            SELECT COUNT(*)
             FROM staff s
             WHERE s.user_id = :userId
             """, nativeQuery = true)
-        boolean hasStaffProfile(
-                @Param("userId") Long userId
-        );
+        long hasStaffProfile(@Param("userId") Long userId);
 
         @Query(value = """
-            SELECT COUNT(*) > 0
+            SELECT COUNT(*)
             FROM management m
             WHERE m.user_id = :userId
             """, nativeQuery = true)
-        boolean hasManagementProfile(
-                @Param("userId") Long userId
-        );
-
+        long hasManagementProfile(@Param("userId") Long userId);
         
         @Query(value = """
             SELECT COUNT(*) 

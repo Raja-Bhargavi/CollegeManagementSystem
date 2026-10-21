@@ -39,7 +39,7 @@ public record AdmissionSubmissionRequest(
     @NotNull @Positive
     Long programId,
 
-    @NotNull @Min(2020) @Max(2100)
+    @NotNull @Min(2018) @Max(2100)
     Integer admissionYear,
 
     @Size(max = 100)

@@ -360,29 +360,31 @@ public class StudentService {
 
     
         private void validateStudentAccount(Long userId) {
-        if (userId == null) {
-                throw new IllegalArgumentException("User ID is required");
-        }
 
-        if (!userRepository.isActiveUser(userId)) {
-                throw new IllegalArgumentException(
-                        "User account does not exist or is inactive: " + userId
-                );
-        }
+                if (userId == null) {
+                        throw new IllegalArgumentException("User ID is required");
+                }
 
-        if (!userRepository.hasRole(userId, "STUDENT")) {
-                throw new IllegalArgumentException(
-                        "Selected account must have the STUDENT role"
-                );
-        }
+                if (userRepository.isActiveUser(userId) <= 0) {
+                        throw new IllegalArgumentException(
+                                "User account does not exist or is inactive: " + userId
+                        );
+                }
 
-        if (userRepository.hasFacultyProfile(userId)
-                || userRepository.hasStaffProfile(userId)
-                || userRepository.hasManagementProfile(userId)) {
-                throw new IllegalArgumentException(
-                        "This account is already linked to another profile type"
-                );
-        }
-        }
+                if (userRepository.hasRole(userId, "STUDENT") <= 0) {
+                        throw new IllegalArgumentException(
+                                "Selected account must have the STUDENT role"
+                        );
+                }
+
+                if (userRepository.hasFacultyProfile(userId) > 0
+                        || userRepository.hasStaffProfile(userId) > 0
+                        || userRepository.hasManagementProfile(userId) > 0) {
+
+                        throw new IllegalArgumentException(
+                                "This account is already linked to another profile type"
+                        );
+                }
+                }
 
 }
